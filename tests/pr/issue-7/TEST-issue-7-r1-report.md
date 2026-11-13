@@ -1,10 +1,12 @@
 # Test Report: PR #10 - Development Target Paths
 
+**Head SHA:** not recorded
+
 **PR:** [#10 - Point development targets at ai-framework-tests repo](https://github.com/NeilWoodComputing/AI-framework/pull/10)  
 **Issue:** NeilWoodComputing/ai-framework-tests#7  
 **Test Date:** 2026-11-13  
 **Test Framework:** Python automated tests  
-**Test File:** `tests/test_pr10_development_target_paths.py`
+**Test File:** `tests/pr/issue-7/test_issue_7.py`
 
 ## Summary
 
@@ -22,7 +24,7 @@ All 6 acceptance criteria have been validated with automated tests. The PR succe
 
 ```bash
 # Run the test suite
-python3 tests/test_pr10_development_target_paths.py
+python3 tests/pr/issue-7/test_issue_7.py
 
 # Run config validation
 python3 tests/validate-config.py
@@ -113,7 +115,7 @@ python3 tests/validate-config.py
 
 ```bash
 # Run PR test suite
-python3 tests/test_pr10_development_target_paths.py
+python3 tests/pr/issue-7/test_issue_7.py
 
 # Run configuration validation
 python3 tests/validate-config.py ai-framework.config.yaml
@@ -144,8 +146,8 @@ The test suite provides comprehensive coverage:
 
 ## Test Artifacts
 
-- **Test Script:** `tests/test_pr10_development_target_paths.py`
-- **Test Report:** `tests/PR10-test-report.md` (this file)
+- **Test Script:** `tests/pr/issue-7/test_issue_7.py`
+- **Test Report:** `tests/pr/issue-7/TEST-issue-7-r1-report.md` (this file)
 - **Validation Script:** `tests/validate-config.py` (existing, enhanced by this PR)
 
 ## Conclusion

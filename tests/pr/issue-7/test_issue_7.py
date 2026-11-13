@@ -12,6 +12,17 @@ import subprocess
 from pathlib import Path
 from typing import List, Dict, Tuple
 
+def find_repo_root(start=None):
+    """Walk up from this file to the folder that holds ai-framework.config.yaml."""
+    p = Path(start or __file__).resolve()
+    if p.is_file():
+        p = p.parent
+    for candidate in [p, *p.parents]:
+        if (candidate / "ai-framework.config.yaml").is_file():
+            return candidate
+    raise SystemExit(f"Could not find repository root from {start}")
+
+
 # Test results tracking
 results = []
 
@@ -31,7 +42,7 @@ def record_result(criterion: str, test_name: str, passed: bool, details: str = "
 
 def test_ac1_active_api_has_repo_fields():
     """AC1: Active API option (api-framework) has repo_url and repo_path"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     config_path = framework_root / 'ai-framework.config.yaml'
     
     with open(config_path) as f:
@@ -83,7 +94,7 @@ def test_ac1_active_api_has_repo_fields():
 
 def test_ac1_active_ui_has_repo_fields():
     """AC1: Active UI option (nextjs) has repo_url and repo_path"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     config_path = framework_root / 'ai-framework.config.yaml'
     
     with open(config_path) as f:
@@ -139,7 +150,7 @@ def test_ac1_active_ui_has_repo_fields():
 
 def test_ac2_unity_api_marked_unavailable():
     """AC2: Unity.API is marked as unavailable (available: false)"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     config_path = framework_root / 'ai-framework.config.yaml'
     
     with open(config_path) as f:
@@ -164,7 +175,7 @@ def test_ac2_unity_api_marked_unavailable():
 
 def test_ac2_angular_marked_unavailable():
     """AC2: Angular is marked as unavailable (available: false)"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     config_path = framework_root / 'ai-framework.config.yaml'
     
     with open(config_path) as f:
@@ -189,7 +200,7 @@ def test_ac2_angular_marked_unavailable():
 
 def test_ac2_unity_api_tests_disabled():
     """AC2: Unity.API.Tests unit test command is commented out or removed"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     config_path = framework_root / 'ai-framework.config.yaml'
     
     with open(config_path) as f:
@@ -219,7 +230,7 @@ def test_ac2_unity_api_tests_disabled():
 
 def test_ac3_readme_mentions_tests_repo():
     """AC3: Root README mentions ai-framework-tests repo"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     readme_path = framework_root / 'README.md'
     
     with open(readme_path) as f:
@@ -238,7 +249,7 @@ def test_ac3_readme_mentions_tests_repo():
 
 def test_ac3_readme_not_claims_local_api_ui():
     """AC3: README doesn't claim api/ and ui/ live inside AI-framework"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     readme_path = framework_root / 'README.md'
     
     with open(readme_path) as f:
@@ -285,7 +296,7 @@ def test_ac3_readme_not_claims_local_api_ui():
 
 def test_ac4_validate_config_enforces_active_fields():
     """AC4: validate-config.py requires repo_url/repo_path for active available options"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     config_path = framework_root / 'ai-framework.config.yaml'
     
     # Import the validation function from validate-config.py
@@ -333,7 +344,7 @@ def test_ac4_validate_config_enforces_active_fields():
 
 def test_ac4_validate_config_enforces_active_repo_path():
     """AC4: validate-config.py requires repo_path for active available options"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     config_path = framework_root / 'ai-framework.config.yaml'
     
     # Import the validation function from validate-config.py
@@ -381,7 +392,7 @@ def test_ac4_validate_config_enforces_active_repo_path():
 
 def test_ac4_validate_allows_inactive_without_repo_fields():
     """AC4: validate-config.py allows unavailable options to lack repo_url/repo_path"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     config_path = framework_root / 'ai-framework.config.yaml'
     
     # Import the validation function from validate-config.py
@@ -415,7 +426,7 @@ def test_ac4_validate_allows_inactive_without_repo_fields():
 
 def test_ac5_no_hardcoded_api_paths_in_briefs():
     """AC5: No AGENT-BRIEF.md uses ai-code-framework/api as active development path"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     
     agent_briefs = [
         framework_root / 'ai-planning-framework/AGENT-BRIEF.md',
@@ -452,7 +463,7 @@ def test_ac5_no_hardcoded_api_paths_in_briefs():
 
 def test_ac5_no_hardcoded_api_paths_in_loops():
     """AC5: No loop files use ai-code-framework/api or /ui as active development paths"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     
     loop_dirs = [
         framework_root / 'ai-planning-framework/loops',
@@ -488,7 +499,7 @@ def test_ac5_no_hardcoded_api_paths_in_loops():
 
 def test_ac5_no_hardcoded_api_paths_in_rules():
     """AC5: No .cursor/rules files use ai-code-framework/api or /ui as active paths"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     
     # Find all .mdc and .md files in .cursor/rules directories
     rule_files = list(framework_root.glob('**/.cursor/rules/*.mdc')) + \
@@ -525,7 +536,7 @@ def test_ac5_no_hardcoded_api_paths_in_rules():
 
 def test_ac6_no_secrets_in_diff():
     """AC6: PR diff contains no secrets (passwords, tokens, keys)"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     
     # Get the diff for this PR branch
     result = subprocess.run(
@@ -578,7 +589,7 @@ def test_ac6_no_secrets_in_diff():
 
 def test_ac6_no_local_paths_in_diff():
     """AC6: PR diff contains no local PC paths (C:\\Users, D:\\Users, etc.)"""
-    framework_root = Path(__file__).parent.parent
+    framework_root = find_repo_root(__file__)
     
     result = subprocess.run(
         ['git', 'diff', 'origin/main...HEAD'],

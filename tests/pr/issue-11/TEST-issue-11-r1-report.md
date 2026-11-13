@@ -1,3 +1,17 @@
+# Test Bot report — issue 11, round 1
+
+**Head SHA:** not recorded
+**Date:** not recorded
+
+| Field | Value |
+|-------|-------|
+| PR | https://github.com/NeilWoodComputing/AI-framework/pull/9 |
+| Head SHA | not recorded |
+| Date | not recorded |
+
+Converted from `tests/pr/issue-11/TEST-issue-11-r1-report.md`. Key lines from the original run output:
+
+```text
 PR #9 Test Report - Fix stale Test Bot brief
 ================================================================================
 
@@ -77,3 +91,4 @@ PASS: All file links in 4 changed markdown file(s) resolve
 
 
 Summary: 7 PASS, 0 FAIL, 0 BLOCKED out of 7 total
+```
