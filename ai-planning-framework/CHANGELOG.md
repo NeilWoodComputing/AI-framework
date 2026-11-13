@@ -4,6 +4,16 @@ Framework version is in `VERSION` (semantic: major = breaking spec / layout chan
 features or stricter checks, patch = fixes). Project profiles record the major.minor they were
 written for in `framework_version`. Dated reasons: `DECISIONS.md`.
 
+## 1.2.0 — 2026-11-13
+
+GitHub ticket publishing adapter complete. No spec or schema change.
+
+- **GitHub adapter** (`skills/publish-tickets/adapters/github.md`): Complete field mapping for GitHub Issues, including title format `[T-<DOMAIN>-NNN] <title> (<page type>)`, body with full Given/When/Then scenarios plus Acceptance criteria summary section (checkable bullets), labels (stable ID, feature slug, page type, `ai-planning-framework`, default_labels), sub-issues only for explicit child tasks, and upsert by stable ID label or title prefix.
+- **Config** (`../ai-framework.config.yaml`): Added `tickets.github` block (owner `NeilWoodComputing`, repository `ai-framework-tests`, project `AI testing`, default_labels). Set `tickets.target: github` and `tickets.enabled: true`. Updated guard comment to reflect explicit-user-approval requirement. Jira adapter remains a stub.
+- **Cross-repo workflows** (`../handoff/README.md`): Documented cross-repo closing keyword `Closes NeilWoodComputing/ai-framework-tests#N` for PRs that close issues in a different repository.
+- **Docs**: Updated `skills/publish-tickets/SKILL.md` (GitHub no longer marked as stub) and `README.md` to reflect GitHub as a complete adapter alongside Azure DevOps.
+- **Authentication**: GitHub adapter uses a connected GitHub connector where available, otherwise the env var named by `secrets.github_token_env`.
+
 ## 1.1.4 — 2026-11-11
 
 More coverage cases, taken from branches the template samples mention but do not pin down. No spec, schema or layout change. Existing goldens are unchanged.

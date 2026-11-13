@@ -5,10 +5,10 @@ Map `work/<feature>/tickets/*.md` into work items in the project's ticket tracke
 | `tickets.target` | Adapter | Status |
 |------------------|---------|--------|
 | `azure-devops` | `adapters/azure-devops.md` | Mapping complete; dry-run until access exists |
-| `github` | `adapters/github.md` | Stub: mapping outline only |
+| `github` | `adapters/github.md` | Mapping complete; dry-run until access exists |
 | `jira` | `adapters/jira.md` | Stub: mapping outline only |
 
-**Stubbed until tracker access exists**: do not call a live connector from this skill yet; prepare payloads and upsert rules so another agent can publish when access is granted. (This skill was called `publish-devops-tickets` before the framework became tracker-neutral.)
+**Dry-run until tracker access exists**: do not call a live connector from this skill yet; prepare payloads and upsert rules so another agent can publish when access is granted. (This skill was called `publish-devops-tickets` before the framework became tracker-neutral.)
 
 ## Config first
 
