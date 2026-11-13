@@ -437,12 +437,20 @@ handoff:
   handoff_file: handoff.md               # lives in each feature folder: <work_dir>/<feature>/handoff.md
 
   # Planning agent -> implementing agent
-  #   devops: publish tickets to the board (publish-tickets); the implementing
-  #           agent picks the work items up from the board. Requires tickets.enabled: true,
-  #           no <placeholders> under tickets, and the DevOps connector.
-  #   direct: write handoff.md and message the implementing agent with the feature path.
-  # Default is direct while tickets.enabled is false.
-  plan_to_code: direct                   # devops | direct
+  #   board:  publish tickets to the board named by tickets.target (publish-tickets);
+  #           the implementing agent picks the work items or issues up from there.
+  #           `devops` is a deprecated alias of `board` and behaves the same.
+  #           Requirements depend on tickets.target:
+  #             github — tickets.enabled: true, the tickets.github block filled in
+  #             (no <placeholders>), and a GitHub connector or the token env var
+  #             named in secrets.github_token_env. Azure DevOps — tickets.enabled:
+  #             true, the tickets.azure_devops block filled in, and the DevOps
+  #             connector or the PAT env var. If any requirement is missing, fall
+  #             back to `direct` only after asking the human owner.
+  #   direct: write handoff.md and message the implementing agent with the feature
+  #           path. The fallback when the board route cannot be used, and what to
+  #           use while tickets.enabled is false.
+  plan_to_code: board                    # board | direct  (devops is a deprecated alias of board)
 
   # Implementing agent -> reviewing agent. Either way the review starts automatically
   # (review.auto_review / review.triggers); no human asks for it.
@@ -482,7 +490,8 @@ handoff:
   # feat/79242/...). {braces} are filled per feature by the implementing agent;
   # they are not <placeholders> for you to set.
   branch_pattern:
-    devops: feat/{work-item-id}/{ticket-id}-{slug}   # e.g. feat/84700/T-CONTACT-001-add-edit-contact
+    board: feat/{work-item-id}/{ticket-id}-{slug}    # e.g. feat/84700/T-CONTACT-001-add-edit-contact
+    devops: feat/{work-item-id}/{ticket-id}-{slug}   # deprecated alias of board; same pattern
     direct: feat/{ticket-id}/{slug}                  # e.g. feat/T-CONTACT-001/add-edit-contact
 
   # Human gates. When true, the agent stops, asks the human owner (agents.human),

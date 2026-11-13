@@ -19,7 +19,7 @@ parked_at: null               # ISO 8601 with offset, set when parked
 parked_by: null               # human (only the human owner parks or resumes)
 
 routes:                       # the route actually used (from handoff in the config)
-  plan_to_code: null          # devops | direct   (set by the planning agent at hand-off)
+  plan_to_code: null          # board | direct  (devops is a deprecated alias of board; set by the planning agent at hand-off)
   code_to_review: null        # pr | direct       (set by the implementing agent at hand-off)
   code_to_test: null          # direct            (set by the implementing agent at the same hand-off; the testing agent runs alongside the review)
   review_feedback: direct     # direct
@@ -27,9 +27,9 @@ routes:                       # the route actually used (from handoff in the con
 tickets:                      # every T-<DOMAIN>-NNN in tickets/; id must match the filename
   - id: T-<DOMAIN>-NNN
     file: tickets/T-<DOMAIN>-NNN-<slug>.md
-    devops_work_item_id: null # set by the planning agent when plan_to_code = devops
+    devops_work_item_id: null # set by the planning agent when plan_to_code is board (or devops); field name is historical
 
-devops:                       # only when plan_to_code = devops
+devops:                       # only when plan_to_code is board (or devops); key name is historical
   board_url: null
   published_at: null
 

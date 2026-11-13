@@ -158,3 +158,6 @@ jobs:
           \$config.Output.Verbosity = 'Detailed'
           Invoke-Pester -Configuration \$config
         "
+
+    - name: Run issue 15 handoff board-route tests
+      run: python3 tests/framework/issue-15/test_issue_15.py

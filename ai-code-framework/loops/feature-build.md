@@ -48,7 +48,7 @@ Skip stage 3 or 4 only when the tickets have no API or no UI work, and say so in
 
 ### 1. pick-up
 
-- `direct`: open `work/<feature>/handoff.md`. `devops`: find the ticket ID in the work item title (Azure DevOps or GitHub issue), then the feature's `handoff.md`. For GitHub Issues, use the cross-repo closing keyword `Closes owner/repo#N` in the PR when tickets and code are in different repositories.
+- `direct`: open `work/<feature>/handoff.md`. `board` (or the `devops` alias): find the ticket ID in the work item or issue title (GitHub issue or Azure DevOps), then the feature's `handoff.md`. For GitHub Issues, use the cross-repo closing keyword `Closes owner/repo#N` in the PR when tickets and code are in different repositories.
 - Load every ticket in `tickets`, every path in each ticket's **Specs** field (`specs/*.yaml`, `excel/*.xlsx`) and `stubs/ui-to-db.yaml` if present
 - Build a control inventory (per control: section / step, label, type, mandatory, editable, enablement, min / max, validation + messages, Service / Table / Column) and a scenario list (`<ticket>/S1`, `S2`, …)
 - On `changes-requested`: also load `review.report` (and the latest round in `review.log`, `reviews/review-log.md`) and list its findings by ID. If the handback is from a **test** failure / test-review code defect, also note `testing.test_fix_cycle` vs `testing.max_test_fix_cycles` (does not increment review cycle)
@@ -58,7 +58,7 @@ Skip stage 3 or 4 only when the tickets have no API or no UI work, and say so in
 
 ### 2. branch
 
-- Name from `handoff.branch_pattern` (`direct` or `devops` form); the same name in the API and UI repo; base = `code.<repo>.base_branch`, else `review.target_branch`
+- Name from `handoff.branch_pattern` (`direct` or `board` form; `devops` is an alias of `board`); the same name in the API and UI repo; base = `code.<repo>.base_branch`, else `review.target_branch`
 - On `changes-requested`, keep the existing branch
 - Required for the PR route and `direct_scope: diff`: base branch is not a placeholder and each repo is a git repo (else blocker → ask the human owner)
 - `direct_scope: plan`: branch in every repo that is under git; a repo that is not under git (e.g. UI.NextJs.Framework) is not a blocker. Leave its `branch` null and rely on the manifest

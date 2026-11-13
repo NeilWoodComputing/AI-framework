@@ -4,6 +4,15 @@ Framework version is in `VERSION` (semantic: major = breaking spec / layout chan
 features or stricter checks, patch = fixes). Project profiles record the major.minor they were
 written for in `framework_version`. Dated reasons: `DECISIONS.md`.
 
+## 1.3.0 — 2026-11-13
+
+Handoff `plan_to_code` now uses a provider-neutral board route. No spec or schema change.
+
+- **Config** (`../ai-framework.config.yaml`): `handoff.plan_to_code` is `board` (GitHub Issues via `tickets.target: github`). `devops` remains a deprecated alias of `board` and behaves the same. Comments describe requirements per target (GitHub needs the `tickets.github` block, not the DevOps connector). The human sign-off (`require_human_approval.plan_to_code: true`) is unchanged. `direct` remains the fallback. `handoff.branch_pattern.board` is the canonical branch form; `branch_pattern.devops` is kept as an alias.
+- **Docs**: `../handoff/README.md`, this framework's `AGENT-BRIEF.md` and `loops/feature-planning.md`, the code framework's `AGENT-BRIEF.md` and `loops/feature-build.md`, the handoff template, and the root `README.md` describe the same flow: plan approved, tickets published as GitHub issues in `ai-framework-tests`, the implementing agent picks them up, PR with `Closes NeilWoodComputing/ai-framework-tests#N`.
+- **Validator** (`../tests/validate-config.py`): allowed `plan_to_code` values are `board`, `direct`, and the `devops` alias. `devops` canonicalises to `board`.
+- **Tests:** `../tests/framework/issue-15/` (Plan Bot's requested path for this issue).
+
 ## 1.2.0 — 2026-11-13
 
 GitHub ticket publishing adapter complete. No spec or schema change.

@@ -12,7 +12,7 @@ Short instructions for the **implementing agent** (`agents.code` in `../ai-frame
    - `handoff` — your pick-up route (`plan_to_code`), your hand-off route (`code_to_review`), `branch_pattern`, `max_review_cycles` (code-review rounds only), `require_human_approval`; also `testing.max_test_fix_cycles` (failing-test fix loops — separate from review rounds)
    - `agents` — role → agent mapping: you are `agents.code`; message the planning agent, the reviewing agent and the human owner by their `agents.<role>.name`
    - `review.direct_scope` — what a direct review covers (`plan`: all code implementing the plan, from your `implementation` manifest; `diff`: a git diff)
-   - `review.target_branch` — base branch, needed only for the PR route or `direct_scope: diff`; `tickets` — the board when the route is `devops`
+   - `review.target_branch` — base branch, needed only for the PR route or `direct_scope: diff`; `tickets` — the board when the route is `board` (or the `devops` alias)
 1. `loops/feature-build.md` — ordered stages and gates for one feature
 2. The active codebase's own docs and rules (below)
 3. The feature's `handoff.md`, then its `tickets/`, `specs/` and `excel/`
@@ -21,8 +21,8 @@ If a value you need is still a `<placeholder>`, stop and report. Do not guess.
 
 ## Pick up work
 
-- **`plan_to_code: direct`** — the planning agent messages you a feature path. Open `<work_dir>/<feature>/handoff.md`.
-- **`plan_to_code: devops`** — take the work item from the board (`tickets.azure_devops` or `tickets.github`). Its title holds `T-<DOMAIN>-NNN`; find `<work_dir>/*/tickets/T-<DOMAIN>-NNN-*.md` and that feature's `handoff.md`. For GitHub Issues (`tickets.target: github`), the planning agent messages you an issue number and link; implement via a cloud agent, then open a PR with the cross-repo closing keyword `Closes NeilWoodComputing/ai-framework-tests#N` (or `Closes #N` when tickets and code are in the same repo). Run a daily sweep for missed issues if configured. Change board state only if the human owner has allowed it and the connector exists.
+- **`plan_to_code: direct`** — the planning agent messages you a feature path. Open `<work_dir>/<feature>/handoff.md`. This is the fallback when the board route is not in use.
+- **`plan_to_code: board`** (or `devops`, a deprecated alias that behaves the same) — take the work item or issue from the board (`tickets.target`: `tickets.github` or `tickets.azure_devops`). Its title holds `T-<DOMAIN>-NNN`; find `<work_dir>/*/tickets/T-<DOMAIN>-NNN-*.md` and that feature's `handoff.md`. For GitHub Issues (`tickets.target: github`, published in `ai-framework-tests`), the planning agent may message you an issue number and link; pick the issue up from the board, implement it, then open a PR with the cross-repo closing keyword `Closes NeilWoodComputing/ai-framework-tests#N` (or `Closes #N` when tickets and code are in the same repo). Run a daily sweep for missed issues if configured. Change board state only if the human owner has allowed it and access exists.
 - Act only when `handoff.md` says owner `dev-bot` and stage `in-development` or `changes-requested`. Set `pickup: accepted`, `updated_at`, `updated_by` and add a History row before any code work.
 - Ignore any `handoff.md` with `example: true`.
 - A feature at `planned`, or waiting on `approvals.plan_to_code`, is not yours yet.
