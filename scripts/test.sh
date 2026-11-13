@@ -55,6 +55,11 @@ if check_command python3 "framework consistency"; then
     run_check "Framework Consistency" python3 tests/check-framework.py || true
 fi
 
+# 2b. Issue 15 handoff board-route tests (Plan Bot path: tests/framework/issue-15/)
+if check_command python3 "issue-15 board-route tests"; then
+    run_check "Issue 15 board-route tests" python3 tests/framework/issue-15/test_issue_15.py || true
+fi
+
 # 3. Shell script checks
 if check_command shellcheck "shellcheck"; then
     run_check "ShellCheck (init-user.sh)" shellcheck scripts/init-user.sh || true

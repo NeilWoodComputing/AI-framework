@@ -103,7 +103,7 @@ Stop after stage 2 if the Excel specs are enough for the next engineering conver
 - Follow **Handoff (planning agent → implementing agent)** in `AGENT-BRIEF.md` and the pipeline rules in `../handoff/README.md`
 - Artefact: `work/<feature>/handoff.md` from `../handoff/templates/handoff.md` — stage `planned`, owner `agents.planning.id`, tickets listed, artefact table and notes for the next owner filled
 - Gate: `handoff.require_human_approval.plan_to_code` — ask the human owner and record their approval before handing off
-- Route from `handoff.plan_to_code`: `devops` (publish via stage 6, record work item IDs; only when `tickets.enabled` is true) or `direct` (default)
+- Route from `handoff.plan_to_code`: `board` (publish via stage 6, record work item IDs; `devops` is a deprecated alias of `board`; only when `tickets.enabled` is true) or `direct` (fallback)
 - Then set stage `in-development`, owner `agents.code.id`, `pickup: pending`, add a History row, and message the implementing agent by name (`agents.code.name`) with `../handoff/templates/handoff-message.md`
 - Gate: never hand off with a missing Service / Table / Column in the specs (**R3**, **R4**)
 - Gate: `tools/check.py` ends `RESULT: PASS` (**R7**, **R9**); add the feature's specs to `tests/manifest.yaml` and create their goldens

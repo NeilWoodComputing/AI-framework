@@ -12,6 +12,41 @@ VALID_RUNTIMES = {'cursor', 'cursor-local', 'claude-code'}
 # Required roles
 REQUIRED_ROLES = {'planning', 'code', 'review', 'testing'}
 
+# Allowed handoff.plan_to_code values. `devops` is a deprecated alias of `board`
+# and canonicalises to it (same behaviour).
+PLAN_TO_CODE_ALIASES = {"devops": "board"}
+PLAN_TO_CODE_CANONICAL = frozenset({"board", "direct"})
+PLAN_TO_CODE_ALLOWED = PLAN_TO_CODE_CANONICAL | frozenset(PLAN_TO_CODE_ALIASES)
+
+
+def canonicalize_plan_to_code(value):
+    """Return the canonical plan_to_code value. `devops` maps to `board`."""
+    if isinstance(value, str) and value in PLAN_TO_CODE_ALIASES:
+        return PLAN_TO_CODE_ALIASES[value]
+    return value
+
+
+def is_board_route(value):
+    """True when the value is the board route (`board` or the `devops` alias)."""
+    return canonicalize_plan_to_code(value) == "board"
+
+
+def validate_plan_to_code_value(value, errors=None, field="handoff.plan_to_code"):
+    """Validate one plan_to_code value. Appends to and returns the errors list."""
+    if errors is None:
+        errors = []
+    if value is None:
+        errors.append(f"Missing '{field}'")
+        return errors
+    if not isinstance(value, str) or value not in PLAN_TO_CODE_ALLOWED:
+        allowed = ", ".join(sorted(PLAN_TO_CODE_CANONICAL))
+        errors.append(
+            f"Invalid {field}: {value!r} (must be one of {allowed}; "
+            "`devops` is a deprecated alias of `board`)"
+        )
+    return errors
+
+
 def validate_framework_config(config_path):
     """Validate ai-framework.config.yaml"""
     errors = []
@@ -137,6 +172,16 @@ def validate_framework_config(config_path):
             errors.append("Missing 'testing.pr_report_names'")
         elif not isinstance(testing["pr_report_names"], str) or not testing["pr_report_names"].strip():
             errors.append("testing.pr_report_names must be a string pattern")
+
+    # Handoff plan_to_code: board | direct, with devops as a deprecated alias of board.
+    if "handoff" not in config:
+        errors.append("Missing 'handoff' section")
+    else:
+        handoff = config["handoff"]
+        if not isinstance(handoff, dict):
+            errors.append("'handoff' section must be a map")
+        else:
+            validate_plan_to_code_value(handoff.get("plan_to_code"), errors)
 
     return errors
 

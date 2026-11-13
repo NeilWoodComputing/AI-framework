@@ -104,7 +104,7 @@ Before working, each agent must:
 
 One agent per framework, each filling a role: the **planning agent** (`ai-planning-framework/`), the **implementing agent** (`ai-code-framework/`), the **testing agent** (`ai-test-framework/`) and the **reviewing agent** (`ai-review-framework/`), plus the **human owner** for approvals and the merge. Each agent starts from its framework's `AGENT-BRIEF.md`. The docs refer to these roles; `agents` in the config says which agent fills each (`name`) and its `handoff.md` owner id, so another agent can take a role without doc changes.
 
-- Planning agent → implementing agent through the DevOps board or directly (`handoff.plan_to_code`).
+- Planning agent → implementing agent through the ticket board or directly (`handoff.plan_to_code`: `board`, with `devops` as a deprecated alias, or `direct` as the fallback). The board is `tickets.target` (currently GitHub Issues in ai-framework-tests). The human owner signs off the plan first (`require_human_approval.plan_to_code`).
 - Implementing agent → reviewing agent through a PR or directly (`handoff.code_to_review`), and at the same time → testing agent (`handoff.code_to_test`), which writes and runs the scenario tests and records them in `handoff.md` `testing` while the feature stays `in-review`.
 - The reviewing agent's code verdict is provisional until the test run finishes; it then reviews the tests, and final approval needs both (`testing.final_approval_requires`).
 - The reviewing agent reviews automatically when the implementing agent hands off or a PR is raised or updated; nobody asks for it. Every round goes into `reviews/review-log.md`; findings go back to the implementing agent, or an approval goes to the human owner (`handoff.review_feedback`).
