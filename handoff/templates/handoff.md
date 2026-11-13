@@ -65,7 +65,7 @@ implementation:               # MANIFEST of what the implementing agent built; t
   tests: []                   # test SCAFFOLDING the implementing agent owns: Api.Framework.Tests project, Playwright / e2e setup, test-data fixtures. Scenario tests are recorded by the testing agent in testing.results
   migrations: []
   # Entry shape (copy into the lists above):
-  #  - path: Unity.API/Controllers/V2/<Name>Controller.cs
+  #  - path: CSharp.API/Controllers/V2/<Name>Controller.cs
   #    repo: api               # api | ui  (tests only; api / migrations are always api, ui is ui)
   #    change: added           # added | modified | existing
   #    tickets: [T-<DOMAIN>-NNN]
@@ -75,7 +75,7 @@ implementation:               # MANIFEST of what the implementing agent built; t
   #    scenarios: [T-<DOMAIN>-NNN/S1]     # mainly for tests
 
 pull_requests: []             # when code_to_review = pr; one entry per repo
-#  - repo: ai-code-framework/api/Unity.API
+#  - repo: ai-code-framework/api/CSharp.API
 #    id: 1234
 #    url: https://dev.azure.com/<org>/<project>/_git/<repo>/pullrequest/1234
 #    source_branch: feat/T-CONTACT-001/add-edit-contact
@@ -137,7 +137,7 @@ blockers: []                  # - "<what> (raised by <agent>, <ISO time>)"
 # Handoff: <Feature name>
 
 > **Now:** `<stage>` · owner `<owner>` · pickup `<pickup>`
-> **Next:** <one line, e.g. "The implementing agent builds T-<DOMAIN>-NNN against Unity.API + Next.js">
+> **Next:** <one line, e.g. "The implementing agent builds T-<DOMAIN>-NNN against the C# API + Next.js">
 
 ## Summary
 

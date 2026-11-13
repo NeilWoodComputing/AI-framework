@@ -148,20 +148,20 @@ agents:
 # ---------------------------------------------------------------------------
 development:
   api:
-    active: api-framework                # unity-api | api-framework  (confirm before code work)
+    active: api-framework                # csharp-api | api-framework  (confirm before code work)
     options:
-      unity-api:
-        path: ai-code-framework/api/Unity.API
+      csharp-api:
+        path: ai-code-framework/api/CSharp.API
         available: false                 # reference-only; not an active development target
-        stack: .NET (net10.0), solution Unity.sln
+        stack: .NET (net10.0), C# solution
         description: >-
-          Unity BFF for the Unity UI. V2 controllers, downstream clients and
+          C# / .NET BFF-style API. V2 controllers, downstream clients and
           mappers, entity-list (grid) endpoints, JSON schema form/wizard
-          endpoints, bulk import, and local persistence via UnityContext
+          endpoints, bulk import, and local persistence via DbContext
           (EF entities and migrations).
         agent_docs: [AGENTS.md, CLAUDE.md]
-        rules: ai-code-framework/api/Unity.API/.cursor/rules
-        skills: ai-code-framework/api/Unity.API/.cursor/skills
+        rules: ai-code-framework/api/CSharp.API/.cursor/rules
+        skills: ai-code-framework/api/CSharp.API/.cursor/skills
       api-framework:
         repo_url: https://github.com/NeilWoodComputing/ai-framework-tests
         repo_path: api/
@@ -184,10 +184,10 @@ development:
         available: false                 # reference-only; not an active development target
         stack: Angular 20, Angular Material, Bootstrap, ag-Grid, JSON Forms
         description: >-
-          Unity.UI.Framework shell. Shared framework in src/framework/;
+          Angular UI framework shell. Shared framework in src/framework/;
           domain features as git submodules under src/app/submodules/.
           Pattern rules for entity grids, JSON schema forms, modal routing,
-          datasets, charts and bulk import. Pairs with Unity.API (v2 routes).
+          datasets, charts and bulk import. Pairs with the C# API (v2 routes).
         agent_docs: [CLAUDE.md, README.md]
         rules: ai-code-framework/ui/UI.Angular.Framework/.cursor/rules
         feature_spec: ai-code-framework/ui/UI.Angular.Framework/src/app/submodules/Example.Subrepo/README.md
@@ -199,7 +199,7 @@ development:
         description: >-
           System UI Next (package system-ui-next): frontend-only Next.js starter
           mirroring the Angular framework layout. Calls the active API via
-          NEXT_PUBLIC_SYSTEM_API_ROOT (API.Framework, no /v1); falls back to Unity.API v2
+          NEXT_PUBLIC_SYSTEM_API_ROOT (API.Framework, no /v1); falls back to the C# API v2
           when that is unset (environment.ts, kept by decision D14).
           Follow README.md, AGENTS.md and .cursor/rules (component library,
           grids, JSON schema forms, modal routing).
@@ -378,7 +378,7 @@ review:
     - "**/coverage/**"
     - "**/TestResults/**"
     - "**/artifacts/**"
-    - "**/.*-out/**"                     # e.g. Unity.API .test-out, .agent-test-out
+    - "**/.*-out/**"                     # e.g. API .test-out, .agent-test-out
     - "**/*.g.cs"
     - "**/*.min.js"
     - "**/package-lock.json"
@@ -471,7 +471,7 @@ handoff:
 
   # Branch name used in every repo the feature touches (same name in API and UI).
   # Must contain the stable ticket ID so the review can link specs. The
-  # <type>/<id>/<slug> shape matches existing Unity.API branches (e.g.
+  # <type>/<id>/<slug> shape matches existing API branches (e.g.
   # feat/79242/...). {braces} are filled per feature by the implementing agent;
   # they are not <placeholders> for you to set.
   branch_pattern:
@@ -558,7 +558,7 @@ testing:
   ui_base_url: <http://localhost:3003>
   api_base_url: <https://localhost:<api-port>>
   reset_endpoint:
-    api: api-framework                   # API.Framework only, not Unity.API
+    api: api-framework                   # API.Framework only, not the C# API
     master_route: TestData/Reset/master  # once per full run, or to recover a dirty DB
     # dependency order
     seed_units: [baseline.migration-seed, baseline.test-tenant, "personas.{feature}", "{feature}.{batch}"]
@@ -593,7 +593,7 @@ testing:
       setup: code                         # harness built and maintained by the implementing agent
       tests: testing                      # scenario tests written and run by the testing agent
   unit:
-    # unity-api: dotnet test Unity.API.Tests/Unity.API.Tests.csproj --configuration Release  # unavailable (reference-only)
+    # csharp-api: dotnet test CSharp.API.Tests/CSharp.API.Tests.csproj --configuration Release  # unavailable (reference-only)
     # approved 08/10/2026 (Neil); project at
     # ai-code-framework/api/API.Framework/Api.Framework.Tests, scaffolded by
     # the implementing agent (folder exists, 2026-10-08)

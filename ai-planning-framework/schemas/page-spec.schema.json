@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://local/ai-planning-framework/page-spec.schema.json",
   "title": "PageSpec",
-  "description": "Full-stack UI page specification, laid out like the starter workbook templates/excel/page-spec-templates.xlsx (the canonical layout reference). Wizard / form controls and Import template columns carry Service / Target DB Table / Target DB Column mapping. Covers Full-Page Wizard, Wizard Modal, Basic Form, Form Modal, Paginated Grid (a routed list page: list on the page), Embedded Grid Modal (a list embedded in another page's flow) and Import (template download + drag-and-drop upload + template column validation). Older field names stay valid: page_type Modal (= Embedded Grid Modal), system_feature and unity_feature (= feature_module), primary_action (= buttons[0]), primary_action.action (= click_action), actions_menu[].availability (= availability_logic).",
+  "description": "Full-stack UI page specification, laid out like the starter workbook templates/excel/page-spec-templates.xlsx (the canonical layout reference). Wizard / form controls and Import template columns carry Service / Target DB Table / Target DB Column mapping. Covers Full-Page Wizard, Wizard Modal, Basic Form, Form Modal, Paginated Grid (a routed list page: list on the page), Embedded Grid Modal (a list embedded in another page's flow) and Import (template download + drag-and-drop upload + template column validation). Older field names stay valid: page_type Modal (= Embedded Grid Modal), system_feature (= feature_module), primary_action (= buttons[0]), primary_action.action (= click_action), actions_menu[].availability (= availability_logic).",
   "type": "object",
   "required": [
     "page_type",
@@ -64,11 +64,6 @@
     "system_feature": {
       "type": "string",
       "description": "Deprecated: older name for feature_module. Used when feature_module is empty.",
-      "deprecated": true
-    },
-    "unity_feature": {
-      "type": "string",
-      "description": "Deprecated: older name for feature_module. Used when feature_module and system_feature are empty.",
       "deprecated": true
     },
     "nav_tree_path": {

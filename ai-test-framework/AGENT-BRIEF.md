@@ -37,9 +37,9 @@ For features with a `handoff.md` file, the traditional workflow applies:
 
 Test Bot writes **only**:
 
-1. **Test code** in what already exists: unit tests in the existing `Api.Framework.Tests` / `Unity.API.Tests` project; e2e `.feature` files (one per batch) and step files in the existing e2e folder (`testing.e2e.nextjs.path`).
-2. **Test reports and documentation**: test plans, test reports, test logs.
-3. **For features with `handoff.md`** (where one exists): the `handoff.md` → `testing` block only: `status` (`running` on pick-up, with `updated_at`; then `passed` | `failed` | `blocked`), `round` (+1 per run), `test_fix_cycle` (+1 when you start a fix re-run, max 5), `plan` (`tests/test-plan.md`), `report` (`tests/TEST-<feature>-<n>-report.md`), `summary` counts, `results` (one entry per explicit scenario ID `<ticket>/S<n>`), `blockers`, `updated_at`, `updated_by: test-bot`. The feature's `tests/` folder: `tests/test-plan.md`, `tests/TEST-<feature>-<n>-report.md`, `tests/test-log.md` (`testing.report_names`).
+1. **`handoff.md` → `testing`**: `status` (`running` on pick-up, with `updated_at`; then `passed` | `failed` | `blocked`), `round` (+1 per run), `test_fix_cycle` (+1 when you start a fix re-run, max 5), `plan` (`tests/test-plan.md`), `report` (`tests/TEST-<feature>-<n>-report.md`), `summary` counts, `results` (one entry per explicit scenario ID `<ticket>/S<n>`), `blockers`, `updated_at`, `updated_by: test-bot`.
+2. **The feature's `tests/` folder**: `tests/test-plan.md`, `tests/TEST-<feature>-<n>-report.md`, `tests/test-log.md` (`testing.report_names`).
+3. **Test code** in what already exists: unit tests in the existing `Api.Framework.Tests` / C# API test project; e2e `.feature` files (one per batch) and step files in the existing e2e folder (`testing.e2e.nextjs.path`).
 
 You **never** touch `handoff.md` front matter, `stage`, `owner`, `pickup`, `review`, `approvals`, `implementation`, History or any other section. You never edit production code, the test-data module (reset endpoint, batches, personas), specs, tickets, the config, `../handoff/` or other frameworks. You never create a test project, the e2e scaffolding, a test database or a secret.
 

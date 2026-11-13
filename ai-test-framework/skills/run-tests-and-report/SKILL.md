@@ -8,7 +8,7 @@ Run the planned tests against the real stack, classify every scenario, write the
 2. **Unit tests** (where the test project exists; commands `testing.unit.*`):
 
    ```powershell
-   dotnet test Unity.API.Tests/Unity.API.Tests.csproj --configuration Release --filter "Ticket=T-<DOMAIN>-NNN"
+   dotnet test CSharp.API.Tests/CSharp.API.Tests.csproj --configuration Release --filter "Ticket=T-<DOMAIN>-NNN"
    ```
 
    ```powershell

@@ -18,7 +18,7 @@ A scenario is only really delivered when a test would catch it breaking. This st
 
 | Codebase | Location and conventions (source) |
 |----------|-----------------------------------|
-| Unity.API | `Unity.API.Tests` (CI runs only this project). Controllers mirror `Unity.API.Tests/Controllers/V2/...`; mappers in `Unity.API.Tests/Mapping`; schema binding and constraints in `JsonSchemaValidation`; import in `DataImport`. xUnit + Moq; mock downstream `*RestService`; no `WebApplicationFactory` for a normal BFF action; include `CancellationToken` in Moq setups; one behaviour per `[Fact]`; name `{Action}_{Condition}_{Expected}`; create-request shape tests include every property. (`.cursor/rules/unity-api-testing.mdc`, `.cursor/skills/unity-api-tests/SKILL.md`) |
+| C# API | C# API test project (CI runs only this project). Controllers mirror test folder structure under `Controllers/V2/...`; mappers in `Mapping`; schema binding and constraints in `JsonSchemaValidation`; import in `DataImport`. xUnit + Moq; mock downstream `*RestService`; no `WebApplicationFactory` for a normal BFF action; include `CancellationToken` in Moq setups; one behaviour per `[Fact]`; name `{Action}_{Condition}_{Expected}`; create-request shape tests include every property. (`.cursor/rules/csharp-api-testing.mdc`, `.cursor/skills/csharp-api-tests/SKILL.md`) |
 | API.Framework | `ai-code-framework/api/API.Framework/Api.Framework.Tests`, run with `testing.unit.api-framework` (`dotnet test Api.Framework.Tests/Api.Framework.Tests.csproj --configuration Release`). Conventions: `ai-code-framework/api/API.Framework/CLAUDE.md` and its `.cursor/rules` |
 | UI.NextJs.Framework | `package.json` scripts: `lint` (`eslint .`), `typecheck` (`tsc --noEmit`), `test` (`vitest run`) and `build` (`next build`). Unit tests run with `npm test`. E2E scenarios live in `e2e/` (Playwright + playwright-bdd, `testing.e2e.nextjs`) and are written and run by the testing agent. |
 | UI.Angular.Framework | Unit tests per `.cursor/rules/testing/angular-tests.mdc`, `angular-testing-framework.mdc`, `angular-testing-best-practices.mdc`; E2E with Playwright + Cucumber per `angular-e2e-testing.mdc` (Given / When / Then scenarios map directly to Cucumber features). |
@@ -28,12 +28,12 @@ A scenario is only really delivered when a test would catch it breaking. This st
 1. List every spec validation rule (mandatory, min / max, format, custom rule, uniqueness) and every scenario `<ticket>/S<n>`.
 2. For each, find a test that asserts it. Record test class / method or spec file and line.
 3. Check test quality on what exists: asserts the outcome named in the Then (status code and envelope, exact message text, persisted column values), not only that no exception was thrown.
-4. For gaps, suggest a test: name, file location, arrange / act / assert in one line each. For Unity.API use `{Action}_{Condition}_{Expected}`, for example `Create_NameMissing_ReturnsNameIsRequired`.
+4. For gaps, suggest a test: name, file location, arrange / act / assert in one line each. For the C# API use `{Action}_{Condition}_{Expected}`, for example `Create_NameMissing_ReturnsNameIsRequired`.
 5. **Required run.** Run the unit suite for the active API and the unit suite for the active UI, and record each command under **Checks run**. Run only the active API's command from `testing.unit`, not the other API's. This is not optional, and a result of "not run" is never a pass. Lint, typecheck and build stay on the UI checklist; they are not this gate. Project-local tools only, never a root `npx` (`AGENT-BRIEF.md` **Running checks safely**). Never change code or tests to make them pass.
 
    ```powershell
-   # testing.unit.unity-api, from the Unity.API project
-   dotnet test Unity.API.Tests/Unity.API.Tests.csproj --configuration Release
+   # testing.unit.csharp-api, from the C# API project
+   dotnet test CSharp.API.Tests/CSharp.API.Tests.csproj --configuration Release
    # testing.unit.api-framework, from ai-code-framework/api/API.Framework
    dotnet test Api.Framework.Tests/Api.Framework.Tests.csproj --configuration Release
    ```

@@ -31,7 +31,7 @@ If a value you need is still a `<placeholder>`, stop and report. Do not guess.
 
 | Config | Read before coding |
 |--------|--------------------|
-| `development.api.active: unity-api` | `api/Unity.API/AGENTS.md`, `CLAUDE.md`, `.cursor/rules/` (index `README.md`), `.cursor/skills/`; run the slices with `.cursor/skills/unity-api-feature-loop/SKILL.md` |
+| `development.api.active: csharp-api` | Active C# API's `AGENTS.md`, `CLAUDE.md`, `.cursor/rules/` (index `README.md`), `.cursor/skills/`; run the slices with the feature loop skill |
 | `development.api.active: api-framework` | `api/API.Framework/AGENTS.md`, `CLAUDE.md`, `.cursor/rules/` (index `README.md`), `.cursor/skills/`; shared `.cursor/rules/api-json-schema-forms.mdc` |
 | `development.ui.active: nextjs` | `ui/UI.NextJs.Framework/AGENTS.md`, `README.md`, `.cursor/rules/` (index `README.md`; start with design-system). Copy the closest existing feature, e.g. `src/features/animals/manage-animals/` or `src/features/reference-data/reference-data-types-grid/`. A routed list page shows filters + results on the page; modals are only for create / edit forms and confirmations (`framework/nextjs-list-pages.mdc`). Angular rules are a reference for patterns only, not a standard to cite. |
 | `development.ui.active: angular` | `ui/UI.Angular.Framework/CLAUDE.md`, `README.md`, `.cursor/rules/`, and the feature spec in `src/app/submodules/Example.Subrepo/README.md` |
@@ -52,7 +52,7 @@ All of these, before hand-off (details in `loops/feature-build.md`):
 
 - [ ] Builds (API: `dotnet build` on the active solution `--configuration Release`; UI: `npm run build` when the change needs it)
 - [ ] Pre-handoff checks pass: `node ai-code-framework/scripts/pre-handoff-checks.mjs --feature <work_dir>/<feature> --record <work_dir>/<feature>/handoff.md` (lint, typecheck, line endings / BOM, secrets, duplicate doc paragraphs, existing unit tests). Results in `code.verification`, `code.pre_handoff_gate: pass` and `code.pre_handoff_gate_at`. A failed or missing gate blocks hand-off (`../handoff/README.md` rule 12; `loops/feature-build.md` stage 5)
-- [ ] Optimise pass done: Unity.API's **Framework compliance and cleanup** slice (when that is the active API), plus the same clean-up on UI files (no dead code, debug output, duplicate helpers or unused imports)
+- [ ] Optimise pass done: C# API's **Framework compliance and cleanup** slice (when that is the active API), plus the same clean-up on UI files (no dead code, debug output, duplicate helpers or unused imports)
 - [ ] Self-check against `../ai-review-framework/checklists/` — `full-stack-checklist.md`, the API checklist named by `api-checklist.md` for the active API, the active UI checklist (`ui-nextjs-checklist.md` or `ui-angular-checklist.md`) and `security-checklist.md`; fix what you find
 - [ ] Every spec control and every Given / When / Then scenario accounted for in code (trace scenarios to code in the manifest; do **not** write scenario tests yourself)
 - [ ] When a feature test plan requires them: scaffolding / reset keys / test users the plan needs exist (created by you). Do **not** create `Api.Framework.Tests`, Playwright suites, or a reset endpoint until Neil asks or a feature test plan needs those files listed. Manifest `tests` lists scaffolding only when present.

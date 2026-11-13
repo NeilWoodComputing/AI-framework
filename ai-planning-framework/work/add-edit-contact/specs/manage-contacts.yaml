@@ -3,7 +3,7 @@
 page_type: Modal
 page_title: Manage Contacts
 page_sub_text: "[Organisation Name] & [Organisation Type]"
-unity_feature: ""
+feature_module: ""
 nav_tree_path: ""
 parent_pages: []
 primary_action:

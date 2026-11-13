@@ -29,7 +29,7 @@ When Test Bot reports failing or defective tests and you are sent back to fix **
         ↓
 2. branch           feature branch per git repo, same name, contains T-<DOMAIN>-NNN (optional for direct_scope: plan)
         ↓
-3. implement-api    active API; Unity.API → its own feature loop (slices)
+3. implement-api    active API; C# API → its own feature loop (slices)
         ↓
 4. implement-ui     active UI; controls + bindings per spec
         ↓
@@ -67,7 +67,7 @@ Skip stage 3 or 4 only when the tickets have no API or no UI work, and say so in
 
 ### 3. implement-api
 
-- `unity-api`: follow `../api/Unity.API/.cursor/skills/unity-api-feature-loop/SKILL.md`. It owns the slice list, its state file (`.cursor/loops/{feature}.md` from `loop-state.template.md`), the iteration limit and the stop conditions. Do not duplicate it here.
+- `csharp-api`: follow the active C# API's feature loop skill. It owns the slice list, its state file (`.cursor/loops/{feature}.md` from `loop-state.template.md`), the iteration limit and the stop conditions. Do not duplicate it here.
 - `api-framework`: follow `../api/API.Framework/CLAUDE.md` and `../.cursor/rules/api-json-schema-forms.mdc`
 - Map every control to its Service / Target DB Table / Target DB Column: record / DTO → mapper → entity or downstream model → table.column, plus a migration when a BFF-owned table changes
 - Server-side validation for every spec rule (mandatory, min / max, format, uniqueness, tenant scope, soft delete) with the spec's exact messages
@@ -83,7 +83,7 @@ Skip stage 3 or 4 only when the tickets have no API or no UI work, and say so in
 
 ### 5. tests + pre-handoff checks
 
-- API (`unity-api`): the Verify section of the Unity.API feature loop (`dotnet build Unity.sln --configuration Release`, then targeted `dotnet test` when that loop requires it)
+- API (`csharp-api`): the Verify section of the C# API feature loop (`dotnet build` on the solution, then targeted `dotnet test` when that loop requires it)
 - API (`api-framework`): `dotnet build Api.Framework.sln --configuration Release`. Scenario tests are owned by test-bot (`[Trait("Scenario", "T-…/S<n>")]`); add `Api.Framework.Tests` scaffolding only when Neil asks or a feature test plan needs those files listed
 - UI (`nextjs`): `npm run build` when the change needs it. Lint, typecheck and the Vitest unit tests (`npm test`) run in the gate below
 - **Pre-handoff gate** (config `verification`; `../../handoff/README.md` rule 12). After the build, from the `ai-framework` root:
@@ -109,7 +109,7 @@ Skip stage 3 or 4 only when the tickets have no API or no UI work, and say so in
 - Write: `code.build`, `code.tests` (scaffolding status or "none — scenario tests = test-bot"), `code.verification` (build commands; `--record` adds one `pre-handoff:` line per check and keeps the others), `code.pre_handoff_gate` / `code.pre_handoff_gate_at` (written by `--record`). Never a secret value
 ### 6. optimise
 
-- Unity.API: the mandatory **Framework compliance and cleanup** slice of its feature loop
+- C# API: the mandatory **Framework compliance and cleanup** slice of its feature loop
 - UI and anything else touched: remove dead code, debug output, commented-out code, unused imports and duplicate helpers; reuse existing framework components instead of new ones
 - Re-run stage 5 after changes (build + pre-handoff gate with `--record`); the last run before stage 8 is the one recorded in `handoff.md`
 - Gate: no new warnings you introduced (compare the lint warning count with the previous gate run); build and gate still pass
@@ -141,7 +141,7 @@ Stop and report (keeping ownership, with the reason in `blockers`, and messaging
 
 - a spec gap is found → hand back to the planning agent instead (stage `planned`, owner `plan-bot`)
 - a config value is a placeholder, a repo is not under git when the route needs git (PR route or `direct_scope: diff`), or a downstream contract / UI route is missing
-- the Unity.API feature loop hits its own stop condition (iteration limit, same failure 3 times)
+- the C# API feature loop hits its own stop condition (iteration limit, same failure 3 times)
 - the work needs a codebase other than the active API / UI
 
 ## Agent checklist (per loop)

@@ -10,7 +10,7 @@ Functional end-to-end tests: the real front end in a real browser, against the r
 
 ## Stack
 
-- Playwright + playwright-bdd (Gherkin), TypeScript; Unity.UI.Framework uses `@playwright/test ^1.56.1`, `playwright-bdd ^8.5.0`.
+- Playwright + playwright-bdd (Gherkin), TypeScript; the Angular framework uses `@playwright/test ^1.56.1`, `playwright-bdd ^8.5.0`.
 - `npm test` = `npx bddgen && npx playwright test`; reporters `list`, `cucumberReporter('html')` → `cucumber-report/index.html`, Playwright `html`.
 - `baseURL` from `BASE_URL` (Test UI), API from `API_URL` (Test API), `trace: 'retain-on-failure'`, `screenshot: 'only-on-failure'`, chromium, `grep: /^(?!.*@skip)/`, one retry in CI only.
 - **Global setup** (scaffolded by the implementing agent) runs the master reset once per run (`templates/e2e-feature.md`): it truncates all app data and runs every seed unit. Command: `testing.e2e.nextjs.command`.
@@ -43,7 +43,7 @@ e2e/
 ## Rules
 
 1. **Scenarios come from the tickets, by explicit ID.** Copy the Given / When / Then text, values and messages; tag the feature `@T-<DOMAIN>-NNN` and each scenario `@T-<DOMAIN>-NNN/S<n>`, where `S<n>` is the ID in the ticket heading `### Scenario: S<n> — <title>` (`testing.scenario_ids: explicit`), never its position. Scenarios in a ticket without explicit IDs are Blocked (planning agent) and get no `.feature` scenario yet. Where a ticket names a real person, use the role persona the plan maps it to and keep the ticket flag.
-2. **No front-end mocks (hard rule).** No `page.route`, `context.route`, `route.fulfill`, `route.abort`, `route.continue` with altered data, `routeFromHAR`, MSW, service-worker mocks, stubbed `fetch` / `XMLHttpRequest`, or faked auth / permission responses. Do not port Unity.UI.Framework's `grid-api-mocking.ts`, `entity-crud-mocking.ts`, `auth-state-permissions-mock.ts`, `http-401-interceptor-e2e.ts` or `*.mockdata.ts` / `*.mocks.ts`. Allowed: `page.waitForResponse`, `page.on('request' | 'response')`, and the `request` fixture.
+2. **No front-end mocks (hard rule).** No `page.route`, `context.route`, `route.fulfill`, `route.abort`, `route.continue` with altered data, `routeFromHAR`, MSW, service-worker mocks, stubbed `fetch` / `XMLHttpRequest`, or faked auth / permission responses. Do not port the Angular framework's `grid-api-mocking.ts`, `entity-crud-mocking.ts`, `auth-state-permissions-mock.ts`, `http-401-interceptor-e2e.ts` or `*.mockdata.ts` / `*.mocks.ts`. Allowed: `page.waitForResponse`, `page.on('request' | 'response')`, and the `request` fixture.
 3. **Reset first, every scenario (hard rule).** The first step of every scenario is `Given the test data is "{feature}.{batch}.{state}"`, using a key owned by its batch (feature file). It calls `POST {API_URL}/TestData/Reset/{key}` with the key header **and** a token for one of the feature's personas. Background sections must not create data or sign in. No scenario relies on data or persona state left by another; use the ids the reset returns.
 4. **Master reset only in global setup.** Once per run, as `testdata-admin`, before workers start. Never from a scenario.
 5. **Role personas.** Sign in through API.Framework's real sign-in endpoint as `<feature>-<role>` personas (`animals-tester`, `animals-viewer`, …). Passwords from `E2E_<FEATURE>_<ROLE>_PASSWORD`; emails `<feature>-<role>@<e2e.test>`. Permission scenarios use a persona that really lacks or holds the permission.

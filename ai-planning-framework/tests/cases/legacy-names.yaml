@@ -1,10 +1,10 @@
 # Coverage case: older field names that must keep generating (deprecated, see schema):
-#   page_type Modal (= Embedded Grid Modal), unity_feature (= feature_module),
+#   page_type Modal (= Embedded Grid Modal), system_feature (= feature_module),
 #   primary_action + action (= buttons[0].click_action), actions_menu[].availability (= availability_logic).
 page_type: Modal
 page_title: Member Loans
 page_sub_text: "[Member Name]"
-unity_feature: Loans
+system_feature: Loans
 required_permission: loans_read
 parent_pages:
   - Member Details

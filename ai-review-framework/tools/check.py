@@ -24,7 +24,7 @@ FW = Path(__file__).resolve().parent.parent
 
 REQUIRED = [
     "checklists/api-checklist.md",
-    "checklists/api-unity-checklist.md",
+    "checklists/api-csharp-checklist.md",
     "checklists/api-framework-checklist.md",
     "checklists/ui-nextjs-checklist.md",
     "checklists/ui-angular-checklist.md",
@@ -43,7 +43,7 @@ REPORT_HEADINGS = [
 CONFIG = FW.parent / "ai-framework.config.yaml"
 # Stack checklists describe one codebase, so its own names are expected there.
 STACK_FILES = {
-    "checklists/api-unity-checklist.md",
+    "checklists/api-csharp-checklist.md",
     "checklists/api-framework-checklist.md",
     "checklists/security-checklist.md",
 }
@@ -77,7 +77,7 @@ def main() -> int:
     index = FW / "checklists" / "api-checklist.md"
     if index.is_file():
         idx = index.read_text(encoding="utf-8")
-        for name in ("api-unity-checklist.md", "api-framework-checklist.md"):
+        for name in ("api-csharp-checklist.md", "api-framework-checklist.md"):
             if name not in idx:
                 errors.append(f"files: api-checklist.md does not point at {name}")
 

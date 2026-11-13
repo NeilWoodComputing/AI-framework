@@ -15,7 +15,7 @@ Paths below are relative to `ai-code-framework/api/API.Framework/`.
 - [ ] On submit the record is re-validated with `IRecordValidationApi`; database-only checks (uniqueness and the like) run in the area service; field errors return as `validationErrors` (`propertyId` + `errors`) - `AGENTS.md`:44-45, `CLAUDE.md`:19
 - [ ] New schema JSON is picked up by the `Validation\Schemas\*.json` content glob; services and schemas registered (`AddLoginServices`, `AddFormSchemas`); permissions / policies registered; routes and `validationErrors` match the paired Next.js feature - `.cursor/rules/api-framework-testing.mdc`:56-59
 - [ ] The schema policy allows every user who can open the form: the same policy on the schema endpoint and the data endpoints - `.cursor/rules/api-framework-controllers.mdc`:59
-- [ ] No Unity.API BFF patterns copied in (`Controllers/V2`, `*RestService`, `PaginatedResponse`, `[CandCAuthorize]`) - `AGENTS.md`:72
+- [ ] No C# API BFF patterns copied in (`Controllers/V2`, `*RestService`, `PaginatedResponse`, domain-specific authorization attributes) - `AGENTS.md`:72
 
 ### Security and permissions
 
@@ -49,5 +49,5 @@ Paths below are relative to `ai-code-framework/api/API.Framework/`.
 - [ ] `Api.Framework.Tests` (`Api.Framework.Tests/Api.Framework.Tests.csproj`, net10.0, in `Api.Framework.sln`) is the implementing agent's scaffolding; scenario tests are the testing agent's, inside that project only - `.cursor/rules/api-framework-testing.mdc`:9-15
 - [ ] xUnit, Moq, Microsoft.NET.Test.Sdk and EF Core InMemory; folders mirror areas; service-level tests preferred (InMemory does not enforce PostgreSQL unique indexes or jsonb) - `.cursor/rules/api-framework-testing.mdc`:16-18
 - [ ] From the `API.Framework` folder: `dotnet build Api.Framework.sln --configuration Release` and `dotnet test Api.Framework.Tests/Api.Framework.Tests.csproj --configuration Release` pass (one scenario: `--filter "Scenario=T-<DOMAIN>-NNN/S<n>"`); full gate `node ../../scripts/pre-handoff-checks.mjs --target api-framework` - `.cursor/rules/api-framework-testing.mdc`:22-33, `AGENTS.md`:75-81
-- [ ] Test-data module is Test-environment only: `POST TestData/Reset/master` and `POST TestData/Reset/{scenarioKey}`, guarded by `TestData:Enabled` + environment `Test`, database `api_framework_test`, `X-Test-Data-Key` and a signed-in persona; Production forces `TestData:Enabled=false`; never pointed at `unity_login` - `.cursor/rules/api-framework-testing.mdc`:35-40
+- [ ] Test-data module is Test-environment only: `POST TestData/Reset/master` and `POST TestData/Reset/{scenarioKey}`, guarded by `TestData:Enabled` + environment `Test`, database `api_framework_test`, `X-Test-Data-Key` and a signed-in persona; Production forces `TestData:Enabled=false`; never pointed at production login database - `.cursor/rules/api-framework-testing.mdc`:35-40
 - [ ] Paging and search have unit tests on EF in-memory (`Paging/`, each list's search and sort); row order and search matching are proven by the e2e run on PostgreSQL, not unit tests alone - `.cursor/rules/api-framework-testing.mdc`:49-52
