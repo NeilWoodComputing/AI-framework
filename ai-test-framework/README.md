@@ -161,12 +161,12 @@ ai-test-framework/
     e2e-feature.md                    ← .feature + steps + global setup skeleton
   examples/
     manage-animals-test-plan.md       ← the real T-ANIMAL scenarios (T-ANIMAL-001 to -009) in batches
-    unity-ui-e2e-reference.md         ← what to copy from Unity.UI.Framework, and where it mocks
+    unity-ui-e2e-reference.md         ← what to copy from the Angular framework reference, and where it mocks
 ```
 
 ## Reference implementation
 
-Unity.UI.Framework (from the CandC project, copied under `ai-code-framework/ui/UI.Angular.Framework/e2e`) is the reference for e2e structure: Playwright + playwright-bdd, shared fixtures, `tid` selectors, API sign-in, response waits. **It relies heavily on front-end route mocks**, which this framework forbids. See `examples/unity-ui-e2e-reference.md`.
+The Angular framework reference e2e (also copied under `ai-code-framework/ui/UI.Angular.Framework/e2e`) is the reference for e2e structure: Playwright + playwright-bdd, shared fixtures, `tid` selectors, API sign-in, response waits. **It relies heavily on front-end route mocks**, which this framework forbids. See `examples/unity-ui-e2e-reference.md`.
 
 ## Still open outside this framework
 
@@ -175,4 +175,4 @@ Not part of the config wiring; listed so nobody assumes they are done.
 - **Review framework** (`ai-review-framework`, the reviewing agent's): `skills/review-tests/SKILL.md` reading the latest `tests/TEST-<feature>-<n>-report.md` and `handoff.md` `testing`; severity for front-end mocks or a missing first-step reset (suggested **Major**) and for an unsafe reset endpoint (suggested **Blocker**).
 - **Implementing agent's build work:** `Api.Framework.Tests` and the update to `.cursor/rules/api-framework-testing.mdc` (it still says no test project exists); Playwright + playwright-bdd and the e2e folder in UI.NextJs.Framework; the reset endpoint and the feature's batches and personas.
 - **Human owner:** the test environment, `<api_framework_test>`, and the env vars named in `secrets`.
-- **Unity.UI.Framework:** decide whether to keep its mock-based suites as UI-level tests, separate from functional e2e tests.
+- **Angular framework:** decide whether to keep its mock-based suites as UI-level tests, separate from functional e2e tests.
