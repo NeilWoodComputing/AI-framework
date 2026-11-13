@@ -9,8 +9,9 @@ BeforeAll {
 
 Describe "init-user.ps1" {
     BeforeEach {
-        # Create temp directory for each test
-        $script:TestDir = Join-Path $env:TEMP "ai-framework-test-$(New-Guid)"
+        # Create temp directory for each test (cross-platform temp path)
+        $TempPath = [System.IO.Path]::GetTempPath()
+        $script:TestDir = Join-Path $TempPath "ai-framework-test-$(New-Guid)"
         New-Item -ItemType Directory -Path $script:TestDir -Force | Out-Null
         $env:AI_FRAMEWORK_USER_CONFIG = Join-Path $script:TestDir "user-preferences.yaml"
         $env:AI_FRAMEWORK_BOT_CACHE_DIR = Join-Path $script:TestDir "cache"
