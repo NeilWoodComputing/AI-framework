@@ -33,7 +33,7 @@ Rules:
 | Code / test verdict | <code verdict> / <test verdict \| not yet \| Tests blocked: <reason>> |
 | Findings | Blocker <n> · Major <n> · Minor <n> · Nit <n> |
 | Full report | `reviews/<DIRECT-<branch-slug>-<n> \| DIRECT-<feature>-<n> \| PR-<id>>-review.md` |
-| Posted to PR | <n/a (direct) \| Yes: inline <n>, summary yes \| No: PR posting is off until Azure DevOps is in use (<github \| cursor-origin \| local-git>) \| No: `review.publish.enabled` is false> |
+| Posted to PR | <n/a (direct) \| Yes: inline <n>, summary yes (COMMENT event) \| No: provider does not support posting (<cursor-origin \| local-git>) \| No: `review.publish.enabled` is false> |
 | Handed to | <implementing agent, <agents.code.name> (changes-requested) \| human owner, <agents.human.name> (approved, ready to merge) \| human owner, <agents.human.name> (review cap reached)> |
 
 ### Summary
