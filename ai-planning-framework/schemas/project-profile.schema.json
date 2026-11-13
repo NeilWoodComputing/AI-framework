@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/ai-planning-framework/project-profile.schema.json",
+  "title": "ProjectProfile",
+  "description": "Project profile: everything specific to one development project. The active file is project.profile in ai-framework.config.yaml. Framework defaults: projects/_template/project.yaml. Validated by tools/check.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_version", "project"],
+  "properties": {
+    "profile_version": {"type": "integer", "enum": [1]},
+    "framework_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+$", "description": "VERSION major.minor the profile was written for."},
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "name": {"type": "string", "minLength": 1},
+        "description": {"type": "string"}
+      }
+    },
+    "work_dir": {"type": "string", "minLength": 1, "description": "Where new features are written, relative to the ai-framework root."},
+    "language": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "spelling": {"type": "string"},
+        "date_format": {"type": "string"}
+      }
+    },
+    "ui": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "feature_module_label": {"type": "string", "minLength": 1}
+      }
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "owns": {"type": "array", "items": {"type": "string"}},
+          "description": {"type": "string"}
+        }
+      }
+    },
+    "glossary": {"type": ["object", "null"], "additionalProperties": {"type": "string"}},
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pattern": {"type": "string", "description": "e.g. {entity}_{action}"},
+        "actions": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "database": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "table_naming": {"type": "string"},
+        "column_naming": {"type": "string"},
+        "schemas": {"type": "array", "items": {"type": "string"}},
+        "reference_data_notation": {"type": "string"}
+      }
+    },
+    "conventions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "multi_tenant": {"type": "boolean"},
+        "soft_delete": {"type": "boolean"},
+        "audit_columns": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Framework rules (RULES.md): true = on (default), false = switched off for this project.",
+      "properties": {
+        "list_pages_not_modals": {"type": "boolean"},
+        "paginated_grid_two_tickets": {"type": "boolean"},
+        "service_db_columns_required": {"type": "boolean"}
+      }
+    },
+    "tickets": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id_prefix": {"type": "string"},
+        "domain_tokens": {"type": ["object", "null"], "additionalProperties": {"type": "string", "pattern": "^[A-Z][A-Z0-9]*$"}}
+      }
+    },
+    "stacks": {"type": "array", "items": {"type": "string", "pattern": "^[a-z0-9-]+$"}, "description": "Hint files skills/generate-code-stubs/stacks/<name>.md (generate-code-stubs only)."}
+  }
+}

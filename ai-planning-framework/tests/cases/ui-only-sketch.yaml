@@ -1,0 +1,35 @@
+# Coverage case: a Form Modal UI-only sketch (include_service_db_columns: false).
+# The control grid stops at Validation Failure Message(s); no Service / Target DB columns.
+# Only for early sketches: real specs keep the DB mapping (RULES.md R3).
+spec_version: 1
+page_type: Form Modal
+page_title: Renew Loan (sketch)
+page_sub_title: "[Book Title]"
+required_permission: loans_write
+parent_pages:
+  - Manage Loans
+include_service_db_columns: false
+controls:
+  - label: New Due Date
+    control_type: Date Picker + Keyed
+    input_format: DD/MM/YYYY
+    min_len_val: Current Due Date + 1 day
+    max_len_val: Current Due Date + 28 days
+    enablement: Always
+    editable: "Yes"
+    mandatory: "Yes"
+    validation_rules: Not allowed when the copy is reserved by another member
+    validation_failure_messages: This book is reserved and cannot be renewed
+buttons:
+  - label: Cancel
+    type: Additional Action
+    visibility: Always Visible
+    enablement: Always Enabled
+    required_permission: ""
+    click_action: Close the modal with no changes
+  - label: Renew
+    type: Primary Action
+    visibility: Always Visible
+    enablement: UI Validation Passes
+    required_permission: loans_write
+    click_action: Extend the loan and close the modal

@@ -1,0 +1,97 @@
+# Example: Basic Form — Member Details (a single-body form on its own page; neutral Library sample domain)
+# Same layout as a Form Modal ("Modal Template" sheet of templates/excel/page-spec-templates.xlsx);
+# use Basic Form when the form is a full page, Form Modal when it opens as a dialog
+# (see form-modal-sample.yaml). Optional sections group fields (not wizard steps);
+# every control includes Service / Target DB Table / Target DB Column.
+page_type: Basic Form
+page_title: Member Details
+page_sub_title: "[Member Name] - [Membership Number]"
+required_permission: members_write
+parent_pages:
+  - Manage Members
+include_service_db_columns: true
+sections:
+  - title: Personal Details
+    visibility: Always shown
+    additional_functionality: N/A
+    controls:
+      - label: Full Name
+        control_type: Keyed Input
+        input_format: Alphanumeric & Special
+        min_len_val: 1
+        max_len_val: 150
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        validation_failure_messages: Full Name is required
+        service: Members
+        target_db_table: Member
+        target_db_column: FullName
+      - label: Membership Number
+        control_type: Keyed Input
+        input_format: Alphanumeric
+        min_len_val: N/A
+        max_len_val: 20
+        enablement: Always
+        editable: "No"
+        mandatory: "No"
+        validation_rules: System-generated on create; read-only
+        service: Members
+        target_db_table: Member
+        target_db_column: MembershipNumber
+      - label: Date of Birth
+        control_type: Date Picker + Keyed
+        input_format: DD/MM/YYYY
+        min_len_val: N/A
+        max_len_val: Today
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        validation_rules: Cannot be a future date
+        validation_failure_messages: Date of Birth cannot be in the future
+        service: Members
+        target_db_table: Member
+        target_db_column: DateOfBirth
+  - title: Communication Preferences
+    visibility: Always shown
+    additional_functionality: N/A
+    controls:
+      - label: Email Address
+        control_type: Keyed Input
+        input_format: Email
+        min_len_val: 0
+        max_len_val: 254
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        validation_rules: Must be a valid email format; unique across members
+        validation_failure_messages: Enter a valid email address | A member with this email already exists
+        service: Members
+        target_db_table: Member
+        target_db_column: EmailAddress
+      - label: Send Due-Date Reminders
+        control_type: Switch
+        input_format: Boolean
+        min_len_val: N/A
+        max_len_val: N/A
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        service: Members
+        target_db_table: Member
+        target_db_column: RemindersEnabled
+buttons:
+  - label: Cancel
+    type: Additional Action
+    visibility: Always Visible
+    enablement: Always Enabled
+    required_permission: ""
+    click_action: Return to Manage Members with no changes saved
+  - label: Save
+    type: Primary Action
+    visibility: Always Visible
+    enablement: UI Validation Passes
+    required_permission: members_write
+    click_action: Save via the Members service and return to Manage Members
+notes: >
+  Full-page form reached from the Manage Members row actions menu.

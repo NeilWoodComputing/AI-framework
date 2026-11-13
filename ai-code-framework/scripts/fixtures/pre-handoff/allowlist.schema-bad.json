@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "target": "api-framework",
+      "path": "TestKey.cs",
+      "rule": "secret-code-literal",
+      "key": "SigningKey",
+      "value": "PLANTED-allowvalue-0015",
+      "reason": "schema fixture: has a value",
+      "owner": "dev-bot",
+      "expires": "2099-12-31"
+    },
+    {
+      "target": "api-framework",
+      "path": "Other.cs",
+      "rule": "secret-code-literal",
+      "key": "ApiKey",
+      "reason": "schema fixture: no expires",
+      "owner": "dev-bot"
+    }
+  ]
+}

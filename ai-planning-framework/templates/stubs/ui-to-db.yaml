@@ -1,0 +1,21 @@
+# Canonical UI ↔ DB mapping excerpt (framework-agnostic)
+# Generated/maintained by skill generate-code-stubs from page specs.
+# Example values from the neutral Library sample (templates/yaml/form-modal-sample.yaml).
+feature: Add | Edit Book
+page_type: Form Modal
+mappings:
+  - control_label: Title
+    control_type: Keyed Input
+    service: Catalogue
+    target_db_table: Book
+    target_db_column: Title
+  - control_label: ISBN
+    control_type: Keyed Input
+    service: Catalogue
+    target_db_table: Book
+    target_db_column: Isbn
+  - control_label: Genre
+    control_type: Single-Select Dropdown
+    service: Catalogue
+    target_db_table: Book
+    target_db_column: GenreCode

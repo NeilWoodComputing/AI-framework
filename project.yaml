@@ -1,0 +1,68 @@
+# project.yaml
+# ---------------------------------------------------------------------------
+# Active project profile. Named by project.profile in ai-framework.config.yaml
+# and kept beside that file, outside ai-planning-framework, so the framework
+# holds no project or domain folder.
+# Paths are relative to the ai-framework root. No secrets here.
+# ---------------------------------------------------------------------------
+profile_version: 1
+framework_version: "1.1"              # VERSION (major.minor) this profile was written for; tools/check.py warns on a mismatch
+
+project:
+  id: candc
+  name: CandC
+  description: CandC system (API + UI).
+
+# Where new features are written: the framework's one feature folder.
+work_dir: ai-planning-framework/work
+
+language:
+  spelling: en-GB
+  date_format: DD/MM/YYYY
+
+ui:
+  feature_module_label: "System Feature"   # keeps existing grid headers unchanged
+
+services:
+  - name: Animals
+    owns: [Animal]
+  - name: Contacts
+    owns: [Contact, ContactAddress]
+  - name: Appointments
+    owns: [Appointment]
+  - name: Project & Development
+  - name: Water Domain
+
+glossary:
+  System: The CandC application (formerly Unity; old specs may say unity_feature).
+  NAV: New Appointment Variation.
+  DWI: Drinking Water Inspectorate (UK drinking water regulator).
+
+permissions:
+  pattern: "{entity}_{action}"         # e.g. animals_read, animals_write
+  actions: [read, write]
+
+database:
+  table_naming: PascalCase
+  column_naming: PascalCase
+  schemas: [auth, creatures]
+  reference_data_notation: "REF Data: <TYPE>"
+
+conventions:
+  multi_tenant: true
+  soft_delete: true
+  audit_columns: [CreatedAt, CreatedBy, UpdatedAt, UpdatedBy]
+
+rules:
+  list_pages_not_modals: true
+  paginated_grid_two_tickets: true
+  service_db_columns_required: true
+
+tickets:
+  id_prefix: T-<DOMAIN>-NNN
+  domain_tokens:
+    Contacts: CONTACT
+    Animals: ANIMAL
+    Appointments: APPT
+
+stacks: [dotnet-efcore, nextjs, angular]

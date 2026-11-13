@@ -1,0 +1,56 @@
+# Example: Embedded Grid Modal — Book Copies (neutral Library sample domain)
+# Laid out like the "Grid Page Template" sheet of templates/excel/page-spec-templates.xlsx
+# (transposed results columns + actions menu).
+# This is an EMBEDDED list modal (opened from a Book in Manage Books) - the only case for page_type
+# Embedded Grid Modal (older YAML may still say page_type Modal, which means the same).
+# A feature list with its own route is a Paginated Grid page instead: see paginated-grid-sample.yaml.
+page_type: Embedded Grid Modal
+page_title: Book Copies
+page_sub_text: "[Book Title] by [Author]"
+feature_module: Catalogue
+required_permission: catalogue_read
+nav_tree_path: ""
+parent_pages:
+  - Manage Books
+buttons:
+  - label: "+ Add Copy"
+    type: Primary Action
+    visibility: Always Visible
+    enablement: Always Enabled
+    required_permission: catalogue_write
+    click_action: Add a new BookCopy for this Book with Status = Available and the next copy number
+results_area:
+  description: >-
+    Paginated results area with Action controls - All non-deleted copies from
+    the BookCopy table for the Book this modal was opened from
+  visibility: Always Visible
+  columns:
+    - title: Copy No.
+      population_source: "BookCopy.\nCopyNumber"
+      display_format: Integer
+      sortable: true
+      additional_functionality: Default sort ascending
+    - title: Shelf Location
+      population_source: "BookCopy.\nShelfLocation"
+      display_format: Char
+      sortable: true
+    - title: Status
+      population_source: "BookCopy.\nStatus"
+      display_format: Char
+      sortable: true
+      additional_functionality: Available / On Loan / Lost
+    - title: Due Back
+      population_source: "Loan.\nDueDate (open loan for this copy)"
+      display_format: DD/MM/YYYY
+      sortable: true
+actions_menu:
+  - item: Mark as Lost
+    icon: Report
+    required_permission: catalogue_write
+    availability_logic: Status is not Lost
+    action_on_click: Set BookCopy.Status = Lost via confirmation modal
+  - item: Delete Copy
+    icon: Delete
+    required_permission: catalogue_write
+    availability_logic: Status is not On Loan
+    action_on_click: Soft delete this BookCopy record via confirmation modal

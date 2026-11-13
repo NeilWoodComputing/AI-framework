@@ -1,0 +1,35 @@
+# Coverage case: older field names that must keep generating (deprecated, see schema):
+#   page_type Modal (= Embedded Grid Modal), unity_feature (= feature_module),
+#   primary_action + action (= buttons[0].click_action), actions_menu[].availability (= availability_logic).
+page_type: Modal
+page_title: Member Loans
+page_sub_text: "[Member Name]"
+unity_feature: Loans
+required_permission: loans_read
+parent_pages:
+  - Member Details
+primary_action:
+  label: "+ New Loan"
+  type: Primary Action
+  visibility: Always Visible
+  enablement: Always Enabled
+  required_permission: loans_write
+  action: Open the New Loan wizard for this member
+results_area:
+  description: All open loans for this member
+  visibility: Always Visible
+  columns:
+    - title: Title
+      population_source: "Book.\nTitle"
+      display_format: Char
+      sortable: true
+    - title: Due Date
+      population_source: "Loan.\nDueDate"
+      display_format: DD/MM/YYYY
+      sortable: true
+actions_menu:
+  - item: Return Book
+    icon: Return
+    required_permission: loans_write
+    availability: Loan is open
+    action_on_click: Mark the loan item returned via confirmation modal

@@ -1,0 +1,3 @@
+# EXPECTED TO FAIL validation. A wizard is multi-step, so steps are required.
+page_type: Wizard Modal
+page_title: New Loan

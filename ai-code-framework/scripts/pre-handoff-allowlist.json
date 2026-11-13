@@ -1,0 +1,119 @@
+{
+  "_comment": [
+    "Pre-handoff gate allowlist (pre-handoff-checks plan 5.2, D13). No values, ever: path + rule + key or line_hint only.",
+    "Entry: { target, path (target-relative) | paths (docs-dup group), rule, key | line_hint, reason, owner, proposed, expires }.",
+    "Dev Bot proposes entries with a reason and expiry; a real credential needs Neil's OK; Review Bot checks new entries every round. Expired entries fail the gate.",
+    "No entries for the API.Framework dev secrets (D1: removed by T-GATE-008)."
+  ],
+  "version": 1,
+  "entries": [
+    {
+      "target": "api-framework",
+      "rule": "docs-dup",
+      "paths": [
+        ".cursor/rules/api-framework-auth-permissions.mdc",
+        ".claude/rules/api-framework-auth-permissions.md"
+      ],
+      "reason": "Intentional Cursor / Claude rule mirror: AGENTS.md says edit the .mdc first, then copy to .claude/rules/",
+      "owner": "dev-bot",
+      "proposed": "2026-10-09",
+      "expires": "2027-04-09"
+    },
+    {
+      "target": "api-framework",
+      "rule": "docs-dup",
+      "paths": [
+        ".cursor/rules/api-framework-bulk-import.mdc",
+        ".claude/rules/api-framework-bulk-import.md"
+      ],
+      "reason": "Intentional Cursor / Claude rule mirror: AGENTS.md says edit the .mdc first, then copy to .claude/rules/",
+      "owner": "dev-bot",
+      "proposed": "2026-10-09",
+      "expires": "2027-04-09"
+    },
+    {
+      "target": "api-framework",
+      "rule": "docs-dup",
+      "paths": [
+        ".cursor/rules/api-framework-controllers.mdc",
+        ".claude/rules/api-framework-controllers.md"
+      ],
+      "reason": "Intentional Cursor / Claude rule mirror: AGENTS.md says edit the .mdc first, then copy to .claude/rules/",
+      "owner": "dev-bot",
+      "proposed": "2026-10-09",
+      "expires": "2027-04-09"
+    },
+    {
+      "target": "api-framework",
+      "rule": "docs-dup",
+      "paths": [
+        ".cursor/rules/api-framework-data-migrations.mdc",
+        ".claude/rules/api-framework-data-migrations.md"
+      ],
+      "reason": "Intentional Cursor / Claude rule mirror: AGENTS.md says edit the .mdc first, then copy to .claude/rules/",
+      "owner": "dev-bot",
+      "proposed": "2026-10-09",
+      "expires": "2027-04-09"
+    },
+    {
+      "target": "api-framework",
+      "rule": "docs-dup",
+      "paths": [
+        ".cursor/rules/api-framework-overview.mdc",
+        ".claude/rules/api-framework-overview.md"
+      ],
+      "reason": "Intentional Cursor / Claude rule mirror: AGENTS.md says edit the .mdc first, then copy to .claude/rules/",
+      "owner": "dev-bot",
+      "proposed": "2026-10-09",
+      "expires": "2027-04-09"
+    },
+    {
+      "target": "api-framework",
+      "rule": "docs-dup",
+      "paths": [
+        ".cursor/rules/api-framework-services.mdc",
+        ".claude/rules/api-framework-services.md"
+      ],
+      "reason": "Intentional Cursor / Claude rule mirror: AGENTS.md says edit the .mdc first, then copy to .claude/rules/",
+      "owner": "dev-bot",
+      "proposed": "2026-10-09",
+      "expires": "2027-04-09"
+    },
+    {
+      "target": "api-framework",
+      "rule": "docs-dup",
+      "paths": [
+        ".cursor/rules/api-framework-testing.mdc",
+        ".claude/rules/api-framework-testing.md"
+      ],
+      "reason": "Intentional Cursor / Claude rule mirror: AGENTS.md says edit the .mdc first, then copy to .claude/rules/",
+      "owner": "dev-bot",
+      "proposed": "2026-10-09",
+      "expires": "2027-04-09"
+    },
+    {
+      "target": "api-framework",
+      "rule": "docs-dup",
+      "paths": [
+        ".cursor/rules/api-framework-ui-contract.mdc",
+        ".claude/rules/api-framework-ui-contract.md"
+      ],
+      "reason": "Intentional Cursor / Claude rule mirror: AGENTS.md says edit the .mdc first, then copy to .claude/rules/",
+      "owner": "dev-bot",
+      "proposed": "2026-10-09",
+      "expires": "2027-04-09"
+    },
+    {
+      "target": "api-framework",
+      "rule": "docs-dup",
+      "paths": [
+        ".cursor/rules/json-schema-forms.mdc",
+        ".claude/rules/json-schema-forms.md"
+      ],
+      "reason": "Intentional Cursor / Claude rule mirror: AGENTS.md says edit the .mdc first, then copy to .claude/rules/",
+      "owner": "dev-bot",
+      "proposed": "2026-10-09",
+      "expires": "2027-04-09"
+    }
+  ]
+}

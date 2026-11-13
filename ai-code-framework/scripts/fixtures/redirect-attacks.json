@@ -1,0 +1,359 @@
+{
+  "version": 1,
+  "kind": "redirect-attacks",
+  "description": "Open-redirect attack list for return-path guards (safeRedirectPath and similar). expect 'reject': the guard must not return this input as a navigable off-site or non-root-relative target (returning a fallback such as '/' counts as rejecting). expect 'safe': a same-origin root-relative path the guard should keep. Used by scripts/probe-redirect.mjs; inputs are the already-decoded query value (what searchParams.get returns), plus raw encoded forms.",
+  "attacks": [
+    {
+      "id": "protocol-relative-1",
+      "category": "protocol-relative",
+      "input": "//evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "protocol-relative-2",
+      "category": "protocol-relative",
+      "input": "///evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "protocol-relative-3",
+      "category": "protocol-relative",
+      "input": "////evil.example/path",
+      "expect": "reject"
+    },
+    {
+      "id": "protocol-relative-4",
+      "category": "protocol-relative",
+      "input": "//evil.example/%2F..",
+      "expect": "reject"
+    },
+    {
+      "id": "backslash-1",
+      "category": "backslash",
+      "input": "/\\evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "backslash-2",
+      "category": "backslash",
+      "input": "\\\\evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "backslash-3",
+      "category": "backslash",
+      "input": "\\/evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "backslash-4",
+      "category": "backslash",
+      "input": "/\\/evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "dot-segments-1",
+      "category": "dot-segments",
+      "input": "/..//evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "dot-segments-2",
+      "category": "dot-segments",
+      "input": "/../..//evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "dot-segments-3",
+      "category": "dot-segments",
+      "input": "/.//evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "dot-segments-4",
+      "category": "dot-segments",
+      "input": "/a/../..//evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "dot-segments-5",
+      "category": "dot-segments",
+      "input": "/./..//evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "dot-segments-6",
+      "category": "dot-segments",
+      "input": "/a/b/../../..//evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "encoded-1",
+      "category": "encoded",
+      "input": "%2F%2Fevil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "encoded-2",
+      "category": "encoded",
+      "input": "/%2F%2Fevil.example",
+      "expect": "reject",
+      "note": "decodes to //evil.example"
+    },
+    {
+      "id": "encoded-3",
+      "category": "encoded",
+      "input": "%5C%5Cevil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "encoded-4",
+      "category": "encoded",
+      "input": "/%5Cevil.example",
+      "expect": "reject",
+      "note": "decodes to /\\evil.example"
+    },
+    {
+      "id": "encoded-5",
+      "category": "encoded",
+      "input": "/%2E%2E//evil.example",
+      "expect": "reject",
+      "note": "%2E%2E is a dot segment to URL parsers"
+    },
+    {
+      "id": "encoded-6",
+      "category": "encoded",
+      "input": "/%2e%2e//evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "encoded-7",
+      "category": "encoded",
+      "input": "%252F%252Fevil.example",
+      "expect": "reject",
+      "note": "double-encoded //"
+    },
+    {
+      "id": "encoded-8",
+      "category": "encoded",
+      "input": "/%252F%252Fevil.example",
+      "expect": "reject",
+      "note": "double-encoded //"
+    },
+    {
+      "id": "scheme-1",
+      "category": "scheme",
+      "input": "http://evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "scheme-2",
+      "category": "scheme",
+      "input": "https://evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "scheme-3",
+      "category": "scheme",
+      "input": "javascript:alert(1)",
+      "expect": "reject"
+    },
+    {
+      "id": "scheme-4",
+      "category": "scheme",
+      "input": "JaVaScRiPt:alert(1)",
+      "expect": "reject"
+    },
+    {
+      "id": "scheme-5",
+      "category": "scheme",
+      "input": "data:text/html,<script>alert(1)</script>",
+      "expect": "reject"
+    },
+    {
+      "id": "scheme-6",
+      "category": "scheme",
+      "input": " javascript:alert(1)",
+      "expect": "reject"
+    },
+    {
+      "id": "scheme-7",
+      "category": "scheme",
+      "input": "\tjavascript:alert(1)",
+      "expect": "reject"
+    },
+    {
+      "id": "scheme-8",
+      "category": "scheme",
+      "input": " //evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "scheme-9",
+      "category": "scheme",
+      "input": "  https://evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "scheme-10",
+      "category": "scheme",
+      "input": "vbscript:msgbox(1)",
+      "expect": "reject"
+    },
+    {
+      "id": "scheme-11",
+      "category": "scheme",
+      "input": "https:evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "scheme-12",
+      "category": "scheme",
+      "input": "http:/evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "control-chars-1",
+      "category": "control-chars",
+      "input": "/%09/evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "control-chars-2",
+      "category": "control-chars",
+      "input": "/\t/evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "control-chars-3",
+      "category": "control-chars",
+      "input": "/\n/evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "control-chars-4",
+      "category": "control-chars",
+      "input": "/\r/evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "control-chars-5",
+      "category": "control-chars",
+      "input": "/%0d%0a/evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "control-chars-6",
+      "category": "control-chars",
+      "input": "/%0A/evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "control-chars-7",
+      "category": "control-chars",
+      "input": "\t//evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "userinfo-1",
+      "category": "userinfo",
+      "input": "//good.example@evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "userinfo-2",
+      "category": "userinfo",
+      "input": "https://good.example@evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "userinfo-3",
+      "category": "userinfo",
+      "input": "/\\good.example@evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "userinfo-4",
+      "category": "userinfo",
+      "input": "//good.example%40evil.example",
+      "expect": "reject"
+    },
+    {
+      "id": "not-root-relative-1",
+      "category": "not-root-relative",
+      "input": "",
+      "expect": "reject",
+      "note": "not a root-relative path: fallback expected"
+    },
+    {
+      "id": "not-root-relative-2",
+      "category": "not-root-relative",
+      "input": "evil.example",
+      "expect": "reject",
+      "note": "not a root-relative path: fallback expected"
+    },
+    {
+      "id": "not-root-relative-3",
+      "category": "not-root-relative",
+      "input": "projects",
+      "expect": "reject",
+      "note": "not a root-relative path: fallback expected"
+    },
+    {
+      "id": "not-root-relative-4",
+      "category": "not-root-relative",
+      "input": "?x=1",
+      "expect": "reject",
+      "note": "not a root-relative path: fallback expected"
+    },
+    {
+      "id": "not-root-relative-5",
+      "category": "not-root-relative",
+      "input": "#top",
+      "expect": "reject",
+      "note": "not a root-relative path: fallback expected"
+    },
+    {
+      "id": "safe-control-1",
+      "category": "safe-control",
+      "input": "/",
+      "expect": "safe"
+    },
+    {
+      "id": "safe-control-2",
+      "category": "safe-control",
+      "input": "/projects",
+      "expect": "safe"
+    },
+    {
+      "id": "safe-control-3",
+      "category": "safe-control",
+      "input": "/projects?x=1#y",
+      "expect": "safe"
+    },
+    {
+      "id": "safe-control-4",
+      "category": "safe-control",
+      "input": "/projects/123/edit",
+      "expect": "safe"
+    },
+    {
+      "id": "safe-control-5",
+      "category": "safe-control",
+      "input": "/a/../b",
+      "expect": "safe"
+    },
+    {
+      "id": "safe-control-6",
+      "category": "safe-control",
+      "input": "/search?q=%2F%2Fevil.example",
+      "expect": "safe"
+    },
+    {
+      "id": "safe-control-7",
+      "category": "safe-control",
+      "input": "/timesheets?week=2026-W44&sort=-date",
+      "expect": "safe"
+    }
+  ]
+}

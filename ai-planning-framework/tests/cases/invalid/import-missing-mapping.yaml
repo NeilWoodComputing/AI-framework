@@ -1,0 +1,8 @@
+# EXPECTED TO FAIL validation. An import template column needs Service / Table / Column (R3).
+page_type: Import
+page_title: Import Books
+import:
+  template_columns:
+    - name: Title
+      target_db_table: Book
+      target_db_column: Title

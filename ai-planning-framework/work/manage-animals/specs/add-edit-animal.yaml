@@ -1,0 +1,130 @@
+# Basic Form — Add | Edit Animal
+# Single-page form (not a multi-step wizard). Optional sections group fields;
+# every control includes Service / Target DB Table / Target DB Column.
+# Updated 2026-10-08 for Neil's decisions (plan.md › Decisions): Q1, Q3, Q4, Q7, Q8, Q9, Q10, Q11, Q20, Q21, 22 / 24 (single animals_write permission), 23 / 26 (Edit Animal in the Manage Animals row actions menu).
+# Target DB Table: entity Animal, physical table creatures.animals (decision 21 - new creatures schema).
+# Modes: Add and Edit only. View mode dropped (decision 20, Neil 2026-10-08 14:31 BST).
+page_type: Basic Form
+page_title: Add | Edit Animal
+page_sub_title: ""
+required_permission: animals_write
+parent_pages:
+  - Manage Animals
+include_service_db_columns: true
+sections:
+  - title: Animal Details
+    controls:
+      - label: Name
+        control_type: Keyed Input
+        input_format: Alphanumeric & Special
+        min_len_val: 1
+        max_len_val: 100
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        validation_rules: >-
+          Trim leading/trailing spaces before validating and saving; must be
+          unique among non-deleted animals (case-insensitive comparison of
+          trimmed Name); a soft-deleted animal's name can be reused.
+          Persistence only (no control): the Animals service also writes the
+          derived Animal.NormalizedName (trimmed, upper-case), backed by a unique
+          index filtered to non-deleted rows
+        validation_failure_messages: >-
+          Name is required | An animal with this name already exists
+        service: Animals
+        target_db_table: "Animal (creatures.animals)"
+        target_db_column: Name
+      - label: Date Born
+        control_type: Date Picker
+        input_format: Date (date only, no time)
+        min_len_val: N/A
+        max_len_val: N/A
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        validation_rules: >-
+          Mandatory; Date Born must be strictly before today. The UI checks
+          against the browser's local date; the API checks against the UTC date
+          (existing [TODAY] constraint) - the small gap just after midnight
+          during BST is accepted. Stored as a date (no time)
+        validation_failure_messages: >-
+          Date Born is required | Date Born must be before today
+        service: Animals
+        target_db_table: "Animal (creatures.animals)"
+        target_db_column: DateBorn
+      - label: Attributes
+        control_type: Tag Input (multi-value)
+        input_format: Alphanumeric & Special (any characters)
+        min_len_val: 0
+        max_len_val: 50
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        validation_rules: >-
+          Optional list of free-text tags (chips); any characters; each tag max
+          50 characters, max 20 tags; no other tag rules. Starts empty on Add.
+          Persisted as a JSON array of strings on Animal.Attributes; never null
+          (no tags = [])
+        validation_failure_messages: >-
+          Each attribute tag must be 50 characters or fewer |
+          A maximum of 20 attributes is allowed
+        service: Animals
+        target_db_table: "Animal (creatures.animals)"
+        target_db_column: Attributes
+  - title: Characteristics
+    controls:
+      - label: Is Furry
+        control_type: Switch
+        input_format: Boolean
+        min_len_val: N/A
+        max_len_val: N/A
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        validation_rules: Defaults to Off (false) on Add
+        service: Animals
+        target_db_table: "Animal (creatures.animals)"
+        target_db_column: IsFurry
+      - label: Has Hooves
+        control_type: Switch
+        input_format: Boolean
+        min_len_val: N/A
+        max_len_val: N/A
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        validation_rules: Defaults to Off (false) on Add
+        service: Animals
+        target_db_table: "Animal (creatures.animals)"
+        target_db_column: HasHooves
+notes: >
+  Opened from Manage Animals in Add or Edit mode only. There is no View mode
+  (decision 20, Neil 2026-10-08 14:31 BST).
+  Animal.Attributes is stored as a JSON array of strings (jsonb, NOT NULL,
+  default []); the Tag Input control reads/writes that array as chips.
+  DB schema (decision 21, Neil 2026-10-08 14:35 BST): Animal is stored in the
+  new creatures schema as creatures.animals (not auth.animals); entity,
+  column and API names are unchanged. Registration / grants / migration
+  details follow Q24-Q27 in plan.md (suggested defaults accepted 15:44 BST).
+  Persistence-only columns written by the Animals service with no control on
+  this form: NormalizedName (derived from Name for uniqueness), IsDeleted
+  (false on create), UpdatedUtc and UpdatedBy (signed-in user's id, set on
+  every create/update), plus the platform Id and CreatedUtc.
+  Add, Edit and Save require the animals_write permission (policy
+  AnimalsWrite; decisions 22, 24); users without it cannot open this form in
+  any mode (or Manage Animals at all). Edit is opened from Edit Animal in the
+  Manage Animals row actions menu (decisions 23, 26).
+  Opening a soft-deleted animal (by id or a stale link) returns not found.
+conditional_visibility:
+  - when: Mode = Add
+    then: All controls empty / default; Is Furry Off; Has Hooves Off; Attributes empty
+    notes: Name and Date Born start blank
+  - when: Mode = Edit
+    then: Controls loaded from the Animal row; all controls editable; Save and Cancel shown
+    notes: Only modes are Add and Edit (View dropped - decision 20)
+  - when: User lacks the animals_write permission (decision 24)
+    then: Form cannot be opened (no Add or Edit entry points)
+    notes: API also rejects create / update / delete and the form schema without the AnimalsWrite policy (decision 22)
+  - when: Animal is soft-deleted (Animal.IsDeleted = true)
+    then: Form cannot be opened; Animals service returns not found
+    notes: Soft-deleted animals are never listed and cannot be restored

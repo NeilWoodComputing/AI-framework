@@ -1,0 +1,201 @@
+# Paginated Grid (routed list page) — Manage Animals. Decision 27: the list is on the page, not in a modal.
+# Decision 28 (Neil 18:46 BST): routed list pages use page_type Paginated Grid, one Excel for the page + grid; the work
+# is split into a page ticket (T-ANIMAL-008) and a paginated grid ticket (T-ANIMAL-003).
+# Same transposed layout as the Manage Contacts example (results columns + row actions menu), plus route, pagination
+# and search / filters.
+# Updated 2026-10-08 for Neil's decisions (plan.md › Decisions): Q2, Q5, Q11, Q14, Q17, Q18, Q19, Q20 (View dropped), Q21 (DB schema creatures),
+# 22 (own animals permissions, supersedes 11), 23 (Actions column at the END of the grid; shared UI.NextJs.Framework feature, T-ANIMAL-007),
+# 24 (single permission animals_write on everything, amends 22), 25 (animals_write given to all users via the Administrators and
+# Standard groups), 26 (Edit and Delete in a row actions MENU in the Actions column, amends 23).
+# Q23 (row click does nothing), Q32 (row actions menu details) and Q36 (no-permission callout): suggested defaults
+# accepted by Neil 2026-10-08 15:44 BST; no open questions remain.
+# Pagination values (page size, options, empty state): Q37, accepted by Neil 2026-10-08 19:00 BST (what the shared
+# grid and Dev Bot's code use today). Server-side paging and the Name ascending sort are already
+# in T-ANIMAL-002 / decision 2.
+# Decision 29 (Neil 19:04 BST via Review Bot): Is Furry and Has Hooves stay read-only but show a green tick / red
+# cross icon (not a read-only Switch), with accessible Yes/No labels. Shared renderer T-ANIMAL-009.
+# Q38 (Neil 19:14 BST): null/undefined → em dash with accessible name "Not set". No open questions remain.
+# Decision 31 (Neil 2026-10-09): a Name search box (search_filters) is added; built in work/shared-paging; details accepted by Neil 2026-10-09 14:47 BST (shared-paging Q2-Q8, decisions P6-P12).
+# Decision 30 (Neil 19:57 BST): the boolean icons become filled circles (light / dark fills from new tokens
+# --app-boolean-true-fill / --app-boolean-false-fill) with Check / Close as a transparent cut-out (Neil 20:19: --app-boolean-glyph removed).
+# actions_menu below lists the items of the row actions menu in the Actions column (decisions 23, 26). The column itself
+# is not added to results_area.columns because it holds no data (no Population Source).
+page_type: Paginated Grid
+page_title: Manage Animals
+page_sub_text: "Animal catalogue"
+required_permission: animals_write
+system_feature: ""
+nav_tree_path: "SiteNav › Animals (/examples/animals)"
+route: /examples/animals
+parent_pages:
+  - "None - routed page /examples/animals, reached from SiteNav › Animals"
+primary_action:
+  label: "+ Add Animal"
+  type: Primary Action
+  visibility: >-
+    Visible to every user who can open this page, i.e. users with the
+    animals_write permission (decision 24). Users without it cannot open the
+    page at all
+  enablement: >-
+    Always enabled for users with animals_write (decision 24); without
+    animals_write there is no Animals nav link and the page does not open
+  action: |
+    Open form
+    Add | Edit Animal
+    in Add mode
+results_area:
+  description: >-
+    On the page /examples/animals (decision 27; only Add | Edit Animal and
+    the delete confirmation are modals). Paginated results area with Action
+    controls - All non-deleted records from
+    the Animal table (physical table creatures.animals) (soft-deleted animals
+    are never shown; no "show deleted" filter). Actions column (decisions 23,
+    26): the LAST column of the grid, after Last Amended, header "Actions",
+    not sortable; each row has a row actions menu (Edit Animal, Delete Animal)
+    from the shared, permission-aware UI.NextJs.Framework grid row actions
+    menu (T-ANIMAL-007). The whole page needs animals_write (decision 24):
+    without it there is no Animals nav link, the list is not shown and
+    the API returns 403; the page shows a warning callout "You do not have
+    permission to manage animals." instead (Q36). Clicking a row does nothing;
+    Edit is chosen from the menu (Q23).
+  visibility: Always Visible
+  empty_state: >-
+    Framework default empty message "No results" in the results area; "+ Add
+    Animal" stays available (Q37, accepted 19:00 BST)
+  columns:
+    - title: Name
+      population_source: "Animal.\nName"
+      display_format: Char
+      sortable: true
+      additional_functionality: Default sort ascending
+    - title: Is Furry
+      population_source: "Animal.\nIsFurry"
+      display_format: "Boolean icon (filled circle: green + tick cut-out = true / red + cross cut-out = false; aria-label Yes/No)"
+      sortable: true
+      additional_functionality: >-
+        Read-only. True shows a filled green circle (--app-boolean-true-fill: light #609b44,
+        dark #8dc374) with Check as a transparent cut-out (Icon knockout="circle"; the row
+        colour shows through the tick) and accessible name "Yes"; false shows a filled red
+        circle (--app-boolean-false-fill: light #ef5673, dark #ff9aa8) with Close as a cut-out
+        and "No"; null or undefined shows an em dash (no circle, theme text colour) with
+        accessible name "Not set" (Q38, accepted 19:14 BST). Fills >= 3:1 on row and hover
+        in light and dark mode (no glyph-vs-fill requirement; Neil 20:19). Not interactive
+        and not colour-only (decisions 29, 30; shared renderer T-ANIMAL-009)
+    - title: Has Hooves
+      population_source: "Animal.\nHasHooves"
+      display_format: "Boolean icon (filled circle: green + tick cut-out = true / red + cross cut-out = false; aria-label Yes/No)"
+      sortable: true
+      additional_functionality: >-
+        Read-only. True shows a filled green circle (--app-boolean-true-fill: light #609b44,
+        dark #8dc374) with Check as a transparent cut-out (Icon knockout="circle"; the row
+        colour shows through the tick) and accessible name "Yes"; false shows a filled red
+        circle (--app-boolean-false-fill: light #ef5673, dark #ff9aa8) with Close as a cut-out
+        and "No"; null or undefined shows an em dash (no circle, theme text colour) with
+        accessible name "Not set" (Q38, accepted 19:14 BST). Fills >= 3:1 on row and hover
+        in light and dark mode (no glyph-vs-fill requirement; Neil 20:19). Not interactive
+        and not colour-only (decisions 29, 30; shared renderer T-ANIMAL-009)
+    - title: Date Born
+      population_source: "Animal.\nDateBorn"
+      display_format: "DD/MM/YYYY"
+      sortable: true
+      additional_functionality: >-
+        Date only (no time). Must be before today (enforced on form save)
+    - title: Attributes
+      population_source: "Animal.\nAttributes"
+      display_format: Char
+      sortable: false
+      additional_functionality: >-
+        Display JSON string array as comma-separated tags
+        (e.g. nocturnal, endangered); an empty array [] shows an empty cell
+    - title: Last Amended
+      population_source: "Animal.\nUpdatedUtc & UpdatedBy\n(UpdatedBy → User.DisplayName, fallback User.Email; User = auth.users)"
+      display_format: "DD/MM/YYYY HH:MM [Display name] - browser local time (stored as UTC)"
+      sortable: true
+      additional_functionality: >-
+        UpdatedUtc (stored as UTC) is converted to the browser's local time for
+        display (UK time: 13:05 UTC in BST shows as 14:05). UpdatedBy
+        (signed-in user's id) and UpdatedUtc are set on every create, update
+        and soft delete. Sort uses UpdatedUtc
+actions_menu:
+  - item: Edit Animal (row actions menu in the Actions column, last column of the grid)
+    icon: Edit
+    required_permission: animals_write
+    availability: >-
+      Every row, for users with animals_write (decisions 24, 26). The page
+      already requires animals_write, so every user who sees the grid sees
+      this item; the shared menu still hides items whose permission the user
+      lacks (T-ANIMAL-007)
+    action_on_click: Open form Add | Edit Animal in Edit mode
+  - item: Delete Animal (row actions menu in the Actions column, after Edit Animal)
+    icon: Delete
+    required_permission: animals_write
+    availability: >-
+      Every row, for users with animals_write (decisions 24, 26); hidden by the
+      shared menu if the user lacks the permission
+    action_on_click: >-
+      Open confirmation modal "Delete <Name>?" with Cancel / Delete buttons.
+      Delete = soft delete via Animals (Animal.IsDeleted = true; row stays in
+      storage) and refresh the list. Cancel = no change. No restore action
+search_filters:   # decision 31 (Neil 2026-10-09): Name search, built by work/shared-paging (T-PAGING-002, T-PAGING-005); details accepted by Neil 2026-10-09 14:47 BST (shared-paging plan.md P6-P12)
+  - label: Search animals
+    control_type: >-
+      Text input (search box) above the grid, placeholder "Search animals…",
+      at most 100 characters (the input stops at 100)
+    filters_on: "Animal.\nName (matched on Animal.NormalizedName)"
+    match_rule: >-
+      Contains, case-insensitive, accent-sensitive: the trimmed input is
+      upper-cased and matched against NormalizedName, from 1 character;
+      whitespace only = no filter; % and _ match literally. Server-side, after
+      a 300 ms pause in typing; every change goes back to page 1 and keeps the
+      sort and page size. No match shows "No results" (+ Add Animal stays).
+      Not kept in the URL. Soft-deleted animals never match
+    default: "Empty (all non-deleted animals, Name ascending)"
+pagination:
+  page_size: 20
+  page_size_options: [5, 10, 20, 50, 100, 200]
+  paging: Server-side
+  default_sort: Name ascending
+  notes: >-
+    Server-side paging and the default sort come from T-ANIMAL-002 (v1/Animal
+    list is paged, non-deleted only, default sort Name ascending). Page size
+    20 and the page-size options (the shared grid's defaults): Q37,
+    accepted by Neil 19:00 BST.
+notes: >
+  Decision 27 (Neil standing rule, 2026-10-08): this list IS the page
+  /examples/animals (linked from SiteNav › Animals) - no list modal, no
+  auto-open, no landing page. Add | Edit Animal opens as a routed modal over
+  the page and closes back to it; Delete uses a confirmation modal.
+  Decision 28 (Neil 18:46 BST): page_type Paginated Grid; tickets split into
+  the page (T-ANIMAL-008: route, nav link, permission gate, no-permission
+  message, layout, hosting the grid and the form modal) and the paginated
+  grid (T-ANIMAL-003: columns, population, sorting, paging, row actions menu,
+  empty state).
+  Permissions (decision 22, Neil 2026-10-08 14:47 BST, supersedes decision 11;
+  amended by decision 24, Neil 15:17 BST): animals have ONE permission of their
+  own, animals_write ("Manage animals"), checked by policy AnimalsWrite on
+  every animal endpoint (list, get, create, update, delete, form schema). No
+  read permission. Decision 25: every user gets it through the Administrators
+  and Standard groups (seeded); users outside those groups get it through group management (Q34).
+  Animals are global (not per tenant).
+  Row actions (decision 23, Neil 14:47 BST; amended by decision 26, Neil
+  15:17 BST): an Actions column at the end of the grid holding a row actions
+  menu with Edit Animal and Delete Animal, built as a reusable,
+  permission-aware grid feature in UI.NextJs.Framework (T-ANIMAL-007).
+  View dropped (decision 20, Neil 2026-10-08 14:31 BST): no View Animal action
+  and no View mode, and no read-only access (decision 24). Clicking a row does
+  nothing (Q23).
+  Decision 29 (Neil 19:04 BST via Review Bot): Is Furry and Has Hooves use the shared
+  boolean-icon grid cell (green Check / red Close with Yes/No accessible names), not a
+  read-only Switch. T-ANIMAL-009; Neil's own change, no re-approval.
+  Decision 30 (Neil 19:57 BST, after his 19:52 dark-mode and 19:53 inverted-icon
+  requests): each boolean cell is a filled circle - green for true, red for false -
+  with Check / Close as a transparent cut-out (Icon knockout="circle"; Neil 20:19).
+  Light fills #609b44 / #ef5673, dark fills #8dc374 / #ff9aa8, via dedicated fill tokens;
+  --app-boolean-glyph removed; --system-green / --system-red are unchanged.
+  Last Amended maps to the platform audit columns UpdatedUtc (existing
+  convention) and UpdatedBy (new user id column referencing auth.users).
+  DB schema (decision 21, Neil 2026-10-08 14:35 BST): the Animal table lives in
+  the new creatures schema (creatures.animals), not auth. Population sources
+  use the entity name Animal; UpdatedBy → auth.users is a cross-schema FK
+  (Q26). Same LoginDbContext, history table auth.__ef_migrations_history, no
+  GRANTs, AddAnimals migration regenerated (Q24, Q25, Q27; accepted 15:44 BST).

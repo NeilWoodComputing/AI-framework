@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "target": "api-framework",
+      "path": "TestKey.cs",
+      "rule": "secret-code-literal",
+      "key": "SigningKey",
+      "reason": "Dummy unit-test signing key, named \"not a secret\" (fixture)",
+      "owner": "dev-bot",
+      "expires": "2020-01-01"
+    },
+    {
+      "target": "nextjs",
+      "paths": [
+        ".cursor/rules/x.mdc",
+        ".claude/rules/x.md"
+      ],
+      "rule": "docs-dup",
+      "reason": "Intentional Cursor / Claude rule mirror (fixture)",
+      "owner": "dev-bot",
+      "expires": "2099-12-31"
+    }
+  ]
+}

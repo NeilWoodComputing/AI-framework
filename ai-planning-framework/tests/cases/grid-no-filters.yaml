@@ -1,0 +1,29 @@
+# Coverage case: Paginated Grid with no on-page search and no row actions.
+# paginated-grid-sample.yaml always has filters and an actions menu. An empty
+# search_filters list is what a page with no search records (see the samples' notes).
+spec_version: 1
+page_type: Paginated Grid
+page_title: Manage Genres
+page_sub_title: Reference list
+feature_module: Catalogue
+required_permission: catalogue_read
+nav_tree_path: "Main nav › Books"
+route: /genres
+parent_pages:
+  - Manage Books
+search_filters: []
+results_area:
+  description: Every genre, one row each
+  visibility: Always Visible
+  empty_state: No genres yet
+  columns:
+    - title: Genre
+      population_source: Genre.Name
+      display_format: Char
+      sortable: true
+pagination:
+  page_size: 20
+  page_size_options: [10, 20, 50]
+  paging: Client-side
+  default_sort: Genre ascending
+actions_menu: []

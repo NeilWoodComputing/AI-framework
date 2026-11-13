@@ -1,0 +1,59 @@
+# Example: Manage/List Modal — Manage Contacts
+# Matches Neil's Manage Contacts Excel pattern (transposed results columns + actions menu).
+page_type: Modal
+page_title: Manage Contacts
+page_sub_text: "[Organisation Name] & [Organisation Type]"
+unity_feature: ""
+nav_tree_path: ""
+parent_pages: []
+primary_action:
+  label: "+ Add Contact"
+  type: Primary Action
+  visibility: Always Visible
+  enablement: Always Enabled
+  action: |
+    Open wizard
+    Add | Edit Contact
+    in Add mode
+results_area:
+  description: >-
+    Paginated results area with Action controls - All non-deleted records from
+    the Contact table for the Organisation this modal was opened from
+  visibility: Always Visible
+  columns:
+    - title: Name
+      population_source: "Contact.\nName"
+      display_format: Char
+      sortable: true
+      additional_functionality: Default sort ascending
+    - title: Job Title / Department
+      population_source: "Contact.\nJobTitleDepartment"
+      display_format: Char
+      sortable: true
+    - title: Primary Contact
+      population_source: "Contact.\nPrimaryContact"
+      display_format: Switch
+      sortable: true
+      additional_functionality: Only one contact per Organisation can be Primary
+    - title: Active
+      population_source: "Contact.\nIsActive"
+      display_format: Switch
+      sortable: true
+      additional_functionality: No restrictions
+    - title: Last Amended
+      population_source: "Contact.\nLastAmendedOn & LastAmendedBy"
+      display_format: "DD/MM/YYYY HH:MM [Username]"
+      sortable: true
+actions_menu:
+  - item: View Contact
+    icon: Visibility
+    availability: Always
+    action_on_click: Open wizard Add | Edit Contact in View mode
+  - item: Edit Contact
+    icon: Edit
+    availability: Always
+    action_on_click: Open wizard Add | Edit Contact in Edit mode
+  - item: Delete Contact
+    icon: Delete
+    availability: Always
+    action_on_click: Soft Delete this Contact record via confirmation modal

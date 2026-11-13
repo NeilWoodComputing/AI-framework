@@ -1,0 +1,28 @@
+# Editor settings for ai-planning-framework (see AGENT-BRIEF.md -> Editing rules).
+# UTF-8 without BOM, LF line endings, final newline. tools/check.py enforces BOM / mixed-ending / mojibake checks.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = false
+
+[*.{yaml,yml,json,py}]
+indent_style = space
+
+[*.py]
+indent_size = 4
+
+[*.{yaml,yml,json}]
+indent_size = 2
+
+# Binary workbooks: never edit as text.
+[*.xlsx]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+
+# Feature folders may hold files with CRLF endings written on Windows: keep whatever a file already uses.
+[work/**]
+end_of_line = unset

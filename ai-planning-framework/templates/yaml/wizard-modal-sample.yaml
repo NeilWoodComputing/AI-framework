@@ -1,0 +1,80 @@
+# Example: Wizard Modal — New Loan (neutral Library sample domain)
+# FULL-STACK: every control includes Service / Target DB Table / Target DB Column.
+# Layout: "Wizard Template" sheet of templates/excel/page-spec-templates.xlsx.
+page_type: Wizard Modal
+page_title: New Loan
+page_sub_title: ""
+required_permission: loans_write
+parent_pages:
+  - Manage Books
+include_service_db_columns: true
+steps:
+  - title: Member
+    format: Standard Form
+    visibility: Always shown
+    additional_functionality: N/A
+    controls:
+      - label: Member
+        control_type: Single-select Dropdown (searchable)
+        input_format: N/A
+        min_len_val: "Members service: active members"
+        max_len_val: N/A
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        validation_rules: Member must be active and have fewer than the maximum loans allowed
+        validation_failure_messages: This member cannot borrow more books
+        service: Loans
+        target_db_table: Loan
+        target_db_column: MemberId
+  - title: Books
+    format: List Form
+    visibility: Always shown
+    additional_functionality: Add one row per copy being borrowed
+    controls:
+      - label: Book Copy
+        control_type: Single-select Dropdown (searchable)
+        input_format: N/A
+        min_len_val: "Catalogue service: available copies"
+        max_len_val: N/A
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        validation_rules: Copy must be available and not already on this loan
+        validation_failure_messages: This copy is not available
+        service: Loans
+        target_db_table: LoanItem
+        target_db_column: BookCopyId
+  - title: Dates
+    format: Standard Form
+    visibility: Always shown
+    additional_functionality: N/A
+    controls:
+      - label: Loan Date
+        control_type: Date Picker + Keyed
+        input_format: DD/MM/YYYY
+        min_len_val: Today
+        max_len_val: Today
+        enablement: Always
+        editable: "No"
+        mandatory: "Yes"
+        service: Loans
+        target_db_table: Loan
+        target_db_column: LoanDate
+      - label: Due Date
+        control_type: Date Picker + Keyed
+        input_format: DD/MM/YYYY
+        min_len_val: Loan Date + 1 day
+        max_len_val: Loan Date + 28 days
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        validation_rules: Must be after Loan Date and within the maximum loan period
+        validation_failure_messages: Due Date must be within 28 days of the Loan Date
+        service: Loans
+        target_db_table: Loan
+        target_db_column: DueDate
+conditional_visibility:
+  - when: Member has an overdue loan
+    then: Books step shows a warning and Finish is disabled
+    notes: Overdue loans must be returned first

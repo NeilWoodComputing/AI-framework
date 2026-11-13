@@ -1,0 +1,129 @@
+# Example: Full-Page Wizard — Library Setup (neutral Library sample domain)
+# Includes Service / Target DB columns.
+# Layout: "Wizard Template" sheet of templates/excel/page-spec-templates.xlsx, including a
+# Section within a Step (Branch > Opening Hours).
+page_type: Full-Page Wizard
+page_title: Library Setup
+page_sub_title: ""
+required_permission: settings_write
+parent_pages:
+  - Settings
+include_service_db_columns: true
+steps:
+  - title: Branch
+    format: Standard Form
+    visibility: Always shown
+    additional_functionality: N/A
+    controls:
+      - label: Branch Name
+        control_type: Keyed Input
+        input_format: Alphanumeric & Special
+        min_len_val: 1
+        max_len_val: 100
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        validation_rules: Unique across branches
+        validation_failure_messages: A branch with this name already exists
+        service: Library Settings
+        target_db_table: Branch
+        target_db_column: Name
+      - label: Address
+        control_type: Multi-line Input
+        input_format: Alphanumeric & Special
+        min_len_val: 1
+        max_len_val: 500
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        service: Library Settings
+        target_db_table: Branch
+        target_db_column: Address
+    sections:
+      - title: Opening Hours
+        format: Standard Form
+        visibility: Always shown
+        additional_functionality: N/A
+        controls:
+          - label: Opens At
+            control_type: Time Picker
+            input_format: HH:MM
+            min_len_val: "06:00"
+            max_len_val: "12:00"
+            enablement: Always
+            editable: "Yes"
+            mandatory: "Yes"
+            service: Library Settings
+            target_db_table: Branch
+            target_db_column: OpensAt
+          - label: Closes At
+            control_type: Time Picker
+            input_format: HH:MM
+            min_len_val: Opens At + 1 hour
+            max_len_val: "23:00"
+            enablement: Always
+            editable: "Yes"
+            mandatory: "Yes"
+            validation_rules: Must be after Opens At
+            validation_failure_messages: Closes At must be after Opens At
+            service: Library Settings
+            target_db_table: Branch
+            target_db_column: ClosesAt
+  - title: Loan Rules
+    format: Standard Form
+    visibility: Always shown
+    additional_functionality: N/A
+    controls:
+      - label: Maximum Loans per Member
+        control_type: Keyed Input
+        input_format: Integer
+        min_len_val: 1
+        max_len_val: 50
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        service: Library Settings
+        target_db_table: LoanPolicy
+        target_db_column: MaxLoansPerMember
+      - label: Loan Period (days)
+        control_type: Keyed Input
+        input_format: Integer
+        min_len_val: 1
+        max_len_val: 90
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        service: Library Settings
+        target_db_table: LoanPolicy
+        target_db_column: LoanPeriodDays
+  - title: Holidays
+    format: List Form
+    visibility: Always shown
+    additional_functionality: Add one row per closure date
+    controls:
+      - label: Closure Date
+        control_type: Date Picker + Keyed
+        input_format: DD/MM/YYYY
+        min_len_val: Today
+        max_len_val: N/A
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        service: Library Settings
+        target_db_table: BranchClosure
+        target_db_column: ClosureDate
+      - label: Reason
+        control_type: Keyed Input
+        input_format: Alphanumeric & Special
+        min_len_val: 0
+        max_len_val: 100
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        service: Library Settings
+        target_db_table: BranchClosure
+        target_db_column: Reason
+conditional_visibility:
+  - when: Loan Period (days) is changed
+    then: Show a note that existing loans keep their original due dates
+    notes: Applies to new loans only

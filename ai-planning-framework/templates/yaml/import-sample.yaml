@@ -1,0 +1,73 @@
+# Example: Import — Import Books (neutral Library sample domain)
+# Laid out like the "Import Template" sheet of templates/excel/page-spec-templates.xlsx:
+# header, Download Template button, drag-and-drop upload panel, Cancel / Upload buttons and the
+# Template Format & Upload Validation Logic table (template columns with Service / DB mapping).
+# Anything left out of `import` (download button, panel text, functional requirements) and the
+# Cancel / Upload buttons take the starter's defaults.
+page_type: Import
+page_title: Import Books
+page_sub_text: Upload a completed Books template to add books to the catalogue in bulk
+required_permission: catalogue_write
+parent_pages:
+  - Manage Books
+import:
+  download_button:
+    label: Download Template
+    type: Primary Action
+    visibility: Always Visible
+    enablement: Always Enabled
+    required_permission: catalogue_write
+    click_action: Download Books-Import-Template.xlsx (columns defined below, one header row)
+  validation_logic: >-
+    The first sheet is read; row 1 must hold the template column names below in order. Every data
+    row is validated against the rules below. If any row fails, nothing is imported and an error
+    report lists each failing row, column and message. If all rows pass, every row is created in
+    one transaction and a success message shows the number of books created.
+  template_columns:
+    - name: Title
+      mandatory: "Yes"
+      format: Alphanumeric & Special
+      min_len_val: 1
+      max_len_val: 200
+      additional_validation_rules: Trimmed
+      service: Catalogue
+      target_db_table: Book
+      target_db_column: Title
+    - name: Author
+      mandatory: "Yes"
+      format: Alphanumeric & Special
+      min_len_val: 1
+      max_len_val: 150
+      additional_validation_rules: Trimmed
+      service: Catalogue
+      target_db_table: Book
+      target_db_column: Author
+    - name: ISBN
+      mandatory: "No"
+      format: Numeric (10 or 13 digits)
+      min_len_val: 10
+      max_len_val: 13
+      additional_validation_rules: Valid check digit; unique across the catalogue and within the file
+      service: Catalogue
+      target_db_table: Book
+      target_db_column: Isbn
+    - name: Genre
+      mandatory: "Yes"
+      format: "Reference data: GENRE (code or description)"
+      min_len_val: N/A
+      max_len_val: N/A
+      additional_validation_rules: Must match an active GENRE value
+      service: Catalogue
+      target_db_table: Book
+      target_db_column: GenreCode
+    - name: Copies
+      mandatory: "No"
+      format: Integer
+      min_len_val: 0
+      max_len_val: 99
+      additional_validation_rules: Blank = 1; creates that many BookCopy rows with Status = Available
+      service: Catalogue
+      target_db_table: BookCopy
+      target_db_column: (one row per copy)
+notes: >
+  Opened from the Bulk Import button on Manage Books (paginated-grid-sample.yaml).

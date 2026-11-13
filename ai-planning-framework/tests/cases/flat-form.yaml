@@ -1,0 +1,38 @@
+# Coverage case: Basic Form with a flat control list and DB columns.
+# The samples (basic-form-sample.yaml, form-modal-sample.yaml) always use sections.
+# ui-only-sketch.yaml is flat too, but it turns the DB columns off.
+spec_version: 1
+page_type: Basic Form
+page_title: Register Copy
+page_sub_title: One book copy
+required_permission: catalogue_write
+parent_pages:
+  - Manage Books
+controls:
+  - label: Shelf Location
+    control_type: Keyed Input
+    input_format: Char
+    min_len_val: 1
+    max_len_val: 40
+    enablement: Always
+    editable: "Yes"
+    mandatory: "Yes"
+    validation_rules: Required
+    validation_failure_messages: Enter a shelf location
+    service: Catalogue
+    target_db_table: BookCopy
+    target_db_column: ShelfLocation
+buttons:
+  - label: Cancel
+    type: Additional Action
+    visibility: Always Visible
+    enablement: Always Enabled
+    required_permission: ""
+    click_action: Close the page with no changes
+  - label: Save
+    type: Primary Action
+    visibility: Always Visible
+    enablement: UI Validation Passes
+    required_permission: catalogue_write
+    click_action: Insert a BookCopy row and return to Manage Books
+notes: Flat control list, so the sheet has no Section Title row.

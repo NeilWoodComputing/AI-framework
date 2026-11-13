@@ -1,0 +1,47 @@
+# tests/manifest.yaml: what tools/check.py regenerates and compares.
+# Paths are relative to the ai-planning-framework folder.
+#   group     -> profile used to generate, golden folder, and whether to cross-check against the profile
+#   output    -> stored workbook that must match the golden (cell-level); optional. Parked features have
+#                none: their excel/ predates the current generator and may not be regenerated in place.
+#   layout    -> compare the fixed starter cells against templates/excel/page-spec-templates.xlsx
+# Read-only entries (e.g. parked features) are only read; check.py never writes into work/.
+manifest_version: 1
+
+groups:
+  samples:  {profile: projects/_template/project.yaml, golden_dir: tests/golden/samples,  cross_check: false}
+  cases:    {profile: projects/_template/project.yaml, golden_dir: tests/golden/cases,    cross_check: false}
+  features: {profile: ../project.yaml,                 golden_dir: tests/golden/features, cross_check: true}   # active profile, beside the shared config
+
+entries:
+  # Neutral Library samples (templates/yaml -> templates/out/)
+  - {group: samples, spec: templates/yaml/form-modal-sample.yaml,          output: templates/out/form-modal-sample.xlsx,          layout: true}
+  - {group: samples, spec: templates/yaml/basic-form-sample.yaml,          output: templates/out/basic-form-sample.xlsx,          layout: true}
+  - {group: samples, spec: templates/yaml/wizard-modal-sample.yaml,        output: templates/out/wizard-modal-sample.xlsx,        layout: true}
+  - {group: samples, spec: templates/yaml/full-page-wizard-sample.yaml,    output: templates/out/full-page-wizard-sample.xlsx,    layout: true}
+  - {group: samples, spec: templates/yaml/paginated-grid-sample.yaml,      output: templates/out/paginated-grid-sample.xlsx,      layout: true}
+  - {group: samples, spec: templates/yaml/embedded-grid-modal-sample.yaml, output: templates/out/embedded-grid-modal-sample.xlsx, layout: true}
+  - {group: samples, spec: templates/yaml/import-sample.yaml,              output: templates/out/import-sample.xlsx,              layout: true}
+
+  # Coverage cases (generated only for the golden compare; no stored workbook)
+  - {group: cases, spec: tests/cases/ui-only-sketch.yaml}          # flat controls, no DB columns: no starter layout to compare
+  - {group: cases, spec: tests/cases/legacy-names.yaml,   layout: true}
+  - {group: cases, spec: tests/cases/flat-form.yaml}                       # flat controls WITH DB columns; no Section Title row, so no starter layout to compare
+  - {group: cases, spec: tests/cases/grid-no-filters.yaml, layout: true}  # search_filters: [] and an empty actions menu
+  - {group: cases, spec: tests/cases/import-defaults.yaml, layout: true}  # download button, panel and Cancel / Upload left to the starter defaults
+
+  # Real feature specs (read-only; goldens live here in tests/golden/features/<feature>/)
+  - {group: features, spec: work/manage-animals/specs/add-edit-animal.yaml,  output: work/manage-animals/excel/add-edit-animal.xlsx,  golden: manage-animals/add-edit-animal.json}
+  - {group: features, spec: work/manage-animals/specs/manage-animals.yaml,   output: work/manage-animals/excel/manage-animals.xlsx,   golden: manage-animals/manage-animals.json}
+  - {group: features, spec: work/add-edit-contact/specs/add-edit-contact.yaml, golden: add-edit-contact/add-edit-contact.json, read_only: parked}
+  - {group: features, spec: work/add-edit-contact/specs/manage-contacts.yaml,   golden: add-edit-contact/manage-contacts.json,  read_only: parked}
+
+# Specs that MUST fail validation, each with text every listed error must be found in.
+expect_invalid:
+  - {spec: tests/cases/invalid/typo-and-missing-mapping.yaml, errors: ["contorls", "'service' is a required property"]}
+  - {spec: tests/cases/invalid/grid-missing-route.yaml,       errors: ["'route' is a required property"]}
+  - {spec: tests/cases/invalid/wizard-without-steps.yaml,     errors: ["'steps' is a required property"]}
+  - {spec: tests/cases/invalid/form-without-body.yaml,        errors: ["is not valid under any of the given schemas"]}
+  - {spec: tests/cases/invalid/import-missing-mapping.yaml,   errors: ["'service' is a required property"]}
+  - {spec: tests/cases/invalid/import-without-columns.yaml,   errors: ["'template_columns' is a required property"]}
+  - {spec: tests/cases/invalid/grid-with-form-controls.yaml,  errors: ["is expected to be empty"]}
+  - {spec: tests/cases/invalid/unknown-page-type.yaml,        errors: ["'Dialog' is not one of"]}

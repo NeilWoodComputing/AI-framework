@@ -1,0 +1,8 @@
+# EXPECTED TO FAIL validation (tools/check.py asserts it does).
+# A Paginated Grid is a routed page, so `route` is required (RULES.md R1).
+page_type: Paginated Grid
+page_title: Manage Members
+results_area:
+  columns:
+    - title: Name
+      population_source: Member.FullName

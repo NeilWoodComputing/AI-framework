@@ -1,0 +1,115 @@
+# Example: Form Modal — Add | Edit Book (neutral Library sample domain)
+# Single-body create / edit dialog (not a multi-step wizard), laid out like the
+# "Modal Template" sheet of templates/excel/page-spec-templates.xlsx: header on rows 2-3,
+# Section Title rows, the control grid, then the Cancel / Save button blocks.
+# Every control includes Service / Target DB Table / Target DB Column.
+page_type: Form Modal
+page_title: Add | Edit Book
+page_sub_title: "[Book Title]"
+required_permission: catalogue_write
+parent_pages:
+  - Manage Books
+include_service_db_columns: true
+sections:
+  - title: Book Details
+    visibility: Always shown
+    additional_functionality: N/A
+    controls:
+      - label: Title
+        control_type: Keyed Input
+        input_format: Alphanumeric & Special
+        min_len_val: 1
+        max_len_val: 200
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        validation_rules: Trim leading/trailing spaces
+        validation_failure_messages: Title is required
+        service: Catalogue
+        target_db_table: Book
+        target_db_column: Title
+      - label: Author
+        control_type: Keyed Input
+        input_format: Alphanumeric & Special
+        min_len_val: 1
+        max_len_val: 150
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        validation_failure_messages: Author is required
+        service: Catalogue
+        target_db_table: Book
+        target_db_column: Author
+      - label: ISBN
+        control_type: Keyed Input
+        input_format: Numeric (10 or 13 digits)
+        min_len_val: 10
+        max_len_val: 13
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        validation_rules: Valid ISBN-10 or ISBN-13 check digit; unique across the catalogue when provided
+        validation_failure_messages: Enter a valid ISBN | A book with this ISBN already exists
+        service: Catalogue
+        target_db_table: Book
+        target_db_column: Isbn
+      - label: Genre
+        control_type: Single-Select Dropdown
+        input_format: N/A
+        min_len_val: "Reference data: GENRE"
+        max_len_val: N/A
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        service: Catalogue
+        target_db_table: Book
+        target_db_column: GenreCode
+      - label: Published Year
+        control_type: Keyed Input
+        input_format: Integer (YYYY)
+        min_len_val: 1450
+        max_len_val: Current year
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        validation_rules: Cannot be a future year
+        validation_failure_messages: Published Year cannot be in the future
+        service: Catalogue
+        target_db_table: Book
+        target_db_column: PublishedYear
+  - title: Availability
+    visibility: Always shown
+    additional_functionality: Hidden in View mode for users without catalogue_write
+    controls:
+      - label: Available for Loan
+        control_type: Switch
+        input_format: Boolean
+        min_len_val: N/A
+        max_len_val: N/A
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        validation_rules: Turning this off does not affect loans already in progress
+        service: Catalogue
+        target_db_table: Book
+        target_db_column: IsLoanable
+buttons:
+  - label: Cancel
+    type: Additional Action
+    visibility: Always Visible
+    enablement: Always Enabled
+    required_permission: ""
+    click_action: Close the modal with no further action (unsaved changes are discarded)
+  - label: Save
+    type: Primary Action
+    visibility: Hidden in View mode
+    enablement: UI Validation Passes
+    required_permission: catalogue_write
+    click_action: Save the Book via the Catalogue service, close the modal and refresh Manage Books
+notes: >
+  Opened from Manage Books in Add, Edit, or View mode.
+  View mode sets Editable = No on all controls.
+conditional_visibility:
+  - when: Mode = View
+    then: All controls Editable = No; Save hidden
+    notes: Read-only form; Cancel / Close only

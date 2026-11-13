@@ -1,0 +1,21 @@
+# Decisions
+
+Dated record of the decisions behind this framework's defaults. The framework docs state the rules
+without names or dates; this file keeps the provenance. Times are Europe/London.
+
+| Date | Decision | Where it applies now |
+|------|----------|----------------------|
+| 2026-10-08 | **List pages vs modals.** A feature list with its own route is a page: search / filters and results sit on the page, with no initial list modal, auto-open or landing page whose only job is to open the list. Modals only for create / edit forms, imports, confirmations and lists embedded in another page's flow. Decided by the human owner. | Framework default `rules.list_pages_not_modals: true` (project profile). |
+| 2026-10-08 | **Paginated Grid ticket split.** One Paginated Grid spec / Excel becomes two tickets: (a) the page (route, nav, permission gate, layout / search, hosting the grid and form modal) and (b) the paginated grid (columns, sorting, paging, row actions, empty state). | Framework default `rules.paginated_grid_two_tickets: true`. |
+| 2026-10-27 | **Starter workbook adopted** as the canonical layout (`templates/excel/page-spec-templates.xlsx`, kept byte-for-byte; copy it to fill in). Page types map to its four sheets; old YAML field names stay valid; Basic Form, Form Modal, Import and the shared header / button fields follow the starter. | `generators/excel_spec.py`, `schemas/page-spec.schema.json`, `templates/README.md`. |
+| 2026-10-27 | **Pastel palette kept** in place of the starter's dark-grey label cells (META #E2EFDA, STEP #FCE4D6, SECTION #E2D5F1, HEADER #D9E2F3, ATTR #DDEBF7). | Generator styles. |
+| 2026-10-27 | **Generic framework.** Project-specific content moves to project profiles (`projects/<project>/project.yaml`) and examples (`examples/<project>/`); samples use a neutral Library domain; the grid header field becomes `feature_module` (old `system_feature` / `unity_feature` accepted; label from the profile); rules become defaults a profile can switch off; stack hints (`profiles/stacks/`) are used only for stubs; agent names and ids come from `agents` in the config; `publish-devops-tickets` becomes `publish-tickets` with tracker adapters chosen by `tickets.target`. New features go to `project.work_dir`; existing features stay where they are. Approved by the human owner. | Whole framework. |
+| 2026-11-11 | **No domain folders (1.1.3).** The active profile lives beside the shared config (`project.yaml`), not in `projects/<project>/`. The CandC example specs are removed; the neutral samples cover the page types. `examples/source-attachments/` stays (the starter's filled originals). Requested by the human owner. | `project.yaml`, `projects/`, `examples/`, `tests/manifest.yaml`. |
+| 2026-11-11 | **One feature folder (1.1.2).** Features live in `ai-planning-framework/work/` whatever the project, so the framework is domain-neutral; `projects/<project>/work/` is removed. Existing features are not moved (R8). Requested by the human owner. | `ai-framework.config.yaml` (`project.work_dir`, `output.work_dirs`), profiles. |
+| 2026-11-11 | **Tidy-up (1.1.1).** Generated samples live in `templates/out/`; stack hints live with their only reader in `skills/generate-code-stubs/stacks/`; stored workbooks are regenerated from `tests/manifest.yaml` by `tools/regenerate.py`; byte-identical duplicates removed. `work/` stays in place. Requested by the human owner. | `templates/`, `skills/generate-code-stubs/`, `tools/`. |
+| 2026-10-27 | **Reliability tooling (1.1.0).** Strict schema with validation before generation; one `tools/check.py` command with golden regression tests; rules consolidated in `RULES.md`; editing rules in `AGENT-BRIEF.md`; tools run wherever Python is available (the owner's PC now has Python); jsonschema installed on the PC. Approved by the human owner. | `tools/`, `tests/`, `RULES.md`, generator, schemas. |
+
+## Notes
+
+- The starter workbook's own feature label cell (Grid Page Template D2) predates the rename; it is the same field as `feature_module`. The workbook is not edited.
+- Features planned before the profile existed (in `ai-planning-framework/work/`) are not moved; their `handoff.md` `feature_path` stays valid.

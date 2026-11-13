@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "target": "api-framework",
+      "path": "TestKey.cs",
+      "rule": "secret-code-literal",
+      "key": "SigningKey",
+      "reason": "Dummy unit-test signing key, named \"not a secret\" (fixture)",
+      "owner": "dev-bot",
+      "expires": "2099-12-31"
+    },
+    {
+      "target": "nextjs",
+      "paths": [
+        ".cursor/rules/x.mdc",
+        ".claude/rules/x.md"
+      ],
+      "rule": "docs-dup",
+      "reason": "Intentional Cursor / Claude rule mirror (fixture)",
+      "owner": "dev-bot",
+      "expires": "2099-12-31"
+    },
+    {
+      "target": "api-framework",
+      "path": "Gone.cs",
+      "rule": "secret-code-literal",
+      "key": "ApiKey",
+      "reason": "unused fixture: the literal was removed",
+      "owner": "dev-bot",
+      "expires": "2099-12-31"
+    },
+    {
+      "target": "api-framework",
+      "paths": [
+        "README.md",
+        "docs/gone.md"
+      ],
+      "rule": "docs-dup",
+      "reason": "unused fixture: the duplicate was removed",
+      "owner": "dev-bot",
+      "expires": "2099-12-31"
+    }
+  ]
+}

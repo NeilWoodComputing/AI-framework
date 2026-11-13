@@ -1,0 +1,16 @@
+# EXPECTED TO FAIL validation. A grid page does not carry a form control list.
+page_type: Paginated Grid
+page_title: Manage Books
+route: /books
+results_area:
+  description: Books
+  columns:
+    - title: Title
+      population_source: Book.Title
+      display_format: Char
+controls:
+  - label: Title
+    control_type: Keyed Input
+    service: Catalogue
+    target_db_table: Book
+    target_db_column: Title

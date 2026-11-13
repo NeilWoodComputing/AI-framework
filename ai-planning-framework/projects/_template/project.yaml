@@ -1,0 +1,63 @@
+# projects/_template/project.yaml
+# ---------------------------------------------------------------------------
+# Project profile defaults. Copy these values into the active profile
+# (project.profile in ai-framework.config.yaml) and fill them in.
+# Every value here is a framework default; a value left out falls back to it.
+# Paths are relative to the ai-framework root (the folder holding ai-framework.config.yaml).
+# No secrets here: name environment variables only.
+# ---------------------------------------------------------------------------
+profile_version: 1
+framework_version: "1.1"              # VERSION (major.minor) this profile was written for; tools/check.py warns on a mismatch
+
+project:
+  id: my-project                       # short slug; also the folder name under projects/
+  name: My Project
+  description: ""
+
+# Where new features are written (<work_dir>/<feature-slug>/). Keep the framework's shared feature folder unless you have a reason not to.
+work_dir: ai-planning-framework/work
+
+language:
+  spelling: en-GB                      # spelling used in specs, tickets and journeys
+  date_format: DD/MM/YYYY
+
+ui:
+  feature_module_label: "Feature / Module"   # grid header label for the feature_module field
+
+# Backend services that own data (Service column in specs).
+services: []
+#  - name: Catalogue
+#    owns: [Book, BookCopy]
+
+# Domain terms agents should use consistently.
+glossary: {}
+#  Loan: A book copy lent to a member for a fixed period.
+
+permissions:
+  pattern: "{entity}_{action}"         # e.g. books_read, books_write
+  actions: [read, write]
+
+database:
+  table_naming: PascalCase             # Book, BookCopy
+  column_naming: PascalCase            # Title, CreatedAt
+  schemas: []                          # optional logical schemas / databases
+  reference_data_notation: "Reference data: <TYPE>"   # how specs name lookup lists
+
+conventions:
+  multi_tenant: false                  # true: every query filtered by tenant
+  soft_delete: true                    # true: deletes set a flag, rows are kept
+  audit_columns: [CreatedAt, CreatedBy, UpdatedAt, UpdatedBy]
+
+# Framework rules (see DECISIONS.md). true = on (default); false = switched off for this project.
+rules:
+  list_pages_not_modals: true          # routed list = Paginated Grid page; only forms / confirmations are modals
+  paginated_grid_two_tickets: true     # one Paginated Grid spec -> a PAGE ticket + a GRID ticket
+  service_db_columns_required: true    # wizard / form controls carry Service / Target DB Table / Target DB Column
+
+tickets:
+  id_prefix: T-<DOMAIN>-NNN            # <DOMAIN> from domain_tokens below
+  domain_tokens: {}                    # feature area -> token, e.g. Catalogue: BOOK
+  # Tracker comes from tickets.target in ai-framework.config.yaml (azure-devops | github | jira).
+
+# Stack hint files for generate-code-stubs only (skills/generate-code-stubs/stacks/<name>.md). Empty = framework-agnostic stubs.
+stacks: []                             # e.g. [dotnet-efcore, nextjs, angular]

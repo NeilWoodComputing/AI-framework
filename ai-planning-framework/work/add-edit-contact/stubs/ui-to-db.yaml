@@ -1,0 +1,77 @@
+# Canonical UI ↔ DB mapping — Add | Edit Contact feature
+# Framework-agnostic; from specs/add-edit-contact.yaml + specs/manage-contacts.yaml
+feature: Add | Edit Contact
+pages:
+  - page_title: Add | Edit Contact
+    page_type: Basic Form
+    mappings:
+      - control_label: Name
+        control_type: Keyed Input
+        section: Contact Details
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: Name
+      - control_label: Job Title / Department
+        control_type: Keyed Input
+        section: Contact Details
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: JobTitleDepartment
+      - control_label: Email Address
+        control_type: Keyed Input
+        section: Contact Details
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: EmailAddress
+      - control_label: Telephone
+        control_type: Keyed Input
+        section: Contact Details
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: Telephone
+      - control_label: Organisation
+        control_type: Single-select Dropdown (searchable)
+        section: Contact Details
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: OrganisationId
+      - control_label: Primary Contact
+        control_type: Switch
+        section: Status
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: PrimaryContact
+      - control_label: Active
+        control_type: Switch
+        section: Status
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: IsActive
+  - page_title: Manage Contacts
+    page_type: Modal
+    mappings:
+      - control_label: Name
+        control_type: Results column
+        service: Contacts
+        target_db_table: Contact
+        population_source: Contact.Name
+      - control_label: Job Title / Department
+        control_type: Results column
+        service: Contacts
+        target_db_table: Contact
+        population_source: Contact.JobTitleDepartment
+      - control_label: Primary Contact
+        control_type: Results column
+        service: Contacts
+        target_db_table: Contact
+        population_source: Contact.PrimaryContact
+      - control_label: Active
+        control_type: Results column
+        service: Contacts
+        target_db_table: Contact
+        population_source: Contact.IsActive
+      - control_label: Last Amended
+        control_type: Results column
+        service: Contacts
+        target_db_table: Contact
+        population_source: Contact.LastAmendedOn & LastAmendedBy

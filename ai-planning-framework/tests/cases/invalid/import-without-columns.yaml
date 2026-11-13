@@ -1,0 +1,4 @@
+# EXPECTED TO FAIL validation. An Import page needs at least one template column.
+page_type: Import
+page_title: Import Books
+import: {}

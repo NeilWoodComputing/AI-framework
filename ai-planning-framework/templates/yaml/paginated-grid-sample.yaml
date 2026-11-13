@@ -1,0 +1,108 @@
+# Example: Paginated Grid — Manage Books (a feature list with its own route; neutral Library sample domain)
+# Default rule (rules.list_pages_not_modals in the project profile): a routed list page shows its search / filters
+# and results ON THE PAGE. There is no list modal, auto-open or landing page; only create / edit forms and
+# confirmations are modals.
+# One spec / Excel, two tickets (rules.paginated_grid_two_tickets): (a) the PAGE (route, nav link, permission gate,
+# no-permission message, layout and search area, hosting the grid and the form modal) and (b) the PAGINATED GRID
+# (columns, sorting, paging, row actions menu, empty state). For a list embedded in another page's flow, use
+# page_type Embedded Grid Modal (embedded-grid-modal-sample.yaml).
+# Layout: "Grid Page Template" sheet of templates/excel/page-spec-templates.xlsx (header rows 2-4, button blocks
+# I/J and L/M, filter table row 9, Results Area, Actions Menu). Route, Pagination and the extra filter columns
+# (Filters On, Match Rule, Default) are framework-only and sit beside / below the starter's blocks.
+page_type: Paginated Grid
+page_title: Manage Books
+page_sub_text: "All books in the catalogue"
+feature_module: Catalogue
+required_permission: catalogue_read
+nav_tree_path: "Main nav › Books"
+route: /books
+parent_pages:
+  - "None - routed page /books, reached from Main nav › Books"
+buttons:
+  - label: "+ Add Book"
+    type: Primary Action
+    visibility: Always Visible
+    enablement: Always Enabled
+    required_permission: catalogue_write
+    click_action: |
+      Open form
+      Add | Edit Book
+      in Add mode (modal over this page; closes back to /books)
+  - label: Bulk Import
+    type: Additional Action
+    visibility: Always Visible
+    enablement: Always Enabled
+    required_permission: catalogue_write
+    click_action: Open the Import Books modal (import-sample.yaml)
+results_area:
+  description: >-
+    Paginated results area with Action controls on the page - All non-deleted
+    records from the Book table matching the search / filters
+  visibility: Always Visible
+  empty_state: >-
+    "No books match your search." with "+ Add Book" still available
+  columns:
+    - title: Title
+      population_source: "Book.\nTitle"
+      display_format: Char
+      sortable: true
+      additional_functionality: Default sort ascending
+    - title: Author
+      population_source: "Book.\nAuthor"
+      display_format: Char
+      sortable: true
+    - title: Genre
+      population_source: "Book.\nGenreCode (reference data GENRE description)"
+      display_format: Char
+      sortable: true
+    - title: Copies Available
+      population_source: "Count of BookCopy rows for the Book with Status = Available"
+      display_format: Integer
+      sortable: true
+    - title: Last Amended
+      population_source: "Book.\nUpdatedAt & UpdatedBy"
+      display_format: "DD/MM/YYYY HH:MM [Username]"
+      sortable: true
+search_filters:
+  - label: Search
+    control_type: Text input
+    input_format: Alphanumeric & Special
+    min_length: 0
+    max_length: 100
+    mandatory: "No"
+    additional_functionality: Server-side after a 300 ms pause in typing; returns to page 1
+    filters_on: "Book.Title, Book.Author, Book.Isbn"
+    match_rule: Contains, case-insensitive
+    default: Empty
+  - label: Genre
+    control_type: Dropdown
+    input_format: "Reference data: GENRE"
+    mandatory: "No"
+    additional_functionality: Options from reference data plus "All"
+    filters_on: "Book.GenreCode"
+    match_rule: Equals; "All" shows every genre
+    default: All
+pagination:
+  page_size: 20
+  page_size_options: [10, 20, 50, 100]
+  paging: Server-side
+  default_sort: Title ascending
+actions_menu:
+  - item: Edit Book
+    icon: Edit
+    required_permission: catalogue_write
+    availability_logic: Always
+    action_on_click: Open form Add | Edit Book in Edit mode (modal over this page)
+  - item: View Copies
+    icon: List
+    required_permission: catalogue_read
+    availability_logic: Always
+    action_on_click: Open the Book Copies modal for this book (embedded-grid-modal-sample.yaml)
+  - item: Delete Book
+    icon: Delete
+    required_permission: catalogue_write
+    availability_logic: No copies are on loan
+    action_on_click: Soft delete this Book record via confirmation modal
+notes: >
+  Routed list page: search, filters and results render on /books. Add | Edit Book,
+  Book Copies, Import Books and the delete confirmation are the only modals.

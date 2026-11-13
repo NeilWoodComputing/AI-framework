@@ -1,0 +1,931 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/ai-planning-framework/page-spec.schema.json",
+  "title": "PageSpec",
+  "description": "Full-stack UI page specification, laid out like the starter workbook templates/excel/page-spec-templates.xlsx (the canonical layout reference). Wizard / form controls and Import template columns carry Service / Target DB Table / Target DB Column mapping. Covers Full-Page Wizard, Wizard Modal, Basic Form, Form Modal, Paginated Grid (a routed list page: list on the page), Embedded Grid Modal (a list embedded in another page's flow) and Import (template download + drag-and-drop upload + template column validation). Older field names stay valid: page_type Modal (= Embedded Grid Modal), system_feature and unity_feature (= feature_module), primary_action (= buttons[0]), primary_action.action (= click_action), actions_menu[].availability (= availability_logic).",
+  "type": "object",
+  "required": [
+    "page_type",
+    "page_title"
+  ],
+  "properties": {
+    "spec_version": {
+      "type": "integer",
+      "enum": [
+        1
+      ],
+      "description": "Optional page-spec format version. 1 = this schema. Lets later field renames be migrated automatically; omit for 1."
+    },
+    "page_type": {
+      "type": "string",
+      "enum": [
+        "Full-Page Wizard",
+        "Wizard Modal",
+        "Basic Form",
+        "Form Modal",
+        "Paginated Grid",
+        "Embedded Grid Modal",
+        "Import",
+        "Modal"
+      ],
+      "description": "Starter sheet per type: Form Modal / Basic Form -> Modal Template; Wizard Modal / Full-Page Wizard -> Wizard Template; Paginated Grid / Embedded Grid Modal -> Grid Page Template; Import -> Import Template. Form Modal = a single-body create / edit dialog; Basic Form = the same layout for a full-page form. Paginated Grid = a feature list with its own route; Embedded Grid Modal = a list embedded in another page's flow. 'Modal' is a deprecated alias of Embedded Grid Modal (kept for older YAML)."
+    },
+    "page_title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "wizard_name": {
+      "type": "string",
+      "description": "Older Wizard Modal YAML: the wizard's name. Shown as Page Title when page_title is absent (page_title is preferred)."
+    },
+    "page_sub_title": {
+      "type": "string",
+      "description": "Page Sub-Title (all types). On grids and Import it is shown as Page Sub-title / Page Sub-text."
+    },
+    "page_sub_text": {
+      "type": "string",
+      "description": "Older name for the sub-title on grids and Import; used when page_sub_title is empty."
+    },
+    "required_permission": {
+      "type": "string",
+      "description": "Permission needed to open the page (starter: Required Permission / Req'd. Permission in the header). Use the permission key, e.g. books_write (pattern set by the project profile, permissions.pattern)."
+    },
+    "parent_pages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Parent page name(s)."
+    },
+    "feature_module": {
+      "type": "string",
+      "description": "Feature / module the page belongs to (grid header D2/E2). The header label comes from the project profile (ui.feature_module_label, default 'Feature / Module'); the starter workbook's own label in that cell means the same field."
+    },
+    "system_feature": {
+      "type": "string",
+      "description": "Deprecated: older name for feature_module. Used when feature_module is empty.",
+      "deprecated": true
+    },
+    "unity_feature": {
+      "type": "string",
+      "description": "Deprecated: older name for feature_module. Used when feature_module and system_feature are empty.",
+      "deprecated": true
+    },
+    "nav_tree_path": {
+      "type": "string",
+      "description": "Optional nav tree path (Paginated Grid / Embedded Grid Modal)."
+    },
+    "route": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Paginated Grid: the route of the list page (e.g. /books). Required for Paginated Grid. Framework-only field (shown under the header, B5)."
+    },
+    "include_service_db_columns": {
+      "type": "boolean",
+      "default": true,
+      "description": "FIRST-CLASS for wizards/forms. Default true: always emit Service / Target DB Table / Target DB Column. Set false only for rare UI-only sketches."
+    },
+    "steps": {
+      "type": "array",
+      "description": "Wizard steps (Full-Page Wizard and Wizard Modal). Each control should map to a service and DB target.",
+      "items": {
+        "$ref": "#/$defs/step"
+      }
+    },
+    "controls": {
+      "type": "array",
+      "description": "Flat control list for Basic Form / Form Modal when there is a single implied form body (no sections).",
+      "items": {
+        "$ref": "#/$defs/control"
+      }
+    },
+    "sections": {
+      "type": "array",
+      "description": "Optional groupings for Basic Form / Form Modal (starter: Section Title / Section Visibility / Additional Functionality). Not wizard steps.",
+      "items": {
+        "$ref": "#/$defs/formSection"
+      }
+    },
+    "primary_action": {
+      "$ref": "#/$defs/primaryAction",
+      "description": "Deprecated: older single-button form of buttons (treated as buttons[0] when buttons is absent).",
+      "deprecated": true
+    },
+    "buttons": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/button"
+      },
+      "description": "Button blocks (starter: Button Label / Button Type / Visibility / Enablement / Req'd. Permission / Click Action). Grids: side by side to the right of the header (I/J, L/M, ...). Forms and wizards: below the controls, left to right (B / C:D, F / G:I, ...). Import: the Cancel / Upload pair (defaults used when absent)."
+    },
+    "results_area": {
+      "$ref": "#/$defs/resultsArea",
+      "description": "Grid results (Paginated Grid / Embedded Grid Modal). Population Source is the DB / path mapping for list columns."
+    },
+    "actions_menu": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/actionsMenuItem"
+      }
+    },
+    "search_filters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/searchFilter"
+      },
+      "description": "Paginated Grid (optional for Embedded Grid Modal): on-page search / filter controls, shown in the starter's filter table (row 9). Framework-only columns filters_on / match_rule / default are shown to the right. An empty array means the page has no search or filters."
+    },
+    "pagination": {
+      "$ref": "#/$defs/pagination",
+      "description": "Paging and default sort of the results grid (framework-only block below the Actions Menu)."
+    },
+    "conditional_visibility": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/conditionalRule"
+      },
+      "description": "Cross-step or cross-control visibility rules (framework-only block below the starter's blocks)."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-text notes (framework-only block at the foot of the sheet)."
+    },
+    "import": {
+      "$ref": "#/$defs/importSpec",
+      "description": "Import page details (page_type Import)."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "page_type": {
+            "enum": [
+              "Modal",
+              "Embedded Grid Modal"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "results_area"
+        ],
+        "properties": {
+          "steps": {
+            "maxItems": 0
+          },
+          "controls": {
+            "maxItems": 0
+          },
+          "sections": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "page_type": {
+            "const": "Paginated Grid"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "results_area",
+          "route"
+        ],
+        "properties": {
+          "steps": {
+            "maxItems": 0
+          },
+          "controls": {
+            "maxItems": 0
+          },
+          "sections": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "page_type": {
+            "enum": [
+              "Full-Page Wizard",
+              "Wizard Modal"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "steps"
+        ],
+        "properties": {
+          "steps": {
+            "minItems": 1
+          },
+          "include_service_db_columns": {
+            "default": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "page_type": {
+            "enum": [
+              "Basic Form",
+              "Form Modal"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "include_service_db_columns": {
+            "default": true
+          },
+          "steps": {
+            "maxItems": 0
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "controls"
+            ],
+            "properties": {
+              "controls": {
+                "minItems": 1
+              }
+            }
+          },
+          {
+            "required": [
+              "sections"
+            ],
+            "properties": {
+              "sections": {
+                "minItems": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "page_type": {
+            "const": "Import"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "import"
+        ],
+        "properties": {
+          "steps": {
+            "maxItems": 0
+          },
+          "controls": {
+            "maxItems": 0
+          },
+          "sections": {
+            "maxItems": 0
+          },
+          "import": {
+            "required": [
+              "template_columns"
+            ],
+            "properties": {
+              "template_columns": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "include_service_db_columns"
+        ],
+        "properties": {
+          "include_service_db_columns": {
+            "const": false
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "controls": {
+            "items": {
+              "$ref": "#/$defs/dbMapping"
+            }
+          },
+          "sections": {
+            "items": {
+              "properties": {
+                "controls": {
+                  "items": {
+                    "$ref": "#/$defs/dbMapping"
+                  }
+                }
+              }
+            }
+          },
+          "steps": {
+            "items": {
+              "properties": {
+                "controls": {
+                  "items": {
+                    "$ref": "#/$defs/dbMapping"
+                  }
+                },
+                "sections": {
+                  "items": {
+                    "properties": {
+                      "controls": {
+                        "items": {
+                          "$ref": "#/$defs/dbMapping"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "formSection": {
+      "type": "object",
+      "required": [
+        "controls"
+      ],
+      "description": "Basic Form / Form Modal grouping (starter: Section Title row). Not a wizard step.",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Optional section heading shown above the control grid."
+        },
+        "visibility": {
+          "type": "string",
+          "default": "Always shown",
+          "description": "Section Visibility."
+        },
+        "additional_functionality": {
+          "type": "string",
+          "default": "N/A"
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/control"
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "step": {
+      "type": "object",
+      "required": [
+        "title",
+        "format"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "Standard Form",
+            "List Form"
+          ]
+        },
+        "visibility": {
+          "type": "string",
+          "default": "Always shown"
+        },
+        "additional_functionality": {
+          "type": "string",
+          "default": "N/A",
+          "description": "Additional Step Functionality."
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/control"
+          },
+          "minItems": 1
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/stepSection"
+          },
+          "description": "Optional sections within the step (starter: Section Title / Section Format / Section Visibility / Additional Section Functionality)."
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "controls"
+          ]
+        },
+        {
+          "required": [
+            "sections"
+          ]
+        }
+      ],
+      "additionalProperties": false
+    },
+    "control": {
+      "type": "object",
+      "required": [
+        "label",
+        "control_type"
+      ],
+      "description": "Full-stack control: UI definition plus mandatory service/DB mapping.",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "control_type": {
+          "type": "string"
+        },
+        "input_format": {
+          "type": "string"
+        },
+        "min_len_val": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        },
+        "max_len_val": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        },
+        "enablement": {
+          "type": "string",
+          "default": "Always"
+        },
+        "editable": {
+          "type": "string",
+          "default": "Yes"
+        },
+        "mandatory": {
+          "type": "string",
+          "default": "No"
+        },
+        "validation_rules": {
+          "type": "string"
+        },
+        "validation_failure_messages": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Owning backend service (e.g. Catalogue, Members, Loans; see the project profile's services list)."
+        },
+        "target_db_table": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Physical or logical table / aggregate root."
+        },
+        "target_db_column": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Column or field name; may include filter expressions."
+        }
+      },
+      "additionalProperties": false
+    },
+    "primaryAction": {
+      "type": "object",
+      "required": [
+        "label",
+        "type"
+      ],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "default": "Primary Action"
+        },
+        "enablement": {
+          "type": "string",
+          "default": "Always Enabled"
+        },
+        "action": {
+          "type": "string",
+          "description": "Older name for click_action.",
+          "deprecated": true
+        },
+        "visibility": {
+          "type": "string",
+          "default": "Always Visible"
+        },
+        "click_action": {
+          "type": "string"
+        },
+        "required_permission": {
+          "type": "string"
+        }
+      },
+      "description": "Deprecated single-button form (see button).",
+      "additionalProperties": false
+    },
+    "resultsArea": {
+      "type": "object",
+      "required": [
+        "description",
+        "columns"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "visibility": {
+          "type": "string",
+          "default": "Always Visible"
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/resultColumn"
+          }
+        },
+        "empty_state": {
+          "type": "string",
+          "description": "What the results area shows when there are no rows (message text / behaviour)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "resultColumn": {
+      "type": "object",
+      "required": [
+        "title",
+        "population_source",
+        "display_format"
+      ],
+      "description": "List column; population_source is the DB mapping equivalent for manage pages.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "population_source": {
+          "type": "string",
+          "description": "Table.Column or expression (DB mapping for list views)."
+        },
+        "display_format": {
+          "type": "string"
+        },
+        "sortable": {
+          "type": "boolean",
+          "default": true
+        },
+        "additional_functionality": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "actionsMenuItem": {
+      "type": "object",
+      "required": [
+        "item",
+        "action_on_click"
+      ],
+      "properties": {
+        "item": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "required_permission": {
+          "type": "string",
+          "description": "Req'd. Permission for the menu item."
+        },
+        "availability_logic": {
+          "type": "string",
+          "description": "When the item is available (starter: Availability Logic)."
+        },
+        "availability": {
+          "type": "string",
+          "description": "Older name for availability_logic.",
+          "deprecated": true
+        },
+        "action_on_click": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "conditionalRule": {
+      "type": "object",
+      "required": [
+        "when",
+        "then"
+      ],
+      "properties": {
+        "when": {
+          "type": "string"
+        },
+        "then": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "pagination": {
+      "type": "object",
+      "description": "Paging and default sort for a results grid.",
+      "properties": {
+        "page_size": {
+          "type": [
+            "integer",
+            "string"
+          ],
+          "description": "Rows per page by default (integer, or text while it is an open question)."
+        },
+        "page_size_options": {
+          "type": [
+            "array",
+            "string"
+          ],
+          "items": {
+            "type": "integer"
+          },
+          "description": "Page-size choices offered to the user."
+        },
+        "paging": {
+          "type": "string",
+          "enum": [
+            "Server-side",
+            "Client-side"
+          ],
+          "description": "Server-side = the API returns one page per request; Client-side = all rows are loaded and paged in the browser."
+        },
+        "default_sort": {
+          "type": "string",
+          "description": "Default sort column and direction, e.g. 'Name ascending'."
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "searchFilter": {
+      "type": "object",
+      "required": [
+        "label"
+      ],
+      "description": "One on-page search or filter control (starter filter table: Filter Control Label, Control Type, Input Format, Min. Length, Max. Length, Mandatory, Additional Functionality / Design Information; plus framework-only Filters On, Match Rule, Default).",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "control_type": {
+          "type": "string"
+        },
+        "input_format": {
+          "type": "string"
+        },
+        "min_length": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        },
+        "max_length": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        },
+        "mandatory": {
+          "type": "string"
+        },
+        "additional_functionality": {
+          "type": "string"
+        },
+        "filters_on": {
+          "type": "string",
+          "description": "Population Source(s) the control filters, e.g. Book.Title."
+        },
+        "match_rule": {
+          "type": "string",
+          "description": "e.g. contains, case-insensitive; equals; date range."
+        },
+        "default": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "stepSection": {
+      "type": "object",
+      "required": [
+        "controls"
+      ],
+      "description": "A section within a wizard step.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "Standard Form",
+            "List Form"
+          ],
+          "default": "Standard Form"
+        },
+        "visibility": {
+          "type": "string",
+          "default": "Always shown"
+        },
+        "additional_functionality": {
+          "type": "string",
+          "default": "N/A"
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/control"
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "button": {
+      "type": "object",
+      "required": [
+        "label"
+      ],
+      "description": "One button block.",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "description": "e.g. Primary Action, Additional Action."
+        },
+        "visibility": {
+          "type": "string",
+          "default": "Always Visible"
+        },
+        "enablement": {
+          "type": "string",
+          "default": "Always Enabled"
+        },
+        "required_permission": {
+          "type": "string"
+        },
+        "click_action": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string",
+          "description": "Older name for click_action.",
+          "deprecated": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "importSpec": {
+      "type": "object",
+      "description": "Import page (starter Import Template). Defaults from the starter are used for anything left out.",
+      "properties": {
+        "download_button": {
+          "$ref": "#/$defs/button",
+          "description": "Download Template button block (default: Download Template / Primary Action / Always Visible / Always Enabled / Download template defined below)."
+        },
+        "panel": {
+          "type": "object",
+          "description": "Drag-and-drop upload panel.",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            },
+            "functional_requirements": {
+              "type": "string",
+              "description": "Default: the starter's fixed text (.xls/.xlsx only, one file at a time, red X removes it)."
+            }
+          },
+          "additionalProperties": false
+        },
+        "validation_logic": {
+          "type": "string",
+          "description": "Overall upload validation logic (row checks, error report, all-or-nothing, etc.)."
+        },
+        "template_columns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/templateColumn"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "templateColumn": {
+      "type": "object",
+      "required": [
+        "name",
+        "service",
+        "target_db_table",
+        "target_db_column"
+      ],
+      "description": "One column of the import template with its validation and Service / DB mapping.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "mandatory": {
+          "type": "string",
+          "default": "No"
+        },
+        "format": {
+          "type": "string"
+        },
+        "min_len_val": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        },
+        "max_len_val": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        },
+        "additional_validation_rules": {
+          "type": "string"
+        },
+        "service": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_db_table": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_db_column": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "dbMapping": {
+      "description": "Service / Target DB Table / Target DB Column are required on every wizard / form control unless include_service_db_columns is false (RULES.md R3).",
+      "required": [
+        "service",
+        "target_db_table",
+        "target_db_column"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

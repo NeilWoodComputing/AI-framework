@@ -1,0 +1,30 @@
+# tests/leftover-terms.yaml: terms that must not appear in the generic framework (tools/check.py, section "terms").
+# Project-specific content belongs outside this framework (the active profile named by
+# project.profile in ../ai-framework.config.yaml), and in DECISIONS.md, CHANGELOG.md and work/.
+# Patterns are Python regular expressions, case-insensitive unless case_sensitive: true.
+# allow_in: path globs (relative to ai-planning-framework) where that term is expected.
+exclude:
+  - examples/*
+  - DECISIONS.md
+  - CHANGELOG.md
+  - work/*
+  - tests/golden/features/*
+  - tests/leftover-terms.yaml
+  - tests/manifest.yaml                         # the test index lists real features by path
+terms:
+  - {pattern: '\bCandC\b'}
+  - {pattern: '\bUnity\b', allow_in: [tools/check.py]}   # check.py maps the starter's own D2 label; unity_feature does not match
+  - {pattern: 'System Feature'}
+  - {pattern: '\bNeil\b'}
+  - {pattern: 'appointment'}
+  - {pattern: '\bcontacts?\b'}
+  - {pattern: '\bNAV\b', case_sensitive: true}
+  - {pattern: '\bDWI\b', case_sensitive: true}
+  - {pattern: 'New Appointment Variation'}
+  - {pattern: 'Drinking Water'}
+  - {pattern: 'Water Domain'}
+  - {pattern: 'animal'}
+  - {pattern: '\b(Plan|Dev|Review|Test) Bot\b'}
+  - {pattern: '\b(plan|dev|review|test)-bot\b'}
+  - {pattern: 'publish-devops-tickets', allow_in: [skills/publish-tickets/SKILL.md]}
+  - {pattern: '\bADO\b', case_sensitive: true, allow_in: [skills/publish-tickets/adapters/azure-devops.md]}

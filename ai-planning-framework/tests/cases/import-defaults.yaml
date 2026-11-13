@@ -1,0 +1,21 @@
+# Coverage case: Import that sets only the template columns.
+# import-sample.yaml fills download_button itself. Left unset, the download button,
+# the upload panel and the Cancel / Upload buttons take the starter's defaults.
+spec_version: 1
+page_type: Import
+page_title: Import Members
+page_sub_text: Upload a completed Members template
+required_permission: members_write
+parent_pages:
+  - Manage Members
+import:
+  validation_logic: Every row is checked. If any row fails, nothing is imported.
+  template_columns:
+    - name: Full Name
+      mandatory: "Yes"
+      format: Alphanumeric & Special
+      min_len_val: 1
+      max_len_val: 150
+      service: Members
+      target_db_table: Member
+      target_db_column: FullName

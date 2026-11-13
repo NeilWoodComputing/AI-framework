@@ -1,0 +1,105 @@
+# Example: Basic Form — Add | Edit Contact
+# Single-page form (not a multi-step wizard). Optional sections group fields;
+# every control includes Service / Target DB Table / Target DB Column.
+page_type: Basic Form
+page_title: Add | Edit Contact
+page_sub_title: ""
+parent_pages:
+  - Manage Contacts
+include_service_db_columns: true
+sections:
+  - title: Contact Details
+    controls:
+      - label: Name
+        control_type: Keyed Input
+        input_format: Alphanumeric & Special
+        min_len_val: 1
+        max_len_val: 100
+        enablement: Always
+        editable: "Yes"
+        mandatory: "Yes"
+        validation_rules: Trim leading/trailing spaces
+        validation_failure_messages: Name is required
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: Name
+      - label: Job Title / Department
+        control_type: Keyed Input
+        input_format: Alphanumeric & Special
+        min_len_val: 0
+        max_len_val: 100
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: JobTitleDepartment
+      - label: Email Address
+        control_type: Keyed Input
+        input_format: Email
+        min_len_val: 0
+        max_len_val: 254
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        validation_rules: Must be a valid email format when provided
+        validation_failure_messages: Enter a valid email address
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: EmailAddress
+      - label: Telephone
+        control_type: Keyed Input
+        input_format: Alphanumeric & Special
+        min_len_val: 0
+        max_len_val: 30
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: Telephone
+      - label: Organisation
+        control_type: Single-select Dropdown (searchable)
+        input_format: N/A
+        min_len_val: N/A
+        max_len_val: N/A
+        enablement: Always
+        editable: "No"
+        mandatory: "Yes"
+        validation_rules: Pre-populated from the Manage Contacts parent context; not user-editable
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: OrganisationId
+  - title: Status
+    controls:
+      - label: Primary Contact
+        control_type: Switch
+        input_format: Boolean
+        min_len_val: N/A
+        max_len_val: N/A
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        validation_rules: Only one contact per Organisation may be Primary; setting this clears the previous primary
+        validation_failure_messages: Another primary contact already exists for this organisation
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: PrimaryContact
+      - label: Active
+        control_type: Switch
+        input_format: Boolean
+        min_len_val: N/A
+        max_len_val: N/A
+        enablement: Always
+        editable: "Yes"
+        mandatory: "No"
+        service: Contacts
+        target_db_table: Contact
+        target_db_column: IsActive
+notes: >
+  Opened from Manage Contacts in Add, Edit, or View mode.
+  View mode sets Editable = No on all controls.
+conditional_visibility:
+  - when: Mode = View
+    then: All controls Editable = No; Save hidden
+    notes: Soft-read-only form; Cancel / Close only

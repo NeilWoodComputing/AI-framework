@@ -1,0 +1,17 @@
+---
+description: API JSON schema forms and wizards
+globs: api/API.Framework/**/*.{cs,json,md}
+alwaysApply: false
+---
+
+# API JSON schema forms and wizards
+
+When changing form or wizard schemas in `api/API.Framework`, follow `api/API.Framework/.cursor/rules/json-schema-forms.mdc`.
+
+Serve forms through `IJsonSchemaFileApi.GetFormSchemaAsync<TRecord>()`. Serve wizard steps through `GetWizardStepSchemaAsync<TRecord>(step)`. Schema files stay under `Validation/Schemas`. A single form record extends `AbstractFormRecord` (`CatalogueItemRecord`). A wizard record extends `JsonSchemaWizardRecord` (`ComponentShowcaseRecord`). Do not read schema files from a controller, and do not return a `JSchema` round-trip as the form document.
+
+**Add and Edit:** one schema file, one record, one schema GET (e.g. `schemas/create-animal`) for both modes; create and update both use `ValidateData` on that record. UI: same URL for `createSchemaUrl` and `updateSchemaUrl` (`AnimalFormModal`). Split create/update schemas only when Edit must differ (legacy reference-data items); new CRUD features copy Animals.
+
+Keep this layout: area endpoints in `Controllers/{Area}`, schema actions in `Controllers/Schemas`, records in `Records`, JSON only in `Validation/Schemas`, shared validation in `DataFramework/JsonSchemaValidation`, Excel in `DataFramework/DataImport`, and area services beside their contracts. EF models stay in `Api.Framework.Data`.
+
+Custom rules are a `constraints` array on the property (`dateComparison`, `numberComparison`, `requiredDependency`, `uniqueArrayKeys`). Put the message under `messages` using the constraint `id`. `RecordSchemaValidator` runs them. Register a new reusable validator as `ICustomValidator`. Database checks stay in the area service.

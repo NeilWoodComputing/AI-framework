@@ -1,0 +1,18 @@
+# EXPECTED TO FAIL validation (tools/check.py asserts it does).
+# - "contorls" is a typo for "controls" (unknown fields are rejected)
+# - the second control has no "service" (DB mapping is required, RULES.md R3)
+page_type: Form Modal
+page_title: Broken Spec
+sections:
+  - title: Details
+    contorls:
+      - label: Title
+        control_type: Keyed Input
+        service: Catalogue
+        target_db_table: Book
+        target_db_column: Title
+controls:
+  - label: Author
+    control_type: Keyed Input
+    target_db_table: Book
+    target_db_column: Author

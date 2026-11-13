@@ -1,0 +1,7 @@
+{
+  "name": "fixture-unit-fail",
+  "private": true,
+  "scripts": {
+    "test": "node unit-fail.mjs"
+  }
+}
