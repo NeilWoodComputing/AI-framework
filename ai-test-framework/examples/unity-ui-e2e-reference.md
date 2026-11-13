@@ -1,6 +1,6 @@
 # Example — Unity.UI.Framework e2e as the reference (and where it mocks)
 
-Studied 2026-10-08 from `D:\Users\nwood01\Documents\Candc\ui\Unity.UI.Framework` (Angular). Near-identical copies: `Candc\ui\Unity.UI.Framework - Copy` and `ai-framework\ai-code-framework\ui\UI.Angular.Framework\e2e`. Read-only study; nothing in it was changed.
+Studied 2026-10-08 from the CandC project's Unity.UI.Framework (Angular). Near-identical copy: `ai-framework\ai-code-framework\ui\UI.Angular.Framework\e2e`. Read-only study; nothing in it was changed.
 
 ## Stack
 

@@ -166,7 +166,7 @@ ai-test-framework/
 
 ## Reference implementation
 
-Unity.UI.Framework (`D:\Users\nwood01\Documents\Candc\ui\Unity.UI.Framework\e2e`, also copied under `ai-code-framework/ui/UI.Angular.Framework/e2e`) is the reference for e2e structure: Playwright + playwright-bdd, shared fixtures, `tid` selectors, API sign-in, response waits. **It relies heavily on front-end route mocks**, which this framework forbids. See `examples/unity-ui-e2e-reference.md`.
+Unity.UI.Framework (from the CandC project, copied under `ai-code-framework/ui/UI.Angular.Framework/e2e`) is the reference for e2e structure: Playwright + playwright-bdd, shared fixtures, `tid` selectors, API sign-in, response waits. **It relies heavily on front-end route mocks**, which this framework forbids. See `examples/unity-ui-e2e-reference.md`.
 
 ## Still open outside this framework
 
