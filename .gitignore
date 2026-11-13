@@ -1,0 +1,9 @@
+# User configuration files (not committed - per-user preferences)
+users/*.yaml
+!users/example.yaml
+
+# Cache directory (on bot machine)
+cache/
+
+# Resolved config files
+.resolved-config-*.yaml

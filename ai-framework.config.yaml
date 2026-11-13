@@ -20,6 +20,35 @@
 config_version: 1
 
 # ---------------------------------------------------------------------------
+# Runtime
+# Which agent runtime or tool performs the work for each role. The shared
+# default applies unless a per-role override is set. Per-user preferences in
+# a user config file take precedence over both (see README.md → Runtime configuration).
+#
+# Agents running under a different runtime than their assigned role must stop
+# and hand off rather than silently running under the wrong subscription.
+#
+# Supported runtimes:
+#   cursor        - Cursor Cloud Agents (Cursor-managed VMs), coordinated from
+#                   the bot machine. This is the default. Local Windows PC
+#                   execution is NEVER the default; local-machine execution
+#                   (Cursor IDE on a developer's machine) is opt-in only via
+#                   per-user config.
+#   claude-code   - Claude Code or other Claude interfaces
+#   (more runtimes can be added later)
+#
+# The bot machine coordinates all work. The framework runs on the bot machine
+# (always-on Linux), not on Neil's Windows PC, which may be switched off.
+# ---------------------------------------------------------------------------
+runtime:
+  default: cursor                        # shared default: Cursor Cloud Agents (Cursor-managed VMs)
+  # Per-role overrides (optional). Uncomment and set to override the default for specific roles.
+  # planning: cursor
+  # code: cursor
+  # review: cursor
+  # testing: cursor
+
+# ---------------------------------------------------------------------------
 # Frameworks
 # ---------------------------------------------------------------------------
 frameworks:

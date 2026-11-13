@@ -5,6 +5,7 @@ Short instructions for any agent working this folder (including a later ticket p
 ## Read first
 
 1. `../ai-framework.config.yaml` — shared config (paths relative to the `ai-framework` root):
+   - `runtime` — which agent runtime performs the work (Cursor Cloud Agents, Claude Code, etc.). Resolve your effective runtime from user config → per-role → shared default (see `../README.md` → Runtime configuration). **Verify you are running under the correct runtime before doing any work.** If assigned to a different runtime, stop and hand off.
    - `project` — the active project: `project.profile` (read it next) and `project.work_dir` (where **new** features go; the shared `ai-planning-framework/work/`)
    - `output.work_dir` / `output.work_dirs` — where existing features live (see **Where features live** below)
    - `development` — active API and UI folder (`active:` under `api` and `ui`)

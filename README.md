@@ -15,6 +15,7 @@ Four frameworks that work together to plan, build, test and review full-stack fe
 
 Before running any skill or loop, read `ai-framework.config.yaml`:
 
+- `runtime` — which agent runtime performs the work (Cursor Cloud Agents, Claude Code, etc.). The shared default is `cursor` (Cursor Cloud Agents on Cursor-managed VMs). **Local Windows PC execution is NEVER the default.** Per-user preferences override the shared config (see **Runtime configuration** below).
 - `development` — which API and UI folder is the active target (`active:` picks one option each)
 - `output.work_dir` — where per-feature artefacts are written (`<work_dir>/<feature>/plan.md`, `specs/`, `excel/`, `journeys/`, `tickets/`, `stubs/`, `tests/`, `reviews/` incl. `reviews/review-log.md`, and `handoff.md`)
 - `tickets` — where stories are published (Azure DevOps). If `enabled` is `false` or any value is still a `<placeholder>`, stop and report; do not guess.
@@ -24,6 +25,103 @@ Before running any skill or loop, read `ai-framework.config.yaml`:
 - `agents` / `handoff` — which agent fills each role (planning, implementing, reviewing, human owner), the `handoff.md` owner ids, and how work moves between them (see below).
 
 Paths in the config are relative to this folder.
+
+## Runtime configuration
+
+The framework is runtime-agnostic: it maps roles (planning, code, review, testing) to runtimes (Cursor Cloud Agents, Claude Code, or other tools).
+
+### Supported runtimes
+
+- **`cursor`** — Cursor Cloud Agents (Cursor-managed VMs), coordinated from the bot machine. **This is the shared default.** The bot machine (always-on Linux) coordinates all work. Neil's Windows PC may be switched off.
+- **`cursor-local`** — Cursor IDE on a developer's local machine. **Opt-in only, never the default.**
+- **`claude-code`** — Claude Code or other Claude interfaces.
+- More runtimes can be added later.
+
+### Precedence
+
+Configuration is resolved in this order (highest to lowest priority):
+
+1. **Per-user config file** — your personal preferences (not committed to the repo)
+2. **Per-role setting** in `ai-framework.config.yaml` (`runtime.planning`, `runtime.code`, etc.)
+3. **Shared default** in `ai-framework.config.yaml` (`runtime.default`)
+
+### User preference files
+
+Each user can set their own runtime preferences without editing the shared config. User config files are **not committed** to the repository.
+
+**Location on the bot machine:**
+```
+/home/box/ai-framework/users/<user>.yaml
+```
+
+**Location on a developer's machine:**
+```
+~/.ai-framework/users/<user>.yaml
+```
+
+**Custom location (environment variable):**
+```bash
+export AI_FRAMEWORK_USER_CONFIG=/path/to/your/config.yaml
+```
+
+### Setting up your preferences
+
+Run the init script to create your user config file and cache the framework:
+
+**Linux / macOS / WSL:**
+```bash
+./scripts/init-user.sh [username]
+```
+
+**Windows (PowerShell):**
+```powershell
+.\scripts\init-user.ps1 [-Username <username>]
+```
+
+The script:
+1. Creates or refreshes your user preference file
+2. Caches the framework on the bot machine (when run there)
+3. Is safe to re-run (idempotent)
+
+After running the init script, edit your user config file to set preferences:
+
+```yaml
+# User preferences for ai-framework
+user: neil
+
+# Override the shared default for all roles
+runtime:
+  default: cursor
+
+# Or override specific roles only
+# runtime:
+#   planning: cursor
+#   code: claude-code
+#   review: cursor
+#   testing: cursor
+```
+
+### Switching to Claude Code
+
+To switch a role to Claude Code:
+
+1. Edit your user config file (`/home/box/ai-framework/users/<user>.yaml` on the bot machine)
+2. Set the runtime for that role:
+   ```yaml
+   runtime:
+     code: claude-code
+   ```
+3. The implementing agent will now use Claude Code instead of Cursor Cloud Agents
+
+### Agent responsibility
+
+**Before doing any work**, each agent must:
+
+1. Resolve the effective runtime for its role (user config → per-role → shared default)
+2. Verify it is running under the correct runtime
+3. **If assigned to a different runtime, stop and hand off** rather than silently running under the wrong subscription
+
+Agents never run under the wrong runtime. If a role is assigned to Cursor but the agent is running in Claude Code, it must stop and report.
 
 ## Agents and handoff
 
