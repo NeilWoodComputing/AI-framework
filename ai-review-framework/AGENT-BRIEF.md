@@ -16,7 +16,7 @@ This framework is written for a **role**, not a named agent, so any agent can pi
 ## Read first
 
 0. `../ai-framework.config.yaml` — shared config (paths relative to the `ai-framework` root):
-   - `runtime` — which agent runtime performs the work (Cursor Cloud Agents, Claude Code, etc.). Resolve your effective runtime from user-preferences.yaml → per-role → shared default (see `../README.md` → Runtime configuration). **Verify you are running under the correct runtime before doing any work.** If assigned to a different runtime, stop and hand off.
+   - `runtime` — which agent runtime performs the work. Resolve: user-preferences.yaml → per-role → shared default. **Verify correct runtime before work; if wrong, stop and hand off.**
    - `development` — active API and UI folder (`active:` under `api` and `ui`); their `rules` and `agent_docs` are what you review against
    - `output.work_dirs` - the work folders, searched in config order for `<feature>/` when `handoff.md` has no `feature_path` (lookup: `skills/gather-pr-context/SKILL.md` step 2); planning artefacts and `reviews/` live in the feature folder, written `<feature_path>/` below
    - `review` — `auto_review` + `triggers`, `direct_scope` + `scope_include` + `scope_exclude`, PR provider, target branch (PR route / `direct_scope: diff` only), severity threshold, `report_names`, `log_file`, publish switches; `secrets` — env var **names** only
