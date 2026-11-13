@@ -24,8 +24,10 @@ readonly BLUE='\033[0;34m'
 readonly NC='\033[0m'
 
 # Paths
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly FRAMEWORK_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
+FRAMEWORK_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+readonly FRAMEWORK_ROOT
 readonly TEMPLATE_FILE="$FRAMEWORK_ROOT/user-preferences.example.yaml"
 
 # Configuration from environment
@@ -39,7 +41,7 @@ echo -e "${BLUE}=== AI Framework User Initialisation ===${NC}\n"
 # Determine username
 USERNAME="${1:-${USER:-}}"
 if [[ -z "$USERNAME" ]]; then
-    read -p "Enter your username: " USERNAME
+    read -r -p "Enter your username: " USERNAME
 fi
 
 if [[ -z "$USERNAME" ]]; then

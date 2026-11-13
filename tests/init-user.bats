@@ -131,8 +131,8 @@ EOF
 }
 
 @test "init-user.sh: requires username" {
-    # Run without username and with empty stdin
-    run bash -c "echo '' | bash '$INIT_SCRIPT'"
+    # Run without username, empty USER env var, and with empty stdin
+    run bash -c "USER='' bash -c 'echo \"\" | bash \"$INIT_SCRIPT\"'"
     [ "$status" -ne 0 ]
     [[ "$output" == *"Username is required"* ]]
 }
