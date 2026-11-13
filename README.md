@@ -112,6 +112,16 @@ One agent per framework, each filling a role: the **planning agent** (`ai-planni
 
 Each feature's state (stage, owner, route, branch, PR, review, approvals, history) is in `<output.work_dir>/<feature>/handoff.md`. Agents pass each other only the feature path. Full rules: `handoff/README.md`.
 
+## Pipeline
+
+Work on a feature goes through this GitHub flow. The current route for opening the PR is **cursor-local** (Neil's PC clone, `gh` as NeilWoodComputing), not a Cursor cloud agent.
+
+1. **Plan Bot** raises the issue in [NeilWoodComputing/ai-framework-tests](https://github.com/NeilWoodComputing/ai-framework-tests) (on the AI testing board).
+2. **Dev Bot** opens the PR on [AI-framework](https://github.com/NeilWoodComputing/AI-framework) through the cursor-local route, with `Closes NeilWoodComputing/ai-framework-tests#N` in the description. Shared files in the PR need Neil's approval.
+3. **Test Bot** posts a results comment on the PR.
+4. **Review Bot** posts a GitHub review with state COMMENT. Agents never approve or request changes.
+5. **Neil** merges the PR, and the issue closes automatically across the two repositories.
+
 ## Testing
 
 The framework includes automated quality checks and tests that run on every PR and push to main.
