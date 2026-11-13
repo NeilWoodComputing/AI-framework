@@ -47,9 +47,9 @@ On every route the scope holds only files under `review.scope_include` (the fold
        - **pull request read**, summary view → title, description, source (head) and target (base) branches, head commit; files view → changed files; commits view → commits in the PR
        - **compare commits** `<target>...<source>` (relative to the merge base, as a PR shows) → the diff
        - **get file contents** at the head ref → whole changed files and the unchanged files they depend on
-       - **list commits** on the source branch → history and the reviewed commit
-       - Never call the connector's write tools (reviews, comments, labels, reviewers, PR updates): PR posting is off until Azure DevOps is in use.
-       - A local clone of the Origin repo can instead be reviewed with `local-git`.
+      - **list commits** on the source branch → history and the reviewed commit
+      - Never call the connector's write tools (reviews, comments, labels, reviewers, PR updates): publishing happens in stage 9 when conditions are met.
+      - A local clone of the Origin repo can instead be reviewed with `local-git`.
      - `local-git` — in each repo from `review.local_git.repo_paths` (`active` means the active API and UI paths; skip a path that is not a git repo and say so):
 
        ```bash

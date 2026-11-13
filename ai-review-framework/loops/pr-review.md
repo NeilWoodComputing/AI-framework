@@ -1,6 +1,6 @@
 # Loop: pr-review
 
-End-to-end review of one change: a **pull request** (`handoff.code_to_review: pr`) or a **direct hand-off** from the implementing agent (`handoff.code_to_review: direct`). **Primary outcome:** a report that says whether the PR renders the controls in the specs and writes their data to the right **Service / Target DB Table / Target DB Column**, to the standards of the active API and UI. Code standards, security and tests follow. A PR is reviewed on its diff. A direct hand-off is reviewed on its **plan scope**: the whole of every file that implements the feature's plan (`review.direct_scope: plan`, the default). Every round is appended to the feature's review log. PR comments are posted only on provider `azure-devops` with publishing enabled; posting is off until Azure DevOps is in use, so on `github`, `cursor-origin` and `local-git` the report and the log are the whole output.
+End-to-end review of one change: a **pull request** (`handoff.code_to_review: pr`) or a **direct hand-off** from the implementing agent (`handoff.code_to_review: direct`). **Primary outcome:** a report that says whether the PR renders the controls in the specs and writes their data to the right **Service / Target DB Table / Target DB Column**, to the standards of the active API and UI. Code standards, security and tests follow. A PR is reviewed on its diff. A direct hand-off is reviewed on its **plan scope**: the whole of every file that implements the feature's plan (`review.direct_scope: plan`, the default). Every round is appended to the feature's review log. PR comments are posted on GitHub (COMMENT event only) and Azure DevOps when publishing is enabled; on `cursor-origin` and `local-git` the report and the log are the whole output.
 
 ## When to run
 
@@ -144,14 +144,15 @@ Stages 2–4 are the critical path. Stages 5–7 still run when no ticket is lin
 - Gate: verdict follows `checklists/severity.md` and `review.severity_threshold`
 - Gate: every finding has severity, area, `file:line`, reference and suggested fix
 
-### 9. publish (PR route, Azure DevOps only)
+### 9. publish (PR route, GitHub and Azure DevOps)
 
-- PR posting is off until an Azure DevOps solution is in use. `review.publish.enabled` stays `false` until DevOps access, the `review.azure_devops` settings and the token / connector are in place. This stage is the one home for the publishing rules; the other docs point here
-- Posts on a PR-route round, without anyone asking, only when **all** of these hold: `review.provider` is `azure-devops` with no placeholders, `review.publish.enabled` is `true`, `review.publish.auto_post_on_pr` is `true` (the default), the token env var named in `secrets.azure_devops_pat_env` is set (never read into the report or printed), and the DevOps connector is available
-- `github`, `cursor-origin`, `local-git` → post nothing, even if `publish.enabled` is `true` or the connector could; record "Not published — PR posting is off until Azure DevOps is in use" in the report footer and the log
+- PR posting is supported on GitHub and Azure DevOps. This stage is the one home for the publishing rules; the other docs point here
+- **GitHub:** Posts on a PR-route round, without anyone asking, when **all** of these hold: `review.provider` is `github` with no placeholders, `review.publish.enabled` is `true`, `review.publish.auto_post_on_pr` is `true` (the default), and the GitHub connector is available (or the token env var named in `secrets.github_token_env` is set). Posts use the COMMENT review event only, never APPROVE or REQUEST_CHANGES
+- **Azure DevOps:** Posts when `review.provider` is `azure-devops` with no placeholders, `review.publish.enabled` is `true`, `review.publish.auto_post_on_pr` is `true`, the token env var named in `secrets.azure_devops_pat_env` is set (never read into the report or printed), and the DevOps connector is available
+- `cursor-origin`, `local-git` → post nothing, even if `publish.enabled` is `true`; record "Not published — provider does not support posting" in the report footer and the log
 - `post_inline_comments` → one comment per finding using `templates/review-comment.md`, anchored at `file:line`
 - `post_summary_comment` → verdict + summary + link to the report path
-- `set_vote` stays `false`: never approve, reject, complete or merge the PR
+- `set_vote` stays `false`: never approve, reject, complete or merge the PR. GitHub: COMMENT event only, never APPROVE or REQUEST_CHANGES
 - Any other condition not met → post nothing and record in the report footer and the log why (e.g. "Not published — `review.publish.enabled` is false")
 - Posted: record in the report footer and the log what was posted (date, inline count, summary yes / no, vote: none)
 - Direct route: skipped (nothing to post to); the report and log are the output; record "Not applicable - direct hand-off" in the report footer
@@ -193,7 +194,7 @@ Stages 2–4 are the critical path. Stages 5–7 still run when no ticket is lin
 - [ ] Uniqueness, tenant scope and soft-delete rules checked server-side
 - [ ] Verdict follows `checklists/severity.md`
 - [ ] Report (with **Review scope**) written to `work/<feature>/reviews/PR-<id>-review.md` or `DIRECT-<branch-slug|feature>-<n>-review.md`
-- [ ] PR route: comments posted only on `azure-devops` when every publish condition is met (else "Not published" recorded); never a vote
+- [ ] PR route: comments posted on `github` (COMMENT event only) or `azure-devops` when every publish condition is met (else "Not published" recorded); never a vote or blocking review state
 - [ ] Round appended to `work/<feature>/reviews/review-log.md`
 - [ ] `handoff.md` updated and the implementing agent (or the human owner) messaged
 

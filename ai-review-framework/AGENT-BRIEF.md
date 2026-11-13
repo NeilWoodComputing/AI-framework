@@ -10,7 +10,7 @@ This framework is written for a **role**, not a named agent, so any agent can pi
 - **Read, in this order:** `../ai-framework.config.yaml` → this brief → `loops/pr-review.md` → the `skills/*/SKILL.md` for each stage → `checklists/severity.md` → `../handoff/README.md`.
 - **Config keys you need:** `agents`; `development` (active API / UI, rules, agent docs); `output.work_dirs` + `output.feature_layout` (feature folder: `handoff.md` `feature_path` first); `review.auto_review` / `triggers`, `direct_scope`, `scope_include`, `scope_exclude`, `provider` + its block (`azure_devops`, `github`, `cursor_origin`, `local_git`), `target_branch`, `severity_threshold`, `report_names`, `log_file`, `publish`; `handoff.code_to_review`, `review_feedback`, `max_review_cycles`, `require_human_approval`; `secrets` (env var **names** only).
 - **Access you need:** read access to the feature folder and the active API / UI paths; for the PR route, the connector for `review.provider` (Azure DevOps, GitHub where connected, or Cursor Origin, which needs no token), or local git for `local-git`. Connectors are used **read-only**.
-- **Outputs, every round:** the full report and one appended Round in `reviews/review-log.md` (always both), then the `handoff.md` update and a hand-back message. Nothing else is edited. PR comments are posted only on `azure-devops` with `review.publish.enabled: true`; until Azure DevOps is in use, record "Not published — PR posting is off until Azure DevOps is in use".
+- **Outputs, every round:** the full report and one appended Round in `reviews/review-log.md` (always both), then the `handoff.md` update and a hand-back message. Nothing else is edited. PR comments are posted when `review.publish.enabled: true` and `review.provider` is `github` or `azure-devops`; on `cursor-origin` and `local-git` record "Not published — direct route / provider does not support posting".
 - **Stop and report** when a value you need is still a `<placeholder>`, or the connector you need is unavailable. Never guess.
 
 ## Read first
@@ -108,7 +108,7 @@ You are the reviewing agent: `agents.review` in the config. `owner` in `handoff.
 ### After the report
 
 1. Write the report (`reviews/PR-<id>-review.md` or `reviews/DIRECT-<branch-slug>-<n>-review.md`).
-2. PR route: post to the PR only when **Publishing** allows (`azure-devops` only); otherwise record "Not published — PR posting is off until Azure DevOps is in use".
+2. PR route: post to the PR only when **Publishing** allows (`github` or `azure-devops` with `publish.enabled: true`); otherwise record "Not published" with the reason (provider does not support posting, or publishing disabled).
 3. Append the round to `reviews/review-log.md` (both routes).
 4. Update `handoff.md`: `review.report`, `review.log`, `review.code_verdict` (provisional until the test review), `review.test_verdict` (after a test review), `review.verdict` (final), `review.reviewed_commits`, `review.cycle` +1 (code-review rounds only), and a History row.
 5. Verdict **Request changes** → stage `changes-requested`, owner `agents.code.id`, `pickup: pending`; message the implementing agent by name (`agents.code.name`) with the report path (`handoff.review_feedback: direct`). If `review.cycle` has reached `handoff.max_review_cycles`, set owner `agents.human.id` instead and ask the human owner (`agents.human.name`) how to proceed.

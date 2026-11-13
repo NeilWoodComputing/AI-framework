@@ -2,7 +2,7 @@
 
 Skills, a loop, checklists and report templates that the **reviewing agent** uses to review a change automatically: a pull request when it is raised or updated, or a direct hand-off from the implementing agent. Any agent can take the reviewing role: `agents.review` in the config says which agent fills it today (roles: `../handoff/README.md`, and `AGENT-BRIEF.md` → **Using this framework as any reviewing agent**). **Primary question:** does the change build what the planning specs say — the right controls on screen, and the data landing in the right **Service / Target DB Table / Target DB Column** — to the standards of the active API and UI codebases?
 
-The review never edits the code under review. It writes a full report and appends the round to `reviews/review-log.md`, next to the feature's planning artefacts. PR posting is off until Azure DevOps is in use: inline and summary comments are only ever posted when `review.provider` is `azure-devops` and `review.publish.enabled` is `true` (see **Publishing**). On `github`, `cursor-origin` and `local-git` the review is the report plus the review log only. It never votes, approves or merges.
+The review never edits the code under review. It writes a full report and appends the round to `reviews/review-log.md`, next to the feature's planning artefacts. PR posting is supported for GitHub and Azure DevOps: inline and summary comments are posted when `review.publish.enabled` is `true` and `review.provider` is `github` or `azure-devops` (see **Publishing**). On GitHub, reviews use the COMMENT event only, never APPROVE or REQUEST_CHANGES. On `cursor-origin` and `local-git` the review is the report plus the review log only, with "Not published" recorded. It never votes, approves or merges.
 
 ## Review scope
 
@@ -37,7 +37,7 @@ Read `../ai-framework.config.yaml` (paths relative to the `ai-framework` root) b
 | `review.target_branch` | Target branch when the PR does not state one; also the fallback base for `direct_scope: diff`. Not used by `direct_scope: plan` |
 | `review.severity_threshold` | Lowest severity that forces **Request changes** (default `major`) |
 | `review.report_names` / `review.log_file` | Report file name per route; the per-feature review log (`review-log.md`) |
-| `review.publish` | Whether comments are posted to the PR: only ever on `azure-devops`, with `enabled: true` (default `false`, off until Azure DevOps is in use; `auto_post_on_pr`); `set_vote` stays `false` |
+| `review.publish` | Whether comments are posted to the PR: on `github` or `azure-devops` when `enabled: true` (default `true` for GitHub; `auto_post_on_pr`); `set_vote` stays `false`; GitHub uses COMMENT event only |
 | `secrets` | Environment variable **names** only (`AZURE_DEVOPS_PAT`; `GITHUB_TOKEN` only when no GitHub connector is connected). `cursor-origin` needs none |
 | `agents` | Role → agent mapping. You are `agents.review`; `agents.code` is the implementing agent, `agents.human` the human owner; each `id` is the `owner` value in `handoff.md` |
 
@@ -145,6 +145,6 @@ ai-review-framework/
     check.py                     ← one command that verifies this framework (see tools/README.md)
 ```
 
-## Publishing (PR route, Azure DevOps only)
+## Publishing (PR route, GitHub and Azure DevOps)
 
-The publishing rules live in one place, `loops/pr-review.md` stage 9: PR posting is off until Azure DevOps is in use, and agents never vote, approve or merge.
+The publishing rules live in one place, `loops/pr-review.md` stage 9: PR posting is supported on GitHub (COMMENT event only) and Azure DevOps, and agents never vote, approve or merge.

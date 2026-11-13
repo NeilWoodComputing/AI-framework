@@ -1,6 +1,6 @@
 # Template: inline PR comment
 
-Used only in loop stage 9 when `review.provider` is `azure-devops` and `review.publish.enabled` and `review.publish.post_inline_comments` are `true`. Never used for `github`, `cursor-origin` or `local-git`: PR posting is off until Azure DevOps is in use. One comment per finding, anchored at the finding's `file:line`. The text must match the finding in the report.
+Used only in loop stage 9 when `review.provider` is `github` or `azure-devops` and `review.publish.enabled` and `review.publish.post_inline_comments` are `true`. Never used for `cursor-origin` or `local-git`: those providers do not support posting. One comment per finding, anchored at the finding's `file:line`. The text must match the finding in the report. GitHub reviews use the COMMENT event only, never APPROVE or REQUEST_CHANGES.
 
 ## Inline comment
 

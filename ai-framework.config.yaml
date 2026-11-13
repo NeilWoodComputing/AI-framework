@@ -277,7 +277,7 @@ tickets:
 # it asks for changes, and whether it may post back to the PR. Reviews are
 # AUTOMATIC: the reviewing agent (agents.review) starts on any trigger below;
 # nobody has to ask.
-# PR posting is OFF until an Azure DevOps solution is in use: see `publish`.
+# PR posting is supported for GitHub and Azure DevOps: see `publish`.
 # Whatever the provider, agents always write the full report and the review log
 # under output.work_dir/<feature>/reviews/ on every round.
 # ---------------------------------------------------------------------------
@@ -289,9 +289,9 @@ review:
   #                   get file contents, list commits); no token env var needed
   #   local-git     - git diff <target>...<source> in local clones; also how to review a
   #                   local clone of an Origin (or GitHub) repo
-  provider: local-git                    # azure-devops | github | cursor-origin | local-git
+  provider: github                       # azure-devops | github | cursor-origin | local-git
   # only needed for the PR route (when the PR states no target) or direct_scope: diff
-  target_branch: <main-or-develop>
+  target_branch: main
   local_git:
     # PR route (and direct_scope: diff) only.
     # Runs `git diff <target_branch>...<source_branch>` in each repo below.
@@ -304,8 +304,8 @@ review:
   github:
     # Read through a connected GitHub connector where available; otherwise the
     # token env var named in secrets.github_token_env.
-    owner: <your-github-owner>
-    repository: <your-repo>
+    owner: NeilWoodComputing
+    repository: ai-framework-tests
   cursor_origin:
     # Read through the Cursor Origin connector (the user's connected account).
     # No token env var: nothing for this provider goes in `secrets`.
@@ -380,24 +380,20 @@ review:
     direct_no_branch: DIRECT-{feature}-{n}-review.md   # direct route when handoff.md records no branch
 
   publish:
-    # PR posting stays OFF until an Azure DevOps solution is in use.
-    # Publishing only ever happens when review.provider is azure-devops AND
-    # enabled is true. Set enabled: true only once DevOps access exists,
-    # every review.azure_devops placeholder is filled in, the token env var
-    # named in secrets.azure_devops_pat_env is set, and the DevOps connector
-    # is available to the reviewing agent.
-    # github, cursor-origin and local-git never post, even if enabled is true: the
-    # review is the report + review-log.md only, recorded as
-    # "Not published - PR posting is off until Azure DevOps is in use".
+    # PR posting is supported for GitHub and Azure DevOps providers.
+    # GitHub: Posts comments using the COMMENT review event (never APPROVE or REQUEST_CHANGES).
+    #         Agents never approve, request changes as a blocking vote, or merge.
+    # Azure DevOps: Posts as PR threads when enabled with the DevOps connector.
+    # cursor-origin and local-git: Never post; the review is the report + review-log.md only.
     # The report and review log are written on every round either way.
-    enabled: false
+    enabled: true                        # GitHub posting is active when review.provider is github
     # when enabled: post on every PR-route review round automatically,
     # no request needed
     auto_post_on_pr: true
     post_inline_comments: true           # one comment per finding (templates/review-comment.md)
     post_summary_comment: true           # verdict + summary + report path
     # stays false: agents never approve, reject or merge; the human owner decides
-    set_vote: false
+    set_vote: false                      # GitHub: COMMENT event only, never APPROVE/REQUEST_CHANGES
 
 # ---------------------------------------------------------------------------
 # Handoff
