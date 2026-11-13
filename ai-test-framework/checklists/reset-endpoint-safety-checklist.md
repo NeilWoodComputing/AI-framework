@@ -4,7 +4,7 @@ Rules: `skills/add-test-data-reset/SKILL.md`. A failed item here is a security /
 
 ## Where and when
 
-- [ ] R1 Lives in API.Framework only (none in Unity.API)
+- [ ] R1 Lives in API.Framework only (none in the C# API)
 - [ ] R2 Registered only when `TestData:Enabled` is `true` and the environment is in `TestData:AllowedEnvironments` (`Test` / `E2E`)
 - [ ] R3 Start-up fails if `Enabled` is `true` in `Production` (hard-coded)
 - [ ] R4 `appsettings.json` has no `TestData` section; `appsettings.Production.json` sets `Enabled: false`

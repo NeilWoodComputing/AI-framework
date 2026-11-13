@@ -8,7 +8,7 @@ The test-data mechanism: **one set of composable, idempotent seed units**, order
 - **The testing agent** (`testing`) only **calls** it (master reset in global setup, a batch key as each scenario's first step) and **reports** what is missing. It lists the batches, keys, footprints and personas it needs in `tests/test-plan.md`; it never writes the endpoint, a seed unit or a persona.
 - **Missing endpoint, batch key or persona?** The affected rows are **Waiting** or **Blocked** with owner `code` (the implementing agent), recorded in `handoff.md` `testing.blockers`. Config: `testing.reset_endpoint.*`, `testing.personas.*`.
 
-> Decided by Neil, 08/10/2026: API.Framework only (not Unity.API); dedicated PostgreSQL test database; key **and** signed-in test persona; master + per-batch resets; role-based personas; master reset = **TRUNCATE + reseed, no schema or database drop** (17:27 BST). Nothing has been added to a codebase yet; expect the first test runs to be Blocked until the implementing agent adds it and the human owner sets up the environment.
+> Decided by Neil, 08/10/2026: API.Framework only (not the C# API); dedicated PostgreSQL test database; key **and** signed-in test persona; master + per-batch resets; role-based personas; master reset = **TRUNCATE + reseed, no schema or database drop** (17:27 BST). Nothing has been added to a codebase yet; expect the first test runs to be Blocked until the implementing agent adds it and the human owner sets up the environment.
 
 ## Database and provider
 

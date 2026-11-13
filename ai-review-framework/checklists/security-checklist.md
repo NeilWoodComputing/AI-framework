@@ -4,7 +4,7 @@ Applies to every review: the PR diff, or the files in scope on the direct route 
 
 ## Authorisation and scope
 
-- [ ] Unity.API only: new or changed V2 controllers carry `[CandCAuthorize]`
+- [ ] C# API only: new or changed V2 controllers carry appropriate authorization attributes
 - [ ] API.Framework: class-level `[Authorize]` plus `[Authorize(Policy = {Area}Policies.X)]` on every endpoint, schema endpoints included; policies registered in `Program.cs` with `RequireClaim(TokenService.PermissionClaimType, ...)` (the `permission` claim); `[AllowAnonymous]` only for sign-in, register, token and password-reset endpoints and the sign-in schema (`checklists/api-framework-checklist.md`)
 - [ ] Reads and writes scoped to the caller's tenant / the parent organisation; IDs from the client are checked against that scope
 - [ ] Fields with `editable: "No"` in the spec (a value filled from the parent record) are set or verified server-side, not trusted from the request body
@@ -31,7 +31,7 @@ Applies to every review: the PR diff, or the files in scope on the direct route 
 - [ ] URL segments and query values encoded; no user input in redirects without validation
   - probe `open-redirect-sink` findings (`--probe --json`, `loops/pr-review.md` stage 5) are leads, not proof: confirm or dismiss each by reading the code; clean output means "nothing obvious", not safe (single-file heuristic; custom guards and wrappers are not recognised)
   - where a redirect guard module exists, run `node ai-code-framework/scripts/probe-redirect.mjs --module <guard> --export <name, e.g. safeRedirectPath> --json` from the `ai-framework` root; it uses the attack list `ai-code-framework/scripts/fixtures/redirect-attacks.json` (`--attacks <file>` to name it). For a `.ts` guard use `node --experimental-strip-types` (Node 22.6+, erasable syntax only, imports with extensions); never build it to JS for this. It imports the module, so its top-level code runs: only run it on a plain guard module. Any `unsafe` result is a finding; `over-strict` is a note
-- [ ] File / spreadsheet uploads validated before import (`unity-api-bulk-import.mdc`)
+- [ ] File / spreadsheet uploads validated before import (`csharp-api-bulk-import.mdc`)
 
 ## Secrets and configuration
 

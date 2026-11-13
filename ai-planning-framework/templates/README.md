@@ -36,7 +36,7 @@ Use it in three ways:
 
 Things to know:
 
-- **The feature label cell (Grid Page Template D2) = `feature_module`.** The starter keeps its original label text. YAML uses `feature_module` (older YAML: `system_feature`, `unity_feature`), and generated grids use the profile's `ui.feature_module_label` (default “Feature / Module”).
+- **The feature label cell (Grid Page Template D2) = `feature_module`.** The starter keeps its original label text. YAML uses `feature_module` (older YAML: `system_feature`), and generated grids use the profile's `ui.feature_module_label` (default “Feature / Module”).
 - **Its “Modal” sheet is a form dialog** (sections, control grid, Cancel / Save). In the framework that is `Form Modal` (or `Basic Form` on a full page); a list embedded in a dialog is `Embedded Grid Modal`.
 - The Wizard Template’s section row says “SectionTitle”; generated sheets say “Section Title”.
 - The starter uses dark-grey label cells. Generated sheets keep the framework’s pastel fills (see `../DECISIONS.md`); the layout is the same.

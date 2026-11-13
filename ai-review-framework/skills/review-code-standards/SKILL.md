@@ -18,7 +18,7 @@ Each codebase in `ai-code-framework/` carries its own rules, agent docs and skil
 
 | Config | Source of rules | Checklist |
 |--------|-----------------|-----------|
-| `development.api.active: unity-api` | `ai-code-framework/api/Unity.API/AGENTS.md`, `CLAUDE.md`, `.cursor/rules/*.mdc` (index: `.cursor/rules/README.md`), `.cursor/skills/*/SKILL.md` "Check" sections | `checklists/api-unity-checklist.md` |
+| `development.api.active: csharp-api` | Active C# API's `AGENTS.md`, `CLAUDE.md`, `.cursor/rules/*.mdc` (index: `.cursor/rules/README.md`), `.cursor/skills/*/SKILL.md` "Check" sections | `checklists/api-csharp-checklist.md` |
 | `development.api.active: api-framework` | `ai-code-framework/api/API.Framework/CLAUDE.md`, its `.cursor/rules`, and shared `ai-code-framework/.cursor/rules/api-json-schema-forms.mdc` | `checklists/api-framework-checklist.md` |
 | `development.ui.active: nextjs` | `ai-code-framework/ui/UI.NextJs.Framework/AGENTS.md`, `README.md`, `.cursor/rules/**` (index: `README.md`) | `checklists/ui-nextjs-checklist.md` |
 | `development.ui.active: angular` | `ai-code-framework/ui/UI.Angular.Framework/.cursor/rules/**` (index: `README.md`), `CLAUDE.md` | `checklists/ui-angular-checklist.md` |
@@ -35,7 +35,7 @@ Apply rules with `alwaysApply: true`, plus rules whose `globs` match a file in t
    - Label it **General practice** in the reference column.
    - Cap General-practice findings at **Minor**, unless they are a security or data-integrity issue (then stage 6 severities apply).
    - If the active UI's `rules` is ever `null` again, say so in the report and review against its `agent_docs` plus general practice.
-5. If the PR changes rule files themselves (`.cursor/rules`, `.claude/rules`, skills) on Unity.API, both copies change together: Cursor `.mdc` first, then `.claude/rules/`.
+5. If the PR changes rule files themselves (`.cursor/rules`, `.claude/rules`, skills) on the C# API, both copies change together: Cursor `.mdc` first, then `.claude/rules/`.
 6. Note pairing issues: a UI route or `apiRoutes` change without the matching API endpoint (or the reverse).
 7. Do not repeat what a formatter or linter enforces unless a rule asks for it; such points are **Nit** at most.
 

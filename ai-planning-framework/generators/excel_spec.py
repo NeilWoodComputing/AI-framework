@@ -167,9 +167,9 @@ def normalise(spec: dict) -> dict:
     pt = s.get("page_type") or ""
     if pt in PAGE_TYPE_ALIASES:   # reported by deprecated_fields()
         s["page_type"] = PAGE_TYPE_ALIASES[pt]
-    # feature_module; older names system_feature and unity_feature are still accepted.
+    # feature_module; older name system_feature is still accepted.
     s["_feature_module"] = next(
-        (s.get(k) for k in ("feature_module", "system_feature", "unity_feature") if s.get(k) not in (None, "")), ""
+        (s.get(k) for k in ("feature_module", "system_feature") if s.get(k) not in (None, "")), ""
     )
     s["_sub_title"] = s.get("page_sub_title") if s.get("page_sub_title") not in (None, "") else (s.get("page_sub_text") or "")
     buttons = s.get("buttons")

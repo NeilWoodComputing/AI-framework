@@ -1,6 +1,6 @@
 # Template — e2e batch, steps and global setup (Playwright + playwright-bdd)
 
-Structure copied from Unity.UI.Framework (`e2e/features/common/fixtures.ts`, `helpers/selectors.ts`, `helpers/authentication.ts`, `helpers/config.ts`), with **no route mocks**, a **master reset in global setup** and a **reset first in every scenario**. Paths are relative to the UI's e2e folder. API.Framework's sign-in route and response shape are placeholders: check `AuthorisationController` before use.
+Structure copied from the Angular framework (`e2e/features/common/fixtures.ts`, `helpers/selectors.ts`, `helpers/authentication.ts`, `helpers/config.ts`), with **no route mocks**, a **master reset in global setup** and a **reset first in every scenario**. Paths are relative to the UI's e2e folder. API.Framework's sign-in route and response shape are placeholders: check `AuthorisationController` before use.
 
 ## `features/{area}/{feature}/{Batch}.feature` — one batch, its own keys
 

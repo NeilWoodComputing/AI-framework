@@ -57,7 +57,7 @@ What is in `../ai-framework.config.yaml` today, and what each key means for this
 | `testing.shared_environments_allowed`, `environment`, `database.*`, `ui_base_url`, `api_base_url` | The test environment (below); `<placeholders>` stop the run |
 | `testing.reset_endpoint.*`, `testing.personas.*` | Reset routes, key header and env var, master persona; persona naming, email domain, password env var pattern |
 | `testing.e2e.nextjs.*` | e2e `path` (does not exist yet; scaffolded by the implementing agent), `runner`, `command` |
-| `testing.unit.*` | `dotnet test` commands for `unity-api` and `api-framework` |
+| `testing.unit.*` | `dotnet test` commands for `csharp-api` and `api-framework` |
 | `testing.report_names` | `tests/test-plan.md`, `tests/TEST-<feature>-<n>-report.md` (`n` = `handoff.md` `testing.round`), `tests/test-log.md` |
 | `testing.forbid_frontend_mocks` | `true` (hard rule 3) |
 | `secrets.test_*` | Env var **names** only for the test connection string, reset key and persona passwords |
@@ -107,7 +107,7 @@ Provider notes and concerns: `skills/add-test-data-reset/SKILL.md` → Database 
 6. **The reset endpoint lives in API.Framework only**, is registered only in the Test environment, works only on the named test database, and needs **both** the secret key header **and** a signed-in test persona (master: the `testdata-admin` persona only). The implementing agent builds it; the testing agent only calls it.
 7. **Role-based test personas only.** `<feature>-<role>` users (for example `animals-tester`, `animals-viewer`) seeded by the test-data mechanism into the test database only; passwords from env vars. Never real people, never migrations / `HasData`. The implementing agent defines and seeds them.
 8. **Mock only at backend boundaries in unit tests.** Downstream HTTP clients, the clock, the current user, outbound senders. Never the class under test, its validators or its mappers.
-9. **Follow each codebase's own test rules.** Unity.API: `Unity.API.Tests` per `.cursor/rules/unity-api-testing.mdc`. API.Framework: `Api.Framework.Tests` (xUnit + Moq), **approved by Neil on 08/10/2026**, created by the implementing agent (`skills/write-api-unit-tests/SKILL.md`).
+9. **Follow each codebase's own test rules.** C# API: test project per `.cursor/rules/csharp-api-testing.mdc`. API.Framework: `Api.Framework.Tests` (xUnit + Moq), **approved by Neil on 08/10/2026**, created by the implementing agent (`skills/write-api-unit-tests/SKILL.md`).
 10. **Test code only.** The testing agent never creates a test project, the e2e scaffolding, the reset endpoint or personas, and never changes production code or weakens a test to make it pass. Missing scaffolding → **Waiting** / **Blocked** with owner `code` (the implementing agent).
 11. **Stay inside the carve-out.** While `review-bot` owns the feature, the testing agent writes only the `testing` section of `handoff.md` and the feature's `tests/` folder (plus test code in the existing test project / e2e folder). Never the front matter, `stage`, `owner`, `review`, `approvals`, `implementation` or History.
 12. **Five test-fix rounds, then the human owner.** Keep `testing.test_fix_cycle`; never start a sixth fix loop (`testing.max_test_fix_cycles`). Test-fix rounds do not count toward the code-review cap.
@@ -134,7 +134,7 @@ Provider notes and concerns: `skills/add-test-data-reset/SKILL.md` → Database 
 | `tests/TEST-<feature>-<n>-report.md` | One report per run, `n` = `testing.round` (`templates/test-report.md`) |
 | `tests/test-log.md` | One line per run, newest last |
 | E2E features and steps | In the existing e2e folder at `testing.e2e.nextjs.path` (scaffolded by the implementing agent) |
-| Unit tests | In the existing `Api.Framework.Tests` / `Unity.API.Tests` project |
+| Unit tests | In the existing `Api.Framework.Tests` / C# API test project |
 
 ## Layout
 

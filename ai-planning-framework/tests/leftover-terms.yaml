@@ -14,6 +14,7 @@ exclude:
 terms:
   - {pattern: '\bCandC\b'}
   - {pattern: '\bUnity\b', allow_in: [tools/check.py]}   # check.py maps the starter's own D2 label; unity_feature does not match
+  - {pattern: 'unity_feature'}
   - {pattern: 'System Feature'}
   - {pattern: '\bNeil\b'}
   - {pattern: 'appointment'}

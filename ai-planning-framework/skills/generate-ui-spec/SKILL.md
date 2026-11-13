@@ -50,7 +50,7 @@ A spec may also be filled by hand from a copy of `templates/excel/page-spec-temp
 - `required_permission` — the header’s **Required Permission**.
 - `page_sub_title` (grids / Import may still use `page_sub_text`).
 - `buttons` — one block per button: `label`, `type` (Primary Action / Additional Action), `visibility`, `enablement`, `required_permission`, `click_action`. Grids show them right of the header (I/J, L/M, …); forms and wizards below the controls (e.g. Cancel / Save); Import uses them for Cancel / Upload. Older YAML: `primary_action` (with `action`) still works as the first button.
-- Grids: `feature_module` (header label from the profile’s `ui.feature_module_label`, default “Feature / Module”; older YAML `system_feature` / `unity_feature` still work) and `nav_tree_path`.
+- Grids: `feature_module` (header label from the profile’s `ui.feature_module_label`, default “Feature / Module”; older YAML `system_feature` still work) and `nav_tree_path`.
 - Sections (forms) and steps / step sections (wizards) take `visibility` and `additional_functionality`.
 
 ### Import

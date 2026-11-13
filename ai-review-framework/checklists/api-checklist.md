@@ -4,5 +4,5 @@ Use the checklist for `development.api.active`. Do not apply the other API's ite
 
 | `development.api.active` | Checklist |
 |--------------------------|-----------|
-| `unity-api` | `api-unity-checklist.md` |
+| `csharp-api` | `api-csharp-checklist.md` |
 | `api-framework` | `api-framework-checklist.md` |

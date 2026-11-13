@@ -15,7 +15,7 @@ Paths below are relative to `ai-code-framework/api/API.Framework/`.
 - [ ] On submit the record is re-validated with `IRecordValidationApi`; database-only checks (uniqueness and the like) run in the area service; field errors return as `validationErrors` (`propertyId` + `errors`) - `AGENTS.md`:44-45, `CLAUDE.md`:19
 - [ ] New schema JSON is picked up by the `Validation\Schemas\*.json` content glob; services and schemas registered (`AddLoginServices`, `AddFormSchemas`); permissions / policies registered; routes and `validationErrors` match the paired Next.js feature - `.cursor/rules/api-framework-testing.mdc`:56-59
 - [ ] The schema policy allows every user who can open the form: the same policy on the schema endpoint and the data endpoints - `.cursor/rules/api-framework-controllers.mdc`:59
-- [ ] No Unity.API BFF patterns copied in (`Controllers/V2`, `*RestService`, `PaginatedResponse`, `[CandCAuthorize]`) - `AGENTS.md`:72
+- [ ] No C# API BFF patterns copied in (`Controllers/V2`, `*RestService`, `PaginatedResponse`, domain-specific authorization attributes) - `AGENTS.md`:72
 
 ### Security and permissions
 

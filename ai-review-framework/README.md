@@ -133,7 +133,7 @@ ai-review-framework/
     severity.md
     full-stack-checklist.md
     api-checklist.md             ← which API checklist to open
-    api-unity-checklist.md       ← when development.api.active is unity-api
+    api-csharp-checklist.md      ← when development.api.active is csharp-api
     api-framework-checklist.md   ← when development.api.active is api-framework
     ui-nextjs-checklist.md
     ui-angular-checklist.md

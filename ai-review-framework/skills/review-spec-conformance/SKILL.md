@@ -16,9 +16,9 @@ Prove each control in the linked YAML / Excel is built as specified: label, cont
 
 ## Where controls are defined in this stack
 
-| Concern | API.Framework | Unity.API | UI (Next.js) | UI (Angular) |
+| Concern | API.Framework | C# API | UI (Next.js) | UI (Angular) |
 |---------|---------------|-----------|---------------|--------------|
-| Field list, types, `required`, `minLength` / `maxLength`, `format`, `oneOf` | Schema JSON under `Validation/Schemas`, served by `IJsonSchemaFileApi` | Schema builder / JSON under `Unity.Entities/Validation/Schemas/{area}/`, served from `GET v2/schemas/{schema-name}` | Rendered from the server schema with JSON Forms | Same |
+| Field list, types, `required`, `minLength` / `maxLength`, `format`, `oneOf` | Schema JSON under `Validation/Schemas`, served by `IJsonSchemaFileApi` | Schema builder / JSON under `entities validation schemas folder`, served from `GET v2/schemas/{schema-name}` | Rendered from the server schema with JSON Forms | Same |
 | Layout, sections, steps, labels, read-only, rules | — | — | `src/features/<area>/<x>-form-modal/ui-schemas/*.ui-schema.json`, rendered by `src/framework/json-schema-form` | `ui-schemas/{step}.ui-schema.json`, `{feature}-wizard.config.ts` |
 | Custom validation and messages | `constraints` + `messages` keyed by constraint `id` | `constraints` + `messages` on the property | Displays server messages; any client rule must use the same text | Same |
 | Grid columns, sorting | The area's list model and its search endpoint | List model in `Controllers/V2/TempEntityModels`, `sortBy` handling | `src/features/<area>/<grid>/columns/` | Entity grid column config |

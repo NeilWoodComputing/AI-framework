@@ -23,7 +23,7 @@ For **Form Modal**, **Basic Form**, **Wizard Modal** and **Full-Page Wizard**, e
 
 ## Older YAML
 
-Older field names still generate (the schema marks them `deprecated`; see `../tests/cases/legacy-names.yaml`): `page_type: Modal` (= Embedded Grid Modal), `system_feature` and `unity_feature` (= `feature_module`), `primary_action` (= `buttons[0]`), `action` (= `click_action`), `availability` (= `availability_logic`), `page_sub_text` (= `page_sub_title`), `wizard_name` (shown as Page Title when `page_title` is absent).
+Older field names still generate (the schema marks them `deprecated`; see `../tests/cases/legacy-names.yaml`): `page_type: Modal` (= Embedded Grid Modal), `system_feature` (= `feature_module`), `primary_action` (= `buttons[0]`), `action` (= `click_action`), `availability` (= `availability_logic`), `page_sub_text` (= `page_sub_title`), `wizard_name` (shown as Page Title when `page_title` is absent).
 
 ## Project profile (header label)
 
