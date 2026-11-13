@@ -22,7 +22,7 @@ If a value you need is still a `<placeholder>`, stop and report. Do not guess.
 ## Pick up work
 
 - **`plan_to_code: direct`** — the planning agent messages you a feature path. Open `<work_dir>/<feature>/handoff.md`.
-- **`plan_to_code: devops`** — take the work item from the board (`tickets.azure_devops`). Its title holds `T-<DOMAIN>-NNN`; find `<work_dir>/*/tickets/T-<DOMAIN>-NNN-*.md` and that feature's `handoff.md`. Change board state only if the human owner has allowed it and the connector exists.
+- **`plan_to_code: devops`** — take the work item from the board (`tickets.azure_devops` or `tickets.github`). Its title holds `T-<DOMAIN>-NNN`; find `<work_dir>/*/tickets/T-<DOMAIN>-NNN-*.md` and that feature's `handoff.md`. For GitHub Issues (`tickets.target: github`), the planning agent messages you an issue number and link; implement via a cloud agent, then open a PR with the cross-repo closing keyword `Closes NeilWoodComputing/ai-framework-tests#N` (or `Closes #N` when tickets and code are in the same repo). Run a daily sweep for missed issues if configured. Change board state only if the human owner has allowed it and the connector exists.
 - Act only when `handoff.md` says owner `dev-bot` and stage `in-development` or `changes-requested`. Set `pickup: accepted`, `updated_at`, `updated_by` and add a History row before any code work.
 - Ignore any `handoff.md` with `example: true`.
 - A feature at `planned`, or waiting on `approvals.plan_to_code`, is not yours yet.
