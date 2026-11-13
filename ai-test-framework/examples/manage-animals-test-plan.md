@@ -1,6 +1,6 @@
 # Example — test plan for manage-animals
 
-Built from the real artefacts in `ai-planning-framework/work/manage-animals/` (tickets T-ANIMAL-001 to -009, `specs/manage-animals.yaml`, `specs/add-edit-animal.yaml`, `plan.md`), re-read on 08/10/2026 after Plan Bot's decision 28 (page / grid split into T-ANIMAL-008 and T-ANIMAL-003) and decision 29 (boolean icon cells, T-ANIMAL-009). Active stack: `api-framework` + `nextjs`. Illustrative only; no tests were written or run.
+**CandC-specific worked example.** Built from the real artefacts in `ai-planning-framework/work/manage-animals/` (tickets T-ANIMAL-001 to -009, `specs/manage-animals.yaml`, `specs/add-edit-animal.yaml`, `plan.md`), re-read on 08/10/2026 after Plan Bot's decision 28 (page / grid split into T-ANIMAL-008 and T-ANIMAL-003) and decision 29 (boolean icon cells, T-ANIMAL-009). Active stack: `api-framework` + `nextjs`. Illustrative only; no tests were written or run.
 
 **Scenario IDs are explicit and frozen** (`testing.scenario_ids: explicit`; frozen by Plan Bot on 2026-10-08, re-read at 19:24 BST). Every ID below is read from a ticket heading `### Scenario: S<n> — <title>`, never from heading order. Gaps (T-ANIMAL-003 has no S1, S10 or S11) and `(was …)` notes (T-ANIMAL-008 S1–S3) are as the tickets have them. All nine tickets now carry explicit IDs, so no scenario is blocked on IDs.
 
