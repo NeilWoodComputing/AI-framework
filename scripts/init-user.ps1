@@ -1,18 +1,16 @@
 # init-user.ps1
 # ---------------------------------------------------------------------------
-# Initialises or refreshes a user's ai-framework configuration.
+# Initialises or refreshes user preferences for ai-framework.
 #
-# This script:
-#   1. Creates or updates the user preferences file
-#   2. Caches the framework and resolved config on the bot machine
-#   3. Is safe to re-run (idempotent)
-#   4. Migrates from old users/<name>.yaml format if found
+# Creates or updates user-preferences.yaml and caches the framework on the
+# bot machine. Safe to re-run (idempotent).
 #
 # Usage:
 #   .\scripts\init-user.ps1 [-Username <username>]
+#   $env:AI_FRAMEWORK_BOT_MACHINE="true"; .\scripts\init-user.ps1
 #
-# If Username is not provided, it uses $env:USERNAME or prompts for input.
-# The username is used only to fill the `user:` field in the config file.
+# Username is optional and fills the `user:` field only.
+# Set AI_FRAMEWORK_BOT_MACHINE=true to enable bot machine caching.
 # ---------------------------------------------------------------------------
 
 param(
@@ -21,11 +19,13 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# Script directory and framework root
+# Paths
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $FrameworkRoot = Split-Path -Parent $ScriptDir
+$TemplateFile = Join-Path $FrameworkRoot "user-preferences.example.yaml"
 
-# Configuration
+# Configuration from environment
+$IsBotMachine = ($env:AI_FRAMEWORK_BOT_MACHINE -eq "true")
 $BotMachineConfig = if ($env:AI_FRAMEWORK_USER_CONFIG) { $env:AI_FRAMEWORK_USER_CONFIG } else { "/home/box/ai-framework/user-preferences.yaml" }
 $LocalConfig = if ($env:AI_FRAMEWORK_USER_CONFIG) { $env:AI_FRAMEWORK_USER_CONFIG } else { "$env:USERPROFILE\.ai-framework\user-preferences.yaml" }
 $BotMachineCacheDir = if ($env:AI_FRAMEWORK_BOT_CACHE_DIR) { $env:AI_FRAMEWORK_BOT_CACHE_DIR } else { "/home/box/ai-framework/cache" }
@@ -45,18 +45,7 @@ if ([string]::IsNullOrWhiteSpace($Username)) {
 Write-Host "Username: " -NoNewline
 Write-Host $Username -ForegroundColor Green
 
-# Determine if we're on the bot machine and which config file to use
-$IsBotMachine = $false
-if (Test-Path "/home/box" -ErrorAction SilentlyContinue) {
-    try {
-        $null = New-Item -ItemType Directory -Path "/home/box/test-write" -Force -ErrorAction Stop
-        Remove-Item "/home/box/test-write" -Force -ErrorAction SilentlyContinue
-        $IsBotMachine = $true
-    } catch {
-        $IsBotMachine = $false
-    }
-}
-
+# Determine config file location
 if ($IsBotMachine) {
     Write-Host "Environment: " -NoNewline
     Write-Host "Bot machine" -ForegroundColor Green
@@ -67,83 +56,44 @@ if ($IsBotMachine) {
     $UserConfigFile = $LocalConfig
 }
 
-# Step 1: Create or update user preference file
+# Step 1: Create or update user preferences file
 Write-Host "`nStep 1: User preferences file" -ForegroundColor Blue
 Write-Host "Location: $UserConfigFile"
 
-# Check for migration from old format
+# Check for migration from old format (users/<name>.yaml)
 $UserConfigDir = Split-Path -Parent $UserConfigFile
 $OldUserDir = Join-Path $UserConfigDir "users"
 $OldUserFile = Join-Path $OldUserDir "$Username.yaml"
 
 if ((Test-Path $OldUserFile) -and -not (Test-Path $UserConfigFile)) {
-    Write-Host "Found old user config format at $OldUserFile" -ForegroundColor Yellow
-    Write-Host "Migrating to new single-file format..."
-    
-    # Ensure directory exists
+    Write-Host "Migrating from old format: $OldUserFile" -ForegroundColor Yellow
     $ParentDir = Split-Path -Parent $UserConfigFile
     if (-not (Test-Path $ParentDir)) {
         New-Item -ItemType Directory -Path $ParentDir -Force | Out-Null
     }
-    
-    # Copy old file to new location
     Copy-Item -Path $OldUserFile -Destination $UserConfigFile -Force
-    
-    Write-Host "✓ Migrated from old format" -ForegroundColor Green
-    Write-Host "Old file preserved at: $OldUserFile"
-    Write-Host "You can safely delete the old users/ directory after verification."
+    Write-Host "✓ Migrated " -ForegroundColor Green -NoNewline
+    Write-Host "(old file preserved; safe to delete users/ directory)"
 } elseif (Test-Path $UserConfigFile) {
-    Write-Host "Existing config found. Keeping existing preferences." -ForegroundColor Yellow
-    Write-Host "To reset preferences, delete $UserConfigFile and re-run this script."
+    Write-Host "Existing config found. Keeping current settings." -ForegroundColor Yellow
 } else {
-    Write-Host "Creating new user preferences file from template..."
+    # Create from template
+    if (-not (Test-Path $TemplateFile)) {
+        Write-Host "Error: Template not found: $TemplateFile" -ForegroundColor Red
+        exit 1
+    }
     
-    # Ensure directory exists
+    Write-Host "Creating from template..."
     $ParentDir = Split-Path -Parent $UserConfigFile
     if (-not (Test-Path $ParentDir)) {
         New-Item -ItemType Directory -Path $ParentDir -Force | Out-Null
     }
     
-    $ConfigContent = @"
-# User preferences for ai-framework
-# ---------------------------------------------------------------------------
-# This file contains runtime preferences that override the shared
-# ai-framework.config.yaml settings. It should NOT be committed to the
-# repository.
-#
-# One file per machine: each person runs the framework on their own bot machine,
-# so only one person's preferences live on a given machine.
-#
-# Location precedence (highest to lowest):
-#   1. User preferences file (this file)
-#   2. Per-role setting in ai-framework.config.yaml (runtime.<role>)
-#   3. Shared default in ai-framework.config.yaml (runtime.default)
-# ---------------------------------------------------------------------------
-
-# Your username (for identification only)
-user: $Username
-
-# Runtime preferences
-# Supported runtimes:
-#   cursor        - Cursor Cloud Agents (Cursor-managed VMs). This is the
-#                   shared default. The bot machine coordinates cloud agent work.
-#                   Local Windows PC execution is NEVER the default.
-#   cursor-local  - Cursor IDE on your local machine (opt-in only, not the default)
-#   claude-code   - Claude Code or other Claude interfaces
-#
-# Uncomment and set the default to override the shared default for all your roles.
-# runtime:
-#   default: cursor
-
-# Per-role overrides (optional). Uncomment and set to override for specific roles.
-# runtime:
-#   planning: cursor
-#   code: cursor
-#   review: cursor
-#   testing: cursor
-"@
+    # Generate config by replacing example-user with actual username
+    $Content = Get-Content $TemplateFile -Raw
+    $Content = $Content -replace 'user: example-user', "user: $Username"
+    Set-Content -Path $UserConfigFile -Value $Content -Encoding UTF8 -NoNewline
     
-    Set-Content -Path $UserConfigFile -Value $ConfigContent -Encoding UTF8
     Write-Host "✓ Created user preferences file" -ForegroundColor Green
 }
 
@@ -156,84 +106,67 @@ if ($IsBotMachine) {
         New-Item -ItemType Directory -Path $BotMachineCacheDir -Force | Out-Null
     }
     
-    # Check if it's a git repo we can pull, otherwise copy
+    # Try git pull if already a repo, otherwise clone or copy
     $CacheGitDir = Join-Path $BotMachineCacheDir ".git"
     if (Test-Path $CacheGitDir) {
-        Write-Host "Updating cached framework (git pull)..."
+        Write-Host "Updating cache (git pull)..."
         Push-Location $BotMachineCacheDir
         try {
             git pull origin main 2>&1 | Out-Null
-            if ($LASTEXITCODE -ne 0) {
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "✓ Updated from git" -ForegroundColor Green
+            } else {
                 throw "Git pull failed"
             }
         } catch {
-            Write-Host "Warning: git pull failed. Falling back to copying files." -ForegroundColor Yellow
+            Write-Host "Warning: git pull failed, trying copy..." -ForegroundColor Yellow
+            if (Get-Command robocopy -ErrorAction SilentlyContinue) {
+                robocopy $FrameworkRoot $BotMachineCacheDir /E /XD .git node_modules bin obj /NFL /NDL /NJH /NJS | Out-Null
+            } else {
+                Copy-Item -Path "$FrameworkRoot\*" -Destination $BotMachineCacheDir -Recurse -Force -ErrorAction SilentlyContinue
+            }
+            Write-Host "✓ Copied" -ForegroundColor Green
+        } finally {
             Pop-Location
-            # Copy files (excluding specific directories)
-            $ExcludeDirs = @('.git', 'node_modules', 'bin', 'obj')
-            Get-ChildItem -Path $FrameworkRoot -Recurse | Where-Object {
-                $item = $_
-                -not ($ExcludeDirs | Where-Object { $item.FullName -like "*\$_\*" -or $item.FullName -like "*/$_/*" })
-            } | Copy-Item -Destination { Join-Path $BotMachineCacheDir $_.FullName.Substring($FrameworkRoot.Length) } -Force
         }
-        Pop-Location
     } else {
-        Write-Host "Creating cached copy of framework..."
+        # Fresh cache: try clone, fall back to copy
+        if ((Test-Path $BotMachineCacheDir) -and (Get-ChildItem $BotMachineCacheDir | Measure-Object).Count -gt 0) {
+            Remove-Item -Path $BotMachineCacheDir -Recurse -Force
+        }
+        New-Item -ItemType Directory -Path $BotMachineCacheDir -Force | Out-Null
         
-        # Try to clone, fall back to copy
+        Push-Location $FrameworkRoot
         try {
-            Push-Location $FrameworkRoot
             $RemoteUrl = git remote get-url origin 2>&1
             Pop-Location
             
             if ($LASTEXITCODE -eq 0 -and $RemoteUrl) {
-                git clone $RemoteUrl $BotMachineCacheDir 2>&1 | Out-Null
-                if ($LASTEXITCODE -ne 0) {
+                Write-Host "Cloning from $RemoteUrl..."
+                git clone --quiet $RemoteUrl $BotMachineCacheDir 2>&1 | Out-Null
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host "✓ Cloned from git" -ForegroundColor Green
+                } else {
                     throw "Git clone failed"
                 }
             } else {
                 throw "No remote URL"
             }
         } catch {
-            Write-Host "Warning: git clone failed. Copying files instead." -ForegroundColor Yellow
-            # Copy files excluding specific directories
-            robocopy $FrameworkRoot $BotMachineCacheDir /E /XD .git node_modules bin obj /NFL /NDL /NJH /NJS | Out-Null
+            Pop-Location -ErrorAction SilentlyContinue
+            Write-Host "Warning: git clone failed, copying instead..." -ForegroundColor Yellow
+            if (Get-Command robocopy -ErrorAction SilentlyContinue) {
+                robocopy $FrameworkRoot $BotMachineCacheDir /E /XD .git node_modules bin obj /NFL /NDL /NJH /NJS | Out-Null
+            } else {
+                Copy-Item -Path "$FrameworkRoot\*" -Destination $BotMachineCacheDir -Recurse -Force -ErrorAction SilentlyContinue
+            }
+            Write-Host "✓ Cached" -ForegroundColor Green
         }
     }
-    
-    Write-Host "✓ Framework cached" -ForegroundColor Green
-    
-    # Save resolved configuration
-    Write-Host "Saving resolved configuration..."
-    $ResolvedConfig = Join-Path $BotMachineCacheDir ".resolved-config-$Username.yaml"
-    $Timestamp = Get-Date -Format "o"
-    
-    $ResolvedContent = @"
-# Resolved configuration for $Username
-# Generated: $Timestamp
-# User config: $UserConfigFile
-# Shared config: $FrameworkRoot/ai-framework.config.yaml
-
-# This file shows the effective runtime configuration after merging:
-#   1. User preferences ($UserConfigFile)
-#   2. Shared config (ai-framework.config.yaml)
-
-# To see your effective configuration, agents should:
-#   1. Read user preferences file if it exists
-#   2. Read shared config
-#   3. Merge with precedence: user preferences > per-role > default
-
-user: $Username
-user_config: $UserConfigFile
-shared_config: $FrameworkRoot/ai-framework.config.yaml
-"@
-    
-    Set-Content -Path $ResolvedConfig -Value $ResolvedContent -Encoding UTF8
-    Write-Host "✓ Resolved config saved to $ResolvedConfig" -ForegroundColor Green
 } else {
     Write-Host "`nStep 2: Bot machine cache" -ForegroundColor Blue
-    Write-Host "Skipped (not on bot machine)" -ForegroundColor Yellow
-    Write-Host "The bot machine will need its own initialisation to cache the framework."
+    Write-Host "Skipped " -ForegroundColor Yellow -NoNewline
+    Write-Host "(set AI_FRAMEWORK_BOT_MACHINE=true to enable caching)"
 }
 
 # Summary
@@ -243,13 +176,6 @@ if ($IsBotMachine) {
     Write-Host "Framework cache: $BotMachineCacheDir"
 }
 Write-Host ""
-Write-Host "Next steps:"
-Write-Host "  1. Edit $UserConfigFile to set your runtime preferences"
-Write-Host "  2. Agents will automatically resolve configuration from:"
-Write-Host "     - Your user preferences file (highest priority)"
-Write-Host "     - Per-role settings in ai-framework.config.yaml"
-Write-Host "     - Shared default in ai-framework.config.yaml (lowest priority)"
-Write-Host ""
-Write-Host "To switch to a different runtime (e.g. claude-code), edit the user preferences file."
-Write-Host "See README.md for more details."
+Write-Host "Edit $UserConfigFile to configure runtime preferences."
+Write-Host "See README.md for details."
 Write-Host ""

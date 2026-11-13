@@ -47,84 +47,58 @@ Configuration is resolved in this order (highest to lowest priority):
 
 ### User preferences file
 
-Runtime preferences are stored in a single file per machine. Each person runs the framework on their own bot machine, so only one person's preferences live on a given machine. The preferences file is **not committed** to the repository.
+One file per machine (not committed): `user-preferences.yaml`
 
-**Location on the bot machine:**
-```
-/home/box/ai-framework/user-preferences.yaml
-```
-
-**Location on a developer's machine:**
-```
-~/.ai-framework/user-preferences.yaml
-```
-
-**Custom location (environment variable):**
-```bash
-export AI_FRAMEWORK_USER_CONFIG=/path/to/your/user-preferences.yaml
-```
+**Locations:**
+- Bot machine: `/home/box/ai-framework/user-preferences.yaml`
+- Developer machine: `~/.ai-framework/user-preferences.yaml`
+- Custom: set `AI_FRAMEWORK_USER_CONFIG=/path/to/user-preferences.yaml`
 
 ### Setting up your preferences
 
-Run the init script to create your user preferences file and cache the framework:
+**Run the init script:**
 
-**Linux / macOS / WSL:**
 ```bash
+# Linux / macOS / WSL
 ./scripts/init-user.sh [username]
+
+# On the bot machine, enable caching:
+AI_FRAMEWORK_BOT_MACHINE=true ./scripts/init-user.sh [username]
 ```
 
-**Windows (PowerShell):**
 ```powershell
+# Windows PowerShell
 .\scripts\init-user.ps1 [-Username <username>]
+
+# On the bot machine, enable caching:
+$env:AI_FRAMEWORK_BOT_MACHINE="true"; .\scripts\init-user.ps1
 ```
 
-The username is optional and is used only to fill the `user:` field in the preferences file.
+Username is optional (fills `user:` field only). The script creates the preferences file, caches the framework on bot machines, and migrates old formats automatically.
 
-The script:
-1. Creates or refreshes your user preferences file
-2. Caches the framework on the bot machine (when run there)
-3. Migrates from old `users/<name>.yaml` format if found
-4. Is safe to re-run (idempotent)
-
-After running the init script, edit your user preferences file to set preferences:
+**Edit the preferences file:**
 
 ```yaml
-# User preferences for ai-framework
 user: neil
-
-# Override the shared default for all roles
 runtime:
-  default: cursor
-
-# Or override specific roles only
-# runtime:
-#   planning: cursor
-#   code: claude-code
-#   review: cursor
-#   testing: cursor
+  default: cursor        # or claude-code, cursor-local
+  # code: claude-code    # per-role override (optional)
 ```
 
 ### Switching to Claude Code
 
-To switch a role to Claude Code:
-
-1. Edit your user preferences file (`/home/box/ai-framework/user-preferences.yaml` on the bot machine)
-2. Set the runtime for that role:
-   ```yaml
-   runtime:
-     code: claude-code
-   ```
-3. The implementing agent will now use Claude Code instead of Cursor Cloud Agents
+Edit `user-preferences.yaml` and set:
+```yaml
+runtime:
+  code: claude-code
+```
 
 ### Agent responsibility
 
-**Before doing any work**, each agent must:
-
-1. Resolve the effective runtime for its role (user preferences → per-role → shared default)
-2. Verify it is running under the correct runtime
-3. **If assigned to a different runtime, stop and hand off** rather than silently running under the wrong subscription
-
-Agents never run under the wrong runtime. If a role is assigned to Cursor but the agent is running in Claude Code, it must stop and report.
+Before working, each agent must:
+1. Resolve effective runtime (user preferences → per-role → shared default)
+2. Verify it's running under the correct runtime
+3. **Stop and hand off if wrong** — never run under the wrong subscription
 
 ## Agents and handoff
 
