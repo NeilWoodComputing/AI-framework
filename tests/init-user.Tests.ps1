@@ -115,7 +115,9 @@ runtime:
         if (Test-Path $script:TemplateFile) {
             Move-Item $script:TemplateFile $backup
             
-            { & pwsh -NoProfile -File $script:InitScript -Username "testuser" 2>&1 } | Should -Throw
+            # Script should exit with non-zero code when template is missing
+            & pwsh -NoProfile -File $script:InitScript -Username "testuser" 2>$null
+            $LASTEXITCODE | Should -Not -Be 0
             
             Move-Item $backup $script:TemplateFile
         }
