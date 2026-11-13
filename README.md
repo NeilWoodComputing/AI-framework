@@ -5,7 +5,7 @@ Four frameworks that work together to plan, build, test and review full-stack fe
 | Folder | Role |
 |--------|------|
 | `ai-planning-framework/` | Skills and loops that turn a feature into a plan, UI ↔ DB page specs (YAML + Excel), user journeys, Given / When / Then tickets and framework-agnostic stubs. Start with its `AGENT-BRIEF.md`. |
-| `ai-code-framework/` | Reference API (`api/`) and UI (`ui/`) codebases, each with its own rules and skills, plus shared rules in `.cursor/rules/`. |
+| `ai-code-framework/` | Framework-owned reference codebases and shared rules (`.cursor/rules/`). **Active development codebases** (`api/` and `ui/`) live in the [ai-framework-tests](https://github.com/NeilWoodComputing/ai-framework-tests) repository. |
 | `ai-review-framework/` | Skills and a loop that review a raised PR against the planning specs (controls and Service / Table / Column), the Given / When / Then tickets and the active API/UI rules, then write `reviews/PR-<id>-review.md`. Start with its `AGENT-BRIEF.md`. |
 | `ai-test-framework/` | Skills and a loop that turn each ticket's Given / When / Then scenarios (by explicit ID `<ticket>/S<n>`) into unit and e2e tests, run them against a dedicated test environment and write `tests/TEST-<feature>-<n>-report.md`. Runs alongside the review. Start with its `AGENT-BRIEF.md`. |
 | `handoff/` | How a feature moves between the agents: pipeline, stages, rules, and the `handoff.md` / message templates. Start with `handoff/README.md`. |

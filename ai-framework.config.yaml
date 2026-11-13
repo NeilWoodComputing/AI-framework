@@ -152,6 +152,7 @@ development:
     options:
       unity-api:
         path: ai-code-framework/api/Unity.API
+        available: false                 # reference-only; not an active development target
         stack: .NET (net10.0), solution Unity.sln
         description: >-
           Unity BFF for the Unity UI. V2 controllers, downstream clients and
@@ -162,6 +163,8 @@ development:
         rules: ai-code-framework/api/Unity.API/.cursor/rules
         skills: ai-code-framework/api/Unity.API/.cursor/skills
       api-framework:
+        repo_url: https://github.com/NeilWoodComputing/ai-framework-tests
+        repo_path: api/
         path: ai-code-framework/api/API.Framework
         stack: .NET (net10.0), solution Api.Framework.sln
         description: >-
@@ -178,6 +181,7 @@ development:
     options:
       angular:
         path: ai-code-framework/ui/UI.Angular.Framework
+        available: false                 # reference-only; not an active development target
         stack: Angular 20, Angular Material, Bootstrap, ag-Grid, JSON Forms
         description: >-
           Unity.UI.Framework shell. Shared framework in src/framework/;
@@ -188,6 +192,8 @@ development:
         rules: ai-code-framework/ui/UI.Angular.Framework/.cursor/rules
         feature_spec: ai-code-framework/ui/UI.Angular.Framework/src/app/submodules/Example.Subrepo/README.md
       nextjs:
+        repo_url: https://github.com/NeilWoodComputing/ai-framework-tests
+        repo_path: ui/
         path: ai-code-framework/ui/UI.NextJs.Framework
         stack: Next.js 15, React 19, JSON Forms, react-hook-form
         description: >-
@@ -573,7 +579,7 @@ testing:
       setup: code                         # harness built and maintained by the implementing agent
       tests: testing                      # scenario tests written and run by the testing agent
   unit:
-    unity-api: dotnet test Unity.API.Tests/Unity.API.Tests.csproj --configuration Release
+    # unity-api: dotnet test Unity.API.Tests/Unity.API.Tests.csproj --configuration Release  # unavailable (reference-only)
     # approved 08/10/2026 (Neil); project at
     # ai-code-framework/api/API.Framework/Api.Framework.Tests, scaffolded by
     # the implementing agent (folder exists, 2026-10-08)

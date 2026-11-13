@@ -74,8 +74,6 @@ def validate_framework_config(config_path):
                     errors.append(f"frameworks.{framework_name}.agent_brief does not exist: {framework_config['agent_brief']}")
     
     # Check development paths
-    # Note: We only validate the structure, not the actual API/UI paths
-    # since those live in separate codebases and won't exist in this framework repo
     if 'development' in config:
         for dev_type in ['api', 'ui']:
             if dev_type in config['development']:
@@ -86,6 +84,26 @@ def validate_framework_config(config_path):
                     active = dev_section['active']
                     if active not in dev_section['options']:
                         errors.append(f"development.{dev_type}.active references '{active}' which is not in options")
+                    else:
+                        active_option = dev_section['options'][active]
+                        # Check if the option is available (default to True if not specified)
+                        is_available = active_option.get('available', True)
+                        
+                        if is_available:
+                            # Active and available options must have repo_url and repo_path
+                            if 'repo_url' not in active_option:
+                                errors.append(f"development.{dev_type}.options.{active}: active option missing 'repo_url'")
+                            if 'repo_path' not in active_option:
+                                errors.append(f"development.{dev_type}.options.{active}: active option missing 'repo_path'")
+                            
+                            # Warn if the checked-out path is missing (but don't fail)
+                            if 'path' in active_option:
+                                path = framework_root / active_option['path']
+                                if not path.exists():
+                                    print(f"  ⚠ development.{dev_type}.options.{active}.path does not exist: {active_option['path']}")
+                        
+                        # Inactive or unavailable options don't need repo_url/repo_path
+                        # and their missing paths don't fail CI
     
     return errors
 
