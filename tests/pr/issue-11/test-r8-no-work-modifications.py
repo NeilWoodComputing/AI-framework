@@ -9,9 +9,20 @@ import sys
 import subprocess
 from pathlib import Path
 
+def find_repo_root(start=None):
+    """Walk up from this file to the folder that holds ai-framework.config.yaml."""
+    p = Path(start or __file__).resolve()
+    if p.is_file():
+        p = p.parent
+    for candidate in [p, *p.parents]:
+        if (candidate / "ai-framework.config.yaml").is_file():
+            return candidate
+    raise SystemExit(f"Could not find repository root from {start}")
+
+
 def test_r8():
     """Test that no files under work/ were modified"""
-    repo_root = Path(__file__).parent.parent.parent
+    repo_root = find_repo_root(__file__)
     
     try:
         # Get the list of modified files in the PR branch compared to main

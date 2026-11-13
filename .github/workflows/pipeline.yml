@@ -35,6 +35,9 @@ jobs:
     
     - name: Run config validation
       run: python3 tests/validate-config.py
+
+    - name: Run test layout check
+      run: python3 tests/check-test-layout.py
     
     - name: Run framework consistency checks
       run: python3 tests/check-framework.py

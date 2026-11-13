@@ -609,6 +609,11 @@ testing:
     plan: tests/test-plan.md
     report: tests/TEST-<feature>-<n>-report.md   # n = test round (handoff.md testing.round)
     log: tests/test-log.md
+  # PR-based framework tests (not tied to a feature work folder).
+  # N is the ai-framework-tests issue number; round starts at 1.
+  # Shared config: the human owner approves this change in the PR.
+  pr_tests_dir: tests/pr
+  pr_report_names: tests/pr/issue-<N>/TEST-issue-<N>-r<round>-report.md
   forbid_frontend_mocks: true
 
 # ---------------------------------------------------------------------------

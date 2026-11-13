@@ -12,6 +12,17 @@ import yaml
 from pathlib import Path
 from typing import Any, Dict, List
 
+def find_repo_root(start=None):
+    """Walk up from this file to the folder that holds ai-framework.config.yaml."""
+    p = Path(start or __file__).resolve()
+    if p.is_file():
+        p = p.parent
+    for candidate in [p, *p.parents]:
+        if (candidate / "ai-framework.config.yaml").is_file():
+            return candidate
+    raise SystemExit(f"Could not find repository root from {start}")
+
+
 # Test results tracker
 test_results = {
     "passed": 0,
@@ -41,7 +52,7 @@ def log_test(criterion: str, test_name: str, status: str, details: str = ""):
 
 def load_config() -> Dict[str, Any]:
     """Load ai-framework.config.yaml"""
-    config_path = Path(__file__).parent.parent / "ai-framework.config.yaml"
+    config_path = find_repo_root(__file__) / "ai-framework.config.yaml"
     if not config_path.exists():
         raise FileNotFoundError(f"Config file not found: {config_path}")
     
@@ -218,7 +229,7 @@ def test_documentation_updated() -> None:
         "ai-review-framework/templates/review-report.md"
     ]
     
-    base_path = Path(__file__).parent.parent
+    base_path = find_repo_root(__file__)
     missing_files = []
     
     for doc_file in doc_files:

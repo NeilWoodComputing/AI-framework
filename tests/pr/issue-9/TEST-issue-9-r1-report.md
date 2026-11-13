@@ -1,5 +1,7 @@
 # Test Report: PR #11 - Review Scope Dual-Repo Configuration
 
+**Head SHA:** not recorded
+
 **Issue:** [NeilWoodComputing/ai-framework-tests#9](https://github.com/NeilWoodComputing/ai-framework-tests/issues/9)  
 **PR:** [NeilWoodComputing/AI-framework#11](https://github.com/NeilWoodComputing/AI-framework/pull/11)  
 **Branch:** `cursor/review-scope-dual-repo-2dc4`  
@@ -23,7 +25,7 @@ All 5 acceptance criteria tests passed successfully. The configuration changes c
 - **Test Framework:** Custom pytest-style Python test suite
 - **Config File:** `ai-framework.config.yaml`
 - **Framework Version:** 1.1.4
-- **Test Script:** `tests/test_pr11_review_scope.py`
+- **Test Script:** `tests/pr/issue-9/test_issue_9.py`
 
 ## Acceptance Criteria Test Results
 
@@ -200,7 +202,7 @@ RESULT: PASS  (framework 1.1.4)
 1. **Acceptance Criteria Tests:**
    ```bash
    cd /agent/repos/AI-framework
-   python3 tests/test_pr11_review_scope.py
+   python3 tests/pr/issue-9/test_issue_9.py
    ```
 
 2. **Framework Validation:**
@@ -212,8 +214,8 @@ RESULT: PASS  (framework 1.1.4)
 
 ### Test Artifacts
 
-- **Test Script:** `/agent/repos/AI-framework/tests/test_pr11_review_scope.py`
-- **Test Report:** `/agent/repos/AI-framework/tests/TEST-PR11-report.md` (this file)
+- **Test Script:** `/agent/repos/AI-framework/tests/pr/issue-9/test_issue_9.py`
+- **Test Report:** `/agent/repos/AI-framework/tests/pr/issue-9/TEST-issue-9-r1-report.md` (this file)
 - **Config Under Test:** `/agent/repos/AI-framework/ai-framework.config.yaml`
 
 ### Dependencies Installed

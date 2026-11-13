@@ -8,7 +8,7 @@
 | Commit | 7fc982e |
 | Test Date | 2026-11-13 15:54:19 UTC |
 | Test Agent | test-bot |
-| Test Script | `ai-test-framework/tests/gitignore-validation/test-gitignore.sh` |
+| Test Script | `tests/pr/issue-10/test_issue_10.sh` |
 
 ## Summary
 
@@ -112,7 +112,7 @@ RESULT: PASS  (framework 1.1.4)
 
 ```bash
 # Execute test suite
-./ai-test-framework/tests/gitignore-validation/test-gitignore.sh
+./tests/pr/issue-10/test_issue_10.sh
 
 # Pre-handoff check
 cd ai-planning-framework && python3 tools/check.py
@@ -133,8 +133,8 @@ None. All acceptance criteria are fully automated and tested.
 
 | File | Purpose |
 |------|---------|
-| `ai-test-framework/tests/gitignore-validation/test-gitignore.sh` | Executable test script (42 automated test cases) |
-| `ai-test-framework/tests/gitignore-validation/TEST-REPORT.md` | This report |
+| `tests/pr/issue-10/test_issue_10.sh` | Executable test script (42 automated test cases) |
+| `tests/pr/issue-10/TEST-issue-10-r1-report.md` | This report |
 
 ## Conclusion
 

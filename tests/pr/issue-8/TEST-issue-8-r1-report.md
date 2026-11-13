@@ -1,3 +1,17 @@
+# Test Bot report — issue 8, round 1
+
+**Head SHA:** not recorded
+**Date:** not recorded
+
+| Field | Value |
+|-------|-------|
+| PR | https://github.com/NeilWoodComputing/AI-framework/pull/8 |
+| Head SHA | not recorded |
+| Date | not recorded |
+
+Converted from `tests/pr/issue-8/TEST-issue-8-r1-report.md`. Key lines from the original run output:
+
+```text
 ================================================================================
 PR #8 Automated Tests: Align handoff routes with GitHub pipeline
 Issue: https://github.com/NeilWoodComputing/ai-framework-tests/issues/8
@@ -48,3 +62,4 @@ TEST RESULTS
 ================================================================================
 SUMMARY: 6/7 passed, 1/7 failed
 ================================================================================
+```

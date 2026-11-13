@@ -10,9 +10,20 @@ import sys
 from pathlib import Path
 import re
 
+def find_repo_root(start=None):
+    """Walk up from this file to the folder that holds ai-framework.config.yaml."""
+    p = Path(start or __file__).resolve()
+    if p.is_file():
+        p = p.parent
+    for candidate in [p, *p.parents]:
+        if (candidate / "ai-framework.config.yaml").is_file():
+            return candidate
+    raise SystemExit(f"Could not find repository root from {start}")
+
+
 def test_ac3():
     r"""Test that no living test-framework docs contain D:\Users\nwood01 paths"""
-    repo_root = Path(__file__).parent.parent.parent
+    repo_root = find_repo_root(__file__)
     test_framework_dir = repo_root / "ai-test-framework"
     
     if not test_framework_dir.exists():

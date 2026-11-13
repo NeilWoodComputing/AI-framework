@@ -17,6 +17,17 @@ import re
 from pathlib import Path
 from typing import List, Tuple
 
+def find_repo_root(start=None):
+    """Walk up from this file to the folder that holds ai-framework.config.yaml."""
+    p = Path(start or __file__).resolve()
+    if p.is_file():
+        p = p.parent
+    for candidate in [p, *p.parents]:
+        if (candidate / "ai-framework.config.yaml").is_file():
+            return candidate
+    raise SystemExit(f"Could not find repository root from {start}")
+
+
 class TestResult:
     def __init__(self, criterion: str, test_name: str, passed: bool, details: str = "", evidence: List[str] = None):
         self.criterion = criterion
@@ -271,7 +282,7 @@ def run_all_tests() -> Tuple[List[TestResult], int, int, int]:
     """Run all tests and return results"""
     
     script_dir = Path(__file__).parent
-    framework_root = script_dir.parent
+    framework_root = find_repo_root(__file__)
     config_path = framework_root / 'ai-framework.config.yaml'
     
     results = []

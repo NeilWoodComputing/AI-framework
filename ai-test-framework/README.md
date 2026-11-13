@@ -59,6 +59,8 @@ What is in `../ai-framework.config.yaml` today, and what each key means for this
 | `testing.e2e.nextjs.*` | e2e `path` (does not exist yet; scaffolded by the implementing agent), `runner`, `command` |
 | `testing.unit.*` | `dotnet test` commands for `csharp-api` and `api-framework` |
 | `testing.report_names` | `tests/test-plan.md`, `tests/TEST-<feature>-<n>-report.md` (`n` = `handoff.md` `testing.round`), `tests/test-log.md` |
+| `testing.pr_tests_dir` | `tests/pr`: root folder for PR-based framework tests, with one `issue-<N>/` per ai-framework-tests issue |
+| `testing.pr_report_names` | `tests/pr/issue-<N>/TEST-issue-<N>-r<round>-report.md` (round starts at 1) |
 | `testing.forbid_frontend_mocks` | `true` (hard rule 3) |
 | `secrets.test_*` | Env var **names** only for the test connection string, reset key and persona passwords |
 
@@ -135,6 +137,19 @@ Provider notes and concerns: `skills/add-test-data-reset/SKILL.md` → Database 
 | `tests/test-log.md` | One line per run, newest last |
 | E2E features and steps | In the existing e2e folder at `testing.e2e.nextjs.path` (scaffolded by the implementing agent) |
 | Unit tests | In the existing `Api.Framework.Tests` / C# API test project |
+
+
+## PR-based framework tests
+
+For framework PRs that are not tied to a feature in `work/`, test code and reports live under `tests/pr/issue-<N>/` at the repository root (`testing.pr_tests_dir`), where N is the ai-framework-tests issue number.
+
+| File | What |
+|------|------|
+| `test_issue_<N>.py` (or `.sh`) | Main test script, no round number, updated in place across rounds. Helpers keep descriptive names |
+| `TEST-issue-<N>-r<round>-report.md` | One report per test round (`testing.pr_report_names`). Header: PR URL, head SHA, date and time in GMT/BST |
+| `issue-<N>-r<round>-<name>.<ext>` | Other committed artefacts. Raw `.txt` / `.json` run output is not committed; key lines go in the report |
+
+The PR comment heading is `Test Bot: test results (round <round>)`. Feature tests stay in the feature's own `tests/` folder (`testing.report_names`).
 
 ## Layout
 

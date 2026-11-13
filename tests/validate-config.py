@@ -105,6 +105,39 @@ def validate_framework_config(config_path):
                         # Inactive or unavailable options don't need repo_url/repo_path
                         # and their missing paths don't fail CI
     
+
+    # PR-based framework test layout (ai-framework-tests#13).
+    # Keep testing.report_names as a map (feature tests). The new keys sit alongside it.
+    if "testing" not in config:
+        errors.append("Missing 'testing' section")
+    else:
+        testing = config["testing"]
+        report_names = testing.get("report_names")
+        if report_names is None:
+            errors.append("Missing 'testing.report_names'")
+        elif not isinstance(report_names, dict):
+            errors.append(
+                f"testing.report_names must remain a map of feature report paths, found {type(report_names).__name__}"
+            )
+        else:
+            for key in ("plan", "report", "log"):
+                if key not in report_names:
+                    errors.append(f"Missing 'testing.report_names.{key}'")
+        if "pr_tests_dir" not in testing:
+            errors.append("Missing 'testing.pr_tests_dir'")
+        else:
+            pr_dir = testing["pr_tests_dir"]
+            if not isinstance(pr_dir, str) or not pr_dir.strip():
+                errors.append("testing.pr_tests_dir must be a string path")
+            else:
+                pr_path = framework_root / pr_dir
+                if not pr_path.exists():
+                    errors.append(f"testing.pr_tests_dir does not exist: {pr_dir}")
+        if "pr_report_names" not in testing:
+            errors.append("Missing 'testing.pr_report_names'")
+        elif not isinstance(testing["pr_report_names"], str) or not testing["pr_report_names"].strip():
+            errors.append("testing.pr_report_names must be a string pattern")
+
     return errors
 
 def validate_user_preferences(template_path):

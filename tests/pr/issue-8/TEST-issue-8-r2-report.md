@@ -32,7 +32,7 @@ This round re-tests all criteria to verify the fixes.
 
 ### 1. Automated Test Script
 ```bash
-python3 tests/test-pr-8-handoff-github-pipeline.py
+python3 tests/pr/issue-8/test_issue_8.py
 ```
 
 **Result:** PASS (7/7 criteria passed)
@@ -114,7 +114,7 @@ All checks passed:
 
 **Commands executed:**
 ```bash
-python3 tests/test-pr-8-handoff-github-pipeline.py
+python3 tests/pr/issue-8/test_issue_8.py
 python3 tests/validate-config.py
 grep -rn "azure-devops only" --include="*.md" --include="*.yaml" --exclude-dir=".git" --exclude="CHANGELOG*" . | grep -v "tests/reports/"
 grep -rn "off until Azure" --include="*.md" --include="*.yaml" --exclude-dir=".git" --exclude="CHANGELOG*" . | grep -v "tests/reports/"

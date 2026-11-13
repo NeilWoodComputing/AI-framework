@@ -5,7 +5,15 @@
 
 set -euo pipefail
 
-REPO_ROOT="/agent/repos/AI-framework"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$SCRIPT_DIR"
+while [ "$REPO_ROOT" != "/" ] && [ ! -f "$REPO_ROOT/ai-framework.config.yaml" ]; do
+    REPO_ROOT="$(dirname "$REPO_ROOT")"
+done
+if [ ! -f "$REPO_ROOT/ai-framework.config.yaml" ]; then
+    echo "Could not find repository root from $SCRIPT_DIR" >&2
+    exit 1
+fi
 cd "$REPO_ROOT"
 
 # Colors for output
