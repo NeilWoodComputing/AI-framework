@@ -31,25 +31,53 @@ Stop and report if any of these is still a `<placeholder>`.
 The title includes:
 - The stable ID in brackets: `[T-<DOMAIN>-NNN]`
 - The ticket heading text after `Ticket: <ID> — `
-- The page type in parentheses: `(<page type>)` from the Type field (e.g. `UI page` → shown verbatim, or map to the page type value like `Form Modal`, `Paginated Grid`, etc.)
+- The page type in parentheses: `(<page type>)`. Use the specific page type from the ticket when available (e.g. `Form Modal`, `Wizard Modal`, `Paginated Grid`), otherwise use the Type field value verbatim (e.g. `Schema`, `API service`)
 
 ### Description body (preserve GWT as Acceptance criteria)
 
-Copy from the ticket markdown into the GitHub issue description (Markdown):
+Copy from the ticket markdown into the GitHub issue description (Markdown). Keep the ticket markdown **as written**, including the full Given / When / Then scenarios:
 
 1. **User story** — As a / I want / So that
 2. **Full-stack scope** — table of UI label ↔ Service / Target DB Table / Target DB Column (or Population Source)
-3. **Acceptance criteria** — A clearly marked section with checkable bullets derived from every Given / When / Then scenario. Each scenario becomes a checkbox item summarising its intent.
-4. **Work to do** if present
+3. **Work to do** — the full Work to do section
+4. **Acceptance criteria** — Full Given / When / Then scenarios as written in the ticket, **plus** a clearly marked checkable summary section
 5. **Out of scope** if present
 6. Footer: `Source: work/<feature>/tickets/<filename>` plus linked spec/excel paths
 
 **Acceptance criteria section format:**
 
-Transform the Given/When/Then scenarios into a checkable list under an `## Acceptance criteria` heading:
+After the full Given/When/Then scenarios (kept as written in the ticket), add a checkable summary under an `## Acceptance criteria (summary)` heading:
 
 ```markdown
 ## Acceptance criteria
+
+### Scenario: S1 — Add mode opens with defaults
+
+```gherkin
+Given I have the required permission
+When I open the Add form
+Then required fields are empty
+And boolean fields are Off
+And multi-value fields have no items
+```
+
+### Scenario: S2 — Create record with required fields
+
+```gherkin
+Given I open the Add form
+And today's local date is after the minimum allowed date
+When I enter Name "Example"
+And I enter Date Born "01/01/2020"
+And I leave optional fields empty
+And I save the form
+Then the form closes successfully
+And the service writes the record with the entered values
+...
+```
+
+(... all scenarios as written in the ticket ...)
+
+## Acceptance criteria (summary)
 
 - [ ] S1 — Add mode opens with defaults
 - [ ] S2 — Create record with required fields
@@ -65,7 +93,7 @@ Transform the Given/When/Then scenarios into a checkable list under an `## Accep
 - [ ] S12 — Deleted record cannot be opened
 ```
 
-Each item should be a concise summary of the scenario's heading. The full Given/When/Then details can follow in a collapsed section or be linked to in the Source footer.
+The full Given/When/Then is **required**, not optional. The checkable summary provides a quick overview for developers and testers.
 
 ### Labels
 
@@ -80,11 +108,16 @@ Label naming convention: lowercase with hyphens (kebab-case).
 
 ### Sub-issues
 
-When a ticket is explicitly typed as a child task (indicated by a Depends on field referencing a parent ticket, or when the Type field says it's a task under a story), create it as a **sub-issue** of the parent GitHub issue.
+When a ticket is **explicitly typed as a child implementation task** in its Type field (not merely having a Depends on field), create it as a **sub-issue** of the parent GitHub issue.
+
+**Important:** A "Depends on" field indicates a dependency relationship but does not make a ticket a sub-issue. Most tickets have dependencies and are still standalone issues (Type: Schema, API service, UI page, etc.). Only create sub-issues when the Type field explicitly says it's a child task under a parent story.
+
+Dependencies should be recorded in the issue body (in the Work to do or Dependencies section) with references like "Depends on #123" or by stable ID.
 
 GitHub sub-issues require:
 1. The parent issue must already exist (create parent before children)
 2. Use the GitHub API's sub-issue creation endpoint or relationship
+3. The Type field must explicitly indicate a child task relationship
 
 ### Attachments / links
 
