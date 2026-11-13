@@ -253,11 +253,11 @@ output:
 # are filled in. While disabled, agents may only write a dry-run plan.
 # ---------------------------------------------------------------------------
 tickets:
-  enabled: false
+  enabled: true
   # azure-devops | github | jira
   # (adapter: ai-planning-framework/skills/publish-tickets/adapters/<target>.md;
-  # github and jira are stubs)
-  target: azure-devops
+  # jira is a stub)
+  target: github
   azure_devops:
     organisation: <your-org>             # e.g. the name in https://dev.azure.com/<your-org>
     project: <your-project>
@@ -267,6 +267,12 @@ tickets:
       story: User Story
       task: Task
     default_tags:
+      - ai-planning-framework
+  github:
+    owner: NeilWoodComputing
+    repository: ai-framework-tests
+    project: AI testing                  # optional GitHub Projects board
+    default_labels:
       - ai-planning-framework
   id_prefix: T-<DOMAIN>-NNN              # e.g. T-CONTACT-001; filename T-<DOMAIN>-NNN-<slug>.md
   upsert: true                           # match on stable ID; update, never duplicate

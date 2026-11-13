@@ -65,7 +65,7 @@ See `generators/README.md` for CLI details.
 3. **Journeys** (optional) — `skills/generate-user-journey/SKILL.md`.
 4. **Tickets** (optional) — `skills/generate-tickets/SKILL.md` (Given/When/Then; stable IDs `T-<DOMAIN>-NNN`; still name Service/Table/Column from specs only).
 5. **Stubs** (optional) — `skills/generate-code-stubs/SKILL.md` (UI ↔ DB mapping files only).
-6. **Publish tickets** (optional, stubbed) — `skills/publish-tickets/SKILL.md` when tracker access exists; see `AGENT-BRIEF.md`.
+6. **Publish tickets** (optional) — `skills/publish-tickets/SKILL.md` when tracker access exists; adapters for Azure DevOps, GitHub (complete), and Jira (stub). See `AGENT-BRIEF.md`.
 7. **Hand off** — write `handoff.md` in the feature folder and pass the feature to the implementing agent; see `AGENT-BRIEF.md` → Handoff and `../handoff/README.md`.
 
 Or run the lot via `loops/feature-planning.md`.

@@ -48,7 +48,7 @@ Set in `handoff` in the config. The agent handing off records the route it used 
 | Key | Values | What happens |
 |-----|--------|--------------|
 | `plan_to_code` | `direct` (default) | The planning agent writes `handoff.md` (stage `in-development`, owner `dev-bot`) and messages the implementing agent with the feature path. |
-| | `devops` | The planning agent publishes `tickets/` via `skills/publish-tickets/SKILL.md` (`tickets.target` picks the adapter; `azure-devops` for this route), records the work item IDs in `handoff.md`, and sets owner `dev-bot`. The implementing agent picks the items up from the board and finds the feature through the `T-<DOMAIN>-NNN` in each title. Needs `tickets.enabled: true`, no `<placeholders>` under `tickets`, and the DevOps connector. If any is missing, fall back to `direct` only after asking the human owner. |
+| | `devops` | The planning agent publishes `tickets/` via `skills/publish-tickets/SKILL.md` (`tickets.target` picks the adapter; `azure-devops`, `github`, or `jira`), records the work item IDs in `handoff.md`, and sets owner `dev-bot`. The implementing agent picks the items up from the board and finds the feature through the `T-<DOMAIN>-NNN` in each title. Needs `tickets.enabled: true`, no `<placeholders>` under `tickets`, and appropriate access (connector or token env var). If any is missing, fall back to `direct` only after asking the human owner. |
 | `code_to_review` | `direct` (default) | The implementing agent fills the `implementation` manifest in `handoff.md` (every file that implements the plan; hand-off is blocked while it is empty), plus branch / head commit where the repo is under git, and messages the reviewing agent. That message is the `direct-handoff` trigger. The reviewing agent reviews straight away on the **plan scope** (`review.direct_scope: plan`): all code relevant to the plan, from the manifest cross-checked by a codebase search, read as whole files. No git or `target_branch` is needed. Output: `reviews/DIRECT-<branch-slug>-<n>-review.md` (or `DIRECT-<feature>-<n>-review.md` with no branch) plus a round in `reviews/review-log.md`. `direct_scope: diff` falls back to a local git diff. |
 | | `pr` | The implementing agent raises a PR per repo (title and branch contain the ticket ID) and records id / url in `handoff.md`. The PR being opened or updated triggers the review (`pr-opened` / `pr-updated`; see **How the review trigger fires**). The reviewing agent reviews the **PR diff**, writes `reviews/PR-<id>-review.md`, posts inline + summary comments to the PR only when `review.publish` allows (provider `azure-devops` only; off until Azure DevOps is in use), and appends a round summary to `reviews/review-log.md`. Needs `review.provider` configured with no placeholders. |
 | `code_to_test` | `direct` | At the **same time** as `code_to_review`, the implementing agent messages the testing agent with the feature path. No stage change: the feature stays `in-review`, owned by `review-bot`. The testing agent writes and runs the scenario tests, fills `testing` in `handoff.md` and writes `tests/` (its carve-out), then messages the reviewing agent (`test-report` trigger). |
@@ -158,6 +158,18 @@ Reviews and test reviews never wait for a human to ask.
 | `pr` | `pr-opened` / `pr-updated` | There is no DevOps service hook or connector yet, so after raising or updating a PR, the implementing agent **also messages the reviewing agent with the PR id** (and `handoff.md` path). The reviewing agent treats that message as the PR trigger. | Once an Azure DevOps service hook (webhook) or connector is available, a reviewing-agent routine listens for PR created / updated events and starts the review itself. The implementing agent's message then becomes optional. |
 
 Posting comments to the PR is off until an Azure DevOps solution is in use. It only ever happens on the PR route when `review.provider` is `azure-devops` and `review.publish.enabled` is `true` (then automatically, `review.publish.auto_post_on_pr: true`). Set `enabled: true` once DevOps access, the `review.azure_devops` settings and the token / connector are in place. With `review.provider` `github`, `cursor-origin` or `local-git`, nothing is posted: the review is the report plus `reviews/review-log.md`. The reviewing agent never votes, approves or merges.
+
+## Cross-repo workflows
+
+When tickets are published to a **different repository** than where the code is developed (e.g. issues in `ai-framework-tests`, code in `AI-framework`), PRs must use **cross-repo closing keywords** to link to the issues:
+
+```markdown
+Closes NeilWoodComputing/ai-framework-tests#2
+```
+
+Format: `Closes <owner>/<repo>#<issue-number>`
+
+This ensures that merging the PR automatically closes the corresponding issue in the other repository. When tickets and code are in the same repository, the standard `Closes #N` format works.
 
 ## Where things live
 
