@@ -39,41 +39,41 @@ readonly BOT_MACHINE_CACHE_DIR="${AI_FRAMEWORK_BOT_CACHE_DIR:-/home/box/ai-frame
 echo -e "${BLUE}=== AI Framework User Initialisation ===${NC}\n"
 
 # Determine username
-USERNAME="${1:-${USER:-}}"
-if [[ -z "$USERNAME" ]]; then
-    read -r -p "Enter your username: " USERNAME
+username="${1:-${USER:-}}"
+if [[ -z "$username" ]]; then
+    read -r -p "Enter your username: " username
 fi
 
-if [[ -z "$USERNAME" ]]; then
+if [[ -z "$username" ]]; then
     echo -e "${RED}Error: Username is required${NC}"
     exit 1
 fi
 
-echo -e "Username: ${GREEN}$USERNAME${NC}"
+echo -e "Username: ${GREEN}$username${NC}"
 
 # Determine config file location
 if [[ "$IS_BOT_MACHINE" == "true" ]]; then
     echo -e "Environment: ${GREEN}Bot machine${NC}"
-    USER_CONFIG_FILE="$BOT_MACHINE_CONFIG"
+    user_config_file="$BOT_MACHINE_CONFIG"
 else
     echo -e "Environment: ${GREEN}Local developer machine${NC}"
-    USER_CONFIG_FILE="$LOCAL_CONFIG"
+    user_config_file="$LOCAL_CONFIG"
 fi
 
 # Step 1: Create or update user preferences file
 echo -e "\n${BLUE}Step 1: User preferences file${NC}"
-echo "Location: $USER_CONFIG_FILE"
+echo "Location: $user_config_file"
 
 # Check for migration from old format (users/<name>.yaml)
-OLD_USER_DIR="$(dirname "$USER_CONFIG_FILE")/users"
-OLD_USER_FILE="$OLD_USER_DIR/$USERNAME.yaml"
+old_user_dir="$(dirname "$user_config_file")/users"
+old_user_file="$old_user_dir/$username.yaml"
 
-if [[ -f "$OLD_USER_FILE" ]] && [[ ! -f "$USER_CONFIG_FILE" ]]; then
-    echo -e "${YELLOW}Migrating from old format: $OLD_USER_FILE${NC}"
-    mkdir -p "$(dirname "$USER_CONFIG_FILE")"
-    cp "$OLD_USER_FILE" "$USER_CONFIG_FILE"
+if [[ -f "$old_user_file" ]] && [[ ! -f "$user_config_file" ]]; then
+    echo -e "${YELLOW}Migrating from old format: $old_user_file${NC}"
+    mkdir -p "$(dirname "$user_config_file")"
+    cp "$old_user_file" "$user_config_file"
     echo -e "${GREEN}✓ Migrated${NC} (old file preserved; safe to delete users/ directory)"
-elif [[ -f "$USER_CONFIG_FILE" ]]; then
+elif [[ -f "$user_config_file" ]]; then
     echo -e "${YELLOW}Existing config found. Keeping current settings.${NC}"
 else
     # Create from template
@@ -83,10 +83,10 @@ else
     fi
     
     echo "Creating from template..."
-    mkdir -p "$(dirname "$USER_CONFIG_FILE")"
+    mkdir -p "$(dirname "$user_config_file")"
     
     # Generate config by replacing example-user with actual username
-    sed "s/user: example-user/user: $USERNAME/" "$TEMPLATE_FILE" > "$USER_CONFIG_FILE"
+    sed "s/user: example-user/user: $username/" "$TEMPLATE_FILE" > "$user_config_file"
     
     echo -e "${GREEN}✓ Created user preferences file${NC}"
 fi
@@ -122,9 +122,9 @@ if [[ "$IS_BOT_MACHINE" == "true" ]]; then
         mkdir -p "$BOT_MACHINE_CACHE_DIR"
         
         if git remote get-url origin &>/dev/null; then
-            REMOTE_URL=$(git remote get-url origin)
-            echo "Cloning from $REMOTE_URL..."
-            if git clone --quiet "$REMOTE_URL" "$BOT_MACHINE_CACHE_DIR" 2>/dev/null; then
+            remote_url=$(git remote get-url origin)
+            echo "Cloning from $remote_url..."
+            if git clone --quiet "$remote_url" "$BOT_MACHINE_CACHE_DIR" 2>/dev/null; then
                 echo -e "${GREEN}✓ Cloned from git${NC}"
             else
                 echo -e "${YELLOW}Warning: git clone failed, copying instead...${NC}"
@@ -154,10 +154,10 @@ fi
 
 # Summary
 echo -e "\n${GREEN}=== Initialisation Complete ===${NC}\n"
-echo "User preferences: $USER_CONFIG_FILE"
+echo "User preferences: $user_config_file"
 if [[ "$IS_BOT_MACHINE" == "true" ]]; then
     echo "Framework cache: $BOT_MACHINE_CACHE_DIR"
 fi
 echo ""
-echo "Edit $USER_CONFIG_FILE to configure runtime preferences."
+echo "Edit $user_config_file to configure runtime preferences."
 echo "See README.md for details."

@@ -70,7 +70,8 @@ frameworks:
     loop: ai-review-framework/loops/pr-review.md
     checklists: ai-review-framework/checklists
   testing:
-    path: ai-test-framework              # scenario test planning, unit + e2e test skills, loop, checklists, report templates
+    # scenario test planning, unit + e2e test skills, loop, checklists, report templates
+    path: ai-test-framework
     agent_brief: ai-test-framework/AGENT-BRIEF.md
     loop: ai-test-framework/loops/feature-test.md
     checklists: ai-test-framework/checklists
@@ -111,7 +112,8 @@ agents:
     framework: ai-code-framework
     agent_brief: ai-code-framework/AGENT-BRIEF.md
     loop: ai-code-framework/loops/feature-build.md
-    hands_off_to: review                 # via handoff.code_to_review, AND notifies testing at the same time via handoff.code_to_test
+    # via handoff.code_to_review, AND notifies testing via handoff.code_to_test
+    hands_off_to: review
   review:
     role: reviewing agent
     name: Review Bot
@@ -119,15 +121,20 @@ agents:
     framework: ai-review-framework
     agent_brief: ai-review-framework/AGENT-BRIEF.md
     loop: ai-review-framework/loops/pr-review.md
-    hands_off_to: code                   # findings go back via handoff.review_feedback: code defects -> code, test defects -> testing (testing.defect_routing); approval -> human
+    # findings go back via handoff.review_feedback: code defects -> code,
+    # test defects -> testing (testing.defect_routing); approval -> human
+    hands_off_to: code
   testing:
     role: testing agent
     name: Test Bot
-    id: test-bot                         # `updated_by` in handoff.md `testing` only; never an `owner` value (no test stage: tests run alongside the review, testing.mode)
+    # `updated_by` in handoff.md `testing` only; never an `owner` value
+    # (no test stage: tests run alongside the review, testing.mode)
+    id: test-bot
     framework: ai-test-framework
     agent_brief: ai-test-framework/AGENT-BRIEF.md
     loop: ai-test-framework/loops/feature-test.md
-    hands_off_to: review                 # messages the reviewing agent when a test run finishes (review trigger test-report)
+    # messages the reviewing agent when a test run finishes (review trigger test-report)
+    hands_off_to: review
   human:
     role: human owner                    # approves the gates and does the merge
     name: Neil Wood
@@ -137,7 +144,7 @@ agents:
 # Development target
 # Pick ONE api and ONE ui with `active:`. The value must match a key under
 # `options`. Each option keeps its own rules/skills inside its folder; read
-# those as well as the code-framework rules above.
+# those and the code-framework rules above.
 # ---------------------------------------------------------------------------
 development:
   api:
@@ -197,23 +204,31 @@ development:
 # Project
 # The development project the planning framework is working for. Everything
 # project-specific (services, permission pattern, DB naming, grid header label,
-# ticket domain tokens, stack hints, which framework rules are on) lives in the
-# profile, not in the framework. See ai-planning-framework/projects/README.md.
+# ticket domain tokens, stack hints, which rules are on) lives in the profile,
+# not in the framework. See ai-planning-framework/projects/README.md.
 # ---------------------------------------------------------------------------
 project:
   active: candc
   profile: project.yaml                 # beside this file, outside the planning framework
-  work_dir: ai-planning-framework/work   # NEW features are planned here: <project.work_dir>/<feature-slug>/ (the one work folder; domain-neutral)
+  # NEW features are planned here: <project.work_dir>/<feature-slug>/
+  # (the one work folder; domain-neutral)
+  work_dir: ai-planning-framework/work
 
 # ---------------------------------------------------------------------------
 # Output
-# Every feature is written under a work folder: <work_dir>/<feature-slug>/ using these folders.
-# The authoritative folder for one feature is `feature_path` in its handoff.md.
+# Every feature is written under a work folder: <work_dir>/<feature-slug>/
+# using these folders. The authoritative folder for one feature is
+# `feature_path` in its handoff.md.
 # ---------------------------------------------------------------------------
 output:
-  work_dir: ai-planning-framework/work   # the feature folder: new and existing features (older features predate the project profiles; their paths stay valid)
-  work_dirs:                             # every work folder, searched in order for <feature-slug>/ when no feature_path is known
-    - ai-planning-framework/work                   # = project.work_dir = output.work_dir
+  # the feature folder: new and existing features (older features predate the
+  # project profiles; their paths stay valid)
+  work_dir: ai-planning-framework/work
+  # every work folder, searched in order for <feature-slug>/ when no
+  # feature_path is known
+  work_dirs:
+    # = project.work_dir = output.work_dir
+    - ai-planning-framework/work
   feature_layout:
     plan: plan.md                        # plan-feature
     specs: specs                         # page YAML (source of truth for UI <-> DB)
@@ -222,8 +237,13 @@ output:
     tickets: tickets                     # Given / When / Then stories (only source for tracker items)
     stubs: stubs                         # framework-agnostic UI <-> DB stubs
     devops: devops                       # optional dry-run publish-plan.md
-    reviews: reviews                     # review reports (review.report_names) + review-log.md (review.log_file), by ai-review-framework
-    tests: tests                         # test plan, run reports and test log (testing.report_names), by ai-test-framework; the testing agent may write here while review-bot owns the feature
+    # review reports (review.report_names) + review-log.md (review.log_file),
+    # by ai-review-framework
+    reviews: reviews
+    # test plan, run reports and test log (testing.report_names),
+    # by ai-test-framework; the testing agent may write here while
+    # review-bot owns the feature
+    tests: tests
     handoff: handoff.md                  # pipeline state for the feature (handoff/templates/handoff.md)
 
 # ---------------------------------------------------------------------------
@@ -234,7 +254,10 @@ output:
 # ---------------------------------------------------------------------------
 tickets:
   enabled: false
-  target: azure-devops                   # azure-devops | github | jira  (adapter: ai-planning-framework/skills/publish-tickets/adapters/<target>.md; github and jira are stubs)
+  # azure-devops | github | jira
+  # (adapter: ai-planning-framework/skills/publish-tickets/adapters/<target>.md;
+  # github and jira are stubs)
+  target: azure-devops
   azure_devops:
     organisation: <your-org>             # e.g. the name in https://dev.azure.com/<your-org>
     project: <your-project>
@@ -267,7 +290,8 @@ review:
   #   local-git     - git diff <target>...<source> in local clones; also how to review a
   #                   local clone of an Origin (or GitHub) repo
   provider: local-git                    # azure-devops | github | cursor-origin | local-git
-  target_branch: <main-or-develop>       # only needed for the PR route (when the PR states no target) or direct_scope: diff
+  # only needed for the PR route (when the PR states no target) or direct_scope: diff
+  target_branch: <main-or-develop>
   local_git:
     # PR route (and direct_scope: diff) only.
     # Runs `git diff <target_branch>...<source_branch>` in each repo below.
@@ -301,12 +325,12 @@ review:
   triggers: [pr-opened, pr-updated, direct-handoff, test-report]
 
   # What a direct-route review (handoff.code_to_review: direct) looks at.
-  #   plan (default): ALL code relevant to the feature's plan. The reviewing agent starts
-  #         from the implementing agent's `implementation` manifest in handoff.md, cross-checks it by
-  #         searching the active API / UI paths for the plan's pages, routes,
-  #         Services, tables, columns, ticket IDs and derived DTO / entity names,
-  #         and reviews the full current contents of every file in scope. Needs no
-  #         git, no branch and no target_branch.
+  #   plan (default): ALL code relevant to the feature's plan. The reviewing
+  #         agent starts from the implementing agent's `implementation` manifest
+  #         in handoff.md, cross-checks it by searching the active API / UI paths
+  #         for the plan's pages, routes, Services, tables, columns, ticket IDs
+  #         and derived DTO / entity names, and reviews the full current contents
+  #         of every file in scope. Needs no git, no branch and no target_branch.
   #   diff: the old behaviour: git diff <base_branch>...<branch> in each repo
   #         (needs git repos and a base / target branch).
   # The PR route always reviews the PR diff.
@@ -315,9 +339,9 @@ review:
   # The ONLY folders whose files are ever reviewed, on every route (direct plan
   # scope, direct diff, PR): the ai-code-framework API and UI folders, which hold
   # every development.api / development.ui option path. Planning artefacts (specs,
-  # tickets, stubs, Excel) are read as the reference for what should be built, but
-  # are never reviewed. Framework docs, this config and anything else outside these
-  # folders are never in scope. scope_exclude still applies inside them.
+  # tickets, stubs, Excel) are read as the reference for what should be built,
+  # but are never reviewed. Framework docs, this config and anything else outside
+  # these folders are never in scope. scope_exclude still applies inside them.
   scope_include:
     - "ai-code-framework/api/**"         # Unity.API, API.Framework
     - "ai-code-framework/ui/**"          # UI.Angular.Framework, UI.NextJs.Framework
@@ -358,19 +382,22 @@ review:
   publish:
     # PR posting stays OFF until an Azure DevOps solution is in use.
     # Publishing only ever happens when review.provider is azure-devops AND
-    # enabled is true. Set enabled: true only once DevOps access exists, every
-    # review.azure_devops placeholder is filled in, the token env var named in
-    # secrets.azure_devops_pat_env is set, and the DevOps connector is available
-    # to the reviewing agent.
+    # enabled is true. Set enabled: true only once DevOps access exists,
+    # every review.azure_devops placeholder is filled in, the token env var
+    # named in secrets.azure_devops_pat_env is set, and the DevOps connector
+    # is available to the reviewing agent.
     # github, cursor-origin and local-git never post, even if enabled is true: the
     # review is the report + review-log.md only, recorded as
     # "Not published - PR posting is off until Azure DevOps is in use".
     # The report and review log are written on every round either way.
     enabled: false
-    auto_post_on_pr: true                # when enabled: post on every PR-route review round automatically, no request needed
+    # when enabled: post on every PR-route review round automatically,
+    # no request needed
+    auto_post_on_pr: true
     post_inline_comments: true           # one comment per finding (templates/review-comment.md)
     post_summary_comment: true           # verdict + summary + report path
-    set_vote: false                      # stays false: agents never approve, reject or merge; the human owner decides
+    # stays false: agents never approve, reject or merge; the human owner decides
+    set_vote: false
 
 # ---------------------------------------------------------------------------
 # Handoff
@@ -397,14 +424,15 @@ handoff:
   # Implementing agent -> reviewing agent. Either way the review starts automatically
   # (review.auto_review / review.triggers); no human asks for it.
   #   pr:     raise a PR (title / branch include T-<DOMAIN>-NNN). Opening or
-  #           updating the PR triggers the review (pr-opened / pr-updated). Until a
-  #           DevOps service hook exists, the implementing agent also messages the
-  #           reviewing agent with the PR id. Requires review.provider configured
-  #           (no <placeholders>).
+  #           updating the PR triggers the review (pr-opened / pr-updated). Until
+  #           a DevOps service hook exists, the implementing agent also messages
+  #           the reviewing agent with the PR id. Requires review.provider
+  #           configured (no <placeholders>).
   #   direct: record the implementation manifest (and branch / head commit if the
   #           repo is under git) in handoff.md and message the reviewing agent
-  #           (direct-handoff). The reviewing agent reviews all code relevant to the
-  #           plan (review.direct_scope: plan), or a local git diff when direct_scope is diff.
+  #           (direct-handoff). The reviewing agent reviews all code relevant to
+  #           the plan (review.direct_scope: plan), or a local git diff when
+  #           direct_scope is diff.
   code_to_review: direct                 # pr | direct
 
   # Implementing agent -> testing agent, at the SAME TIME as code_to_review (Neil,
@@ -426,9 +454,10 @@ handoff:
   max_review_cycles: 3
 
   # Branch name used in every repo the feature touches (same name in API and UI).
-  # Must contain the stable ticket ID so the review can link specs. The <type>/<id>/<slug>
-  # shape matches existing Unity.API branches (e.g. feat/79242/...). {braces} are
-  # filled per feature by the implementing agent; they are not <placeholders> for you to set.
+  # Must contain the stable ticket ID so the review can link specs. The
+  # <type>/<id>/<slug> shape matches existing Unity.API branches (e.g.
+  # feat/79242/...). {braces} are filled per feature by the implementing agent;
+  # they are not <placeholders> for you to set.
   branch_pattern:
     devops: feat/{work-item-id}/{ticket-id}-{slug}   # e.g. feat/84700/T-CONTACT-001-add-edit-contact
     direct: feat/{ticket-id}/{slug}                  # e.g. feat/T-CONTACT-001/add-edit-contact
@@ -437,7 +466,9 @@ handoff:
   # and records who / when in handoff.md approvals before moving the feature on.
   require_human_approval:
     plan_to_code: true                   # the human owner signs off the plan / tickets before code starts
-    code_to_review: false                # the implementing agent hands to the reviewing agent without asking; the review runs automatically
+    # the implementing agent hands to the reviewing agent without asking;
+    # the review runs automatically
+    code_to_review: false
     code_to_test: false                  # the implementing agent notifies the testing agent without asking
     merge: true                          # agents NEVER merge; the human owner merges. Do not set false.
 
@@ -455,41 +486,66 @@ handoff:
 # reports. Secrets are env var NAMES only (see `secrets`).
 # ---------------------------------------------------------------------------
 testing:
-  mode: alongside-review                 # alongside-review (chosen) | before-review (not used: would need an in-test stage)
-  test_review: true                      # the reviewing agent reviews the test report and test code after each run
+  # alongside-review (chosen) | before-review (not used: would need an in-test stage)
+  mode: alongside-review
+  # the reviewing agent reviews the test report and test code after each run
+  test_review: true
   final_approval_requires: [code_review, test_review]
-  # DECIDED by Neil (2026-10-08 19:19 BST; replaces flagged default (1)): fixing failing tests has its own cap.
-  failures_count_toward_review_cycles: false  # test-failure / test-defect fix rounds do NOT count toward handoff.max_review_cycles (3)
-  max_test_fix_cycles: 5                 # separate from handoff max_review_cycles; on exhaustion escalate to Neil (decided 2026-10-08). Counter: handoff.md testing.test_fix_cycle
-  # DECIDED (2): a blocked run, or a required unit command that was not run, does not get final approval.
-  # The stage stays in-review and the owner is the human owner. The human owner still merges.
+  # DECIDED by Neil (2026-10-08 19:19 BST; replaces flagged default (1)):
+  # fixing failing tests has its own cap.
+  # test-failure / test-defect fix rounds do NOT count toward
+  # handoff.max_review_cycles (3)
+  failures_count_toward_review_cycles: false
+  # separate from handoff max_review_cycles; on exhaustion escalate to Neil
+  # (decided 2026-10-08). Counter: handoff.md testing.test_fix_cycle
+  max_test_fix_cycles: 5
+  # DECIDED (2): a blocked run, or a required unit command that was not run,
+  # does not get final approval. The stage stays in-review and the owner is
+  # the human owner. The human owner still merges.
   blocked_tests_allow_approval: false
   # DEFAULTS FLAGGED TO NEIL (not settled; change here if he decides otherwise):
-  scenario_ids: explicit                 # (3) tests are tagged with the explicit ticket heading ID <ticket>/S<n>, never heading order; IDs are never renumbered
+  # (3) tests are tagged with the explicit ticket heading ID <ticket>/S<n>,
+  # never heading order; IDs are never renumbered
+  scenario_ids: explicit
   ownership:
-    scaffolding: code                    # Api.Framework.Tests project; Playwright + playwright-bdd setup and e2e folder in UI.NextJs.Framework
+    # Api.Framework.Tests project; Playwright + playwright-bdd setup and e2e
+    # folder in UI.NextJs.Framework
+    scaffolding: code
     reset_endpoint: code                 # test-data reset endpoint in API.Framework (Test environment only)
     test_users: code                     # role-based test personas, seeded by the test-data mechanism
     scenario_tests: testing              # unit and e2e tests, one per <ticket>/S<n>, tagged with the scenario ID
     test_runs: testing                   # running the suites and writing tests/ reports + handoff.md `testing`
   defect_routing:
-    code_defects: code                   # failing scenario because the code is wrong -> implementing agent (stage changes-requested)
-    test_defects: testing                # weak / mis-tagged / mocked / missing test -> testing agent (stage stays in-review)
-  shared_environments_allowed: false     # never run e2e against shared dev / non-prod
+    # failing scenario because the code is wrong -> implementing agent
+    # (stage changes-requested)
+    code_defects: code
+    # weak / mis-tagged / mocked / missing test -> testing agent
+    # (stage stays in-review)
+    test_defects: testing
+  # never run e2e against shared dev / non-prod
+  shared_environments_allowed: false
   environment: Test                      # ASPNETCORE_ENVIRONMENT of API.Framework (alternative: E2E)
   database:
     provider: postgresql                 # API.Framework is Npgsql-only
-    name: <api_framework_test>           # dedicated to API.Framework; the reset endpoint refuses any other
-    connection_env: APIFW_TEST_ConnectionStrings__LoginConnection   # env var NAME; value set by the human owner only. Test-environment-only (Neil 2026-10-09): user-level, read by Program.cs / LoginDbContextFactory only when the environment is Test; Test Jwt secret: APIFW_TEST_Jwt__Secret
-    schema_source: Api.Framework.Data/Migrations          # schema only ever built by migrations (owner connection)
-    runtime_user_rights: [USAGE on auth/creatures, SELECT, INSERT, UPDATE, DELETE, TRUNCATE]   # no DROP / CREATE / CREATEDB
+    # dedicated to API.Framework; the reset endpoint refuses any other
+    name: <api_framework_test>
+    # env var NAME; value set by the human owner only.
+    # Test-environment-only (Neil 2026-10-09): user-level, read by Program.cs /
+    # LoginDbContextFactory only when the environment is Test;
+    # Test Jwt secret: APIFW_TEST_Jwt__Secret
+    connection_env: APIFW_TEST_ConnectionStrings__LoginConnection
+    # schema only ever built by migrations (owner connection)
+    schema_source: Api.Framework.Data/Migrations
+    # no DROP / CREATE / CREATEDB
+    runtime_user_rights: [USAGE on auth/creatures, SELECT, INSERT, UPDATE, DELETE, TRUNCATE]
     migrate_on_startup: false                             # InitialisationSettings:MigrateDatabase in Test
   ui_base_url: <http://localhost:3003>
   api_base_url: <https://localhost:<api-port>>
   reset_endpoint:
     api: api-framework                   # API.Framework only, not Unity.API
-    master_route: TestData/Reset/master      # once per full run, or to recover a dirty DB
-    seed_units: [baseline.migration-seed, baseline.test-tenant, "personas.{feature}", "{feature}.{batch}"]   # dependency order
+    master_route: TestData/Reset/master  # once per full run, or to recover a dirty DB
+    # dependency order
+    seed_units: [baseline.migration-seed, baseline.test-tenant, "personas.{feature}", "{feature}.{batch}"]
     batch_route: TestData/Reset/{scenarioKey}
     key_format: "{feature}.{batch}.{state}"
     key_header: X-Test-Data-Key
@@ -503,20 +559,29 @@ testing:
     tenant: <e2e-test-tenant>
   e2e:
     nextjs:
-      path: ai-code-framework/ui/UI.NextJs.Framework/e2e     # scaffolded by the implementing agent (folder exists, 2026-10-08)
+      # scaffolded by the implementing agent (folder exists, 2026-10-08)
+      path: ai-code-framework/ui/UI.NextJs.Framework/e2e
       runner: Playwright + playwright-bdd
-      command: npx bddgen && npx playwright test             # global setup runs the master reset
-  component:                             # Neil 2026-10-08 20:04: component harness for the shared UI pieces, set up by the implementing agent
+      # global setup runs the master reset
+      command: npx bddgen && npx playwright test
+  # Neil 2026-10-08 20:04: component harness for the shared UI pieces,
+  # set up by the implementing agent
+  component:
     nextjs:
-      path: ai-code-framework/ui/UI.NextJs.Framework/src/app/examples/test-harness   # page-based harness (page.tsx -> src/features/test-harness/ComponentTestHarness.tsx)
+      # page-based harness (page.tsx -> src/features/test-harness/ComponentTestHarness.tsx)
+      path: ai-code-framework/ui/UI.NextJs.Framework/src/app/examples/test-harness
       route: /examples/test-harness
-      runner: Playwright + playwright-bdd   # exercised by Playwright in the existing e2e stack (testing.e2e.nextjs)
+      # exercised by Playwright in the existing e2e stack (testing.e2e.nextjs)
+      runner: Playwright + playwright-bdd
       covers: ["T-ANIMAL-006 Switch / Tag Input", "T-ANIMAL-007 row actions menu", "T-ANIMAL-009 boolean circle cells"]
       setup: code                         # harness built and maintained by the implementing agent
       tests: testing                      # scenario tests written and run by the testing agent
   unit:
     unity-api: dotnet test Unity.API.Tests/Unity.API.Tests.csproj --configuration Release
-    api-framework: dotnet test Api.Framework.Tests/Api.Framework.Tests.csproj --configuration Release   # approved 08/10/2026 (Neil); project at ai-code-framework/api/API.Framework/Api.Framework.Tests, scaffolded by the implementing agent (folder exists, 2026-10-08)
+    # approved 08/10/2026 (Neil); project at
+    # ai-code-framework/api/API.Framework/Api.Framework.Tests, scaffolded by
+    # the implementing agent (folder exists, 2026-10-08)
+    api-framework: dotnet test Api.Framework.Tests/Api.Framework.Tests.csproj --configuration Release
   report_names:
     plan: tests/test-plan.md
     report: tests/TEST-<feature>-<n>-report.md   # n = test round (handoff.md testing.round)
@@ -526,8 +591,9 @@ testing:
 # ---------------------------------------------------------------------------
 # Verification (pre-handoff gate)
 # Run by the implementing agent in feature-build stage 5 (re-run after stage 6);
-# the last run is recorded in handoff.md code.verification + code.pre_handoff_gate.
-# A failed or missing gate blocks in-review (handoff/README.md rule 12).
+# the last run is recorded in handoff.md code.verification +
+# code.pre_handoff_gate. A failed or missing gate blocks in-review
+# (handoff/README.md rule 12).
 # Decided by Neil 2026-10-09 10:32 BST (pre-handoff-checks plan D1-D17).
 # Runner and allowlist exist (built by Dev Bot, T-GATE-003..005, 2026-10-09).
 # Flags: --target api-framework|nextjs|all, --feature <work/<feature> or its
@@ -535,12 +601,18 @@ testing:
 # prints file, key path and rule only.
 # ---------------------------------------------------------------------------
 verification:
-  runner: node ai-code-framework/scripts/pre-handoff-checks.mjs   # D4, D15 (Node, no dependencies)
-  allowlist: ai-code-framework/scripts/pre-handoff-allowlist.json # D13: entries have reason, owner, expires; no values
+  # D4, D15 (Node, no dependencies)
+  runner: node ai-code-framework/scripts/pre-handoff-checks.mjs
+  # D13: entries have reason, owner, expires; no values
+  allowlist: ai-code-framework/scripts/pre-handoff-allowlist.json
   fail_on_warnings: false                # D3: errors fail; warnings counted and recorded
-  blocks_handoff: true                   # failed / missing gate blocks in-development|changes-requested -> in-review
-  not_in_git: scan-working-tree          # D14: targets without git: working tree minus review.scope_exclude
-  scope: whole-target                    # D17: fallback touched-files + recorded baseline only if T-GATE-001 cannot reach a clean baseline
+  # failed / missing gate blocks in-development|changes-requested -> in-review
+  blocks_handoff: true
+  # D14: targets without git: working tree minus review.scope_exclude
+  not_in_git: scan-working-tree
+  # D17: fallback touched-files + recorded baseline only if T-GATE-001 cannot
+  # reach a clean baseline
+  scope: whole-target
   targets:
     api-framework:
       path: ai-code-framework/api/API.Framework
@@ -548,9 +620,12 @@ verification:
       checks: [eol, secrets, docs-dup, unit]   # unit = testing.unit.api-framework (D6)
     nextjs:
       path: ai-code-framework/ui/UI.NextJs.Framework
-      end_of_line: lf                    # D5 (*.ps1 / *.cmd / *.bat crlf in both targets)
-      checks: [lint, typecheck, eol, secrets, docs-dup, unit]   # lint = npm run lint, typecheck = npm run typecheck, unit = npm test (vitest)
-      lint_exclude: [e2e/]               # D11: e2e/ is secrets-scanned but not linted / typechecked
+      # D5 (*.ps1 / *.cmd / *.bat crlf in both targets)
+      end_of_line: lf
+      # lint = npm run lint, typecheck = npm run typecheck, unit = npm test (vitest)
+      checks: [lint, typecheck, eol, secrets, docs-dup, unit]
+      # D11: e2e/ is secrets-scanned but not linted / typechecked
+      lint_exclude: [e2e/]
   charset: utf-8                         # D7: no BOM
   docs_dup_min_words: 25                 # D8
 
@@ -561,9 +636,14 @@ verification:
 secrets:
   azure_devops_pat_env: AZURE_DEVOPS_PAT   # personal access token for Azure DevOps
   # AZURE_DEVOPS_PAT is also used by review.provider: azure-devops.
-  github_token_env: GITHUB_TOKEN           # only needed when review.provider is github AND no GitHub connector is connected
-  # review.provider: cursor-origin needs no env var: it reads through the Cursor Origin connector.
-  # Testing (testing block). Values are set by the human owner in the test environment only.
-  test_db_connection_env: APIFW_TEST_ConnectionStrings__LoginConnection   # Test-environment-only (Neil 2026-10-09): user-level, read only when the environment is Test. Test Jwt secret env var: APIFW_TEST_Jwt__Secret
+  # only needed when review.provider is github AND no GitHub connector connected
+  github_token_env: GITHUB_TOKEN
+  # review.provider: cursor-origin needs no env var: it reads through the Cursor
+  # Origin connector. Testing (testing block). Values are set by the human owner
+  # in the test environment only.
+  # Test-environment-only (Neil 2026-10-09): user-level, read only when the
+  # environment is Test. Test Jwt secret env var: APIFW_TEST_Jwt__Secret
+  test_db_connection_env: APIFW_TEST_ConnectionStrings__LoginConnection
   test_data_reset_key_env: E2E_TEST_DATA_KEY
-  test_persona_password_env_pattern: E2E_{FEATURE}_{ROLE}_PASSWORD   # e.g. E2E_ANIMALS_TESTER_PASSWORD, E2E_TESTDATA_ADMIN_PASSWORD
+  # e.g. E2E_ANIMALS_TESTER_PASSWORD, E2E_TESTDATA_ADMIN_PASSWORD
+  test_persona_password_env_pattern: E2E_{FEATURE}_{ROLE}_PASSWORD

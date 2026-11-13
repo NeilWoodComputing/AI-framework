@@ -15,21 +15,21 @@ readonly YELLOW='\033[1;33m'
 readonly BLUE='\033[0;34m'
 readonly NC='\033[0m'
 
-FAILED=0
-TOTAL=0
+failed=0
+total=0
 
 run_check() {
     local name="$1"
     shift
     
-    TOTAL=$((TOTAL + 1))
+    total=$((total + 1))
     echo -e "\n${BLUE}▶ $name${NC}"
     
     if "$@"; then
         echo -e "${GREEN}✓ Passed${NC}"
     else
         echo -e "${RED}✗ Failed${NC}"
-        FAILED=$((FAILED + 1))
+        failed=$((failed + 1))
         return 1
     fi
 }
@@ -109,14 +109,14 @@ fi
 
 # Summary
 echo -e "\n${BLUE}=== Summary ===${NC}"
-echo "Total checks: $TOTAL"
-echo "Failed: $FAILED"
-echo "Passed: $((TOTAL - FAILED))"
+echo "Total checks: $total"
+echo "Failed: $failed"
+echo "Passed: $((total - failed))"
 
-if [ $FAILED -eq 0 ]; then
+if [ $failed -eq 0 ]; then
     echo -e "\n${GREEN}✓ All checks passed!${NC}"
     exit 0
 else
-    echo -e "\n${RED}✗ $FAILED check(s) failed${NC}"
+    echo -e "\n${RED}✗ $failed check(s) failed${NC}"
     exit 1
 fi

@@ -152,8 +152,8 @@ This runs all available checks:
 
 ### CI/CD
 
-GitHub Actions runs the full test suite automatically on:
+GitHub Actions runs the full pipeline automatically on:
 - Pull requests to `main`
 - Pushes to `main`
 
-See `.github/workflows/test.yml` for the complete CI configuration.
+The pipeline includes parallel validation, linting, and testing jobs. See `.github/workflows/pipeline.yml` for the complete CI configuration.
