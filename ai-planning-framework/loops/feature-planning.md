@@ -30,7 +30,7 @@ Read `../ai-framework.config.yaml` (paths relative to the `ai-framework` root) b
         ↓
 6. publish-tickets         (optional; stubbed — no live tracker calls until connector + approval)
         ↓
-7. hand-off                (planning agent → implementing agent: handoff.md + human owner's approval + devops | direct)
+7. hand-off                (planning agent → implementing agent: handoff.md + human owner's approval + board | direct; devops is a deprecated alias of board)
 ```
 
 Stop after stage 2 if the Excel specs are enough for the next engineering conversation. Stop after stage 4 only when no hand-off is wanted. Otherwise finish with stage 7 (after stage 4, plus 5 / 6 when they run), so the implementing agent can pick the feature up.

@@ -347,6 +347,81 @@ def test_branch_pattern(config) -> Result:
     )
 
 
+
+def test_no_stale_devops_direct_route_list(repo: Path) -> Result:
+    """F-T15-01: living docs must list plan_to_code as board | direct, not devops | direct."""
+    failures = []
+    evidence = []
+    loop = repo / "ai-planning-framework" / "loops" / "feature-planning.md"
+    content = read(loop)
+    if "approval + devops | direct" in content:
+        failures.append("feature-planning.md still has 'approval + devops | direct' on the stage-7 overview")
+    if "board | direct" not in content:
+        failures.append("feature-planning.md does not list 'board | direct'")
+    else:
+        evidence.append("feature-planning.md lists 'board | direct'")
+    if "deprecated alias" not in content:
+        failures.append("feature-planning.md no longer mentions devops as a deprecated alias")
+    else:
+        evidence.append("feature-planning.md still mentions devops as a deprecated alias")
+
+    stale = "devops | direct"
+    skip_parts = {".git", "node_modules", "__pycache__", ".next", "bin", "obj"}
+    skip_prefixes = (
+        "ai-planning-framework/work/",
+        "tests/pr/",
+    )
+    text_suffixes = {".md", ".yaml", ".yml", ".py", ".sh", ".ps1", ".txt", ".json"}
+    offenders = []
+    for path in repo.rglob("*"):
+        if not path.is_file():
+            continue
+        if any(part in skip_parts for part in path.parts):
+            continue
+        try:
+            rel = path.relative_to(repo).as_posix()
+        except ValueError:
+            continue
+        if rel.startswith(skip_prefixes):
+            continue
+        # This test file itself quotes the stale phrase; skip it.
+        if rel == "tests/framework/issue-15/test_issue_15.py":
+            continue
+        if path.suffix.lower() not in text_suffixes:
+            continue
+        try:
+            text = read(path)
+        except (UnicodeDecodeError, OSError):
+            continue
+        if stale in text:
+            # Report line numbers
+            for i, line in enumerate(text.splitlines(), 1):
+                if stale in line:
+                    offenders.append(f"{rel}:{i}: {line.strip()}")
+    if offenders:
+        failures.append("Stale 'devops | direct' still present in living files:")
+        failures.extend(offenders)
+    else:
+        evidence.append("No living file (excluding work/ and tests/pr/) contains 'devops | direct'")
+
+    if failures:
+        return Result(
+            "AC2",
+            "No stale 'devops | direct' route list in living docs (F-T15-01)",
+            False,
+            "Issues:",
+            failures,
+        )
+    return Result(
+        "AC2",
+        "No stale 'devops | direct' route list in living docs (F-T15-01)",
+        True,
+        "Stage-7 overview lists board | direct; no leftover 'devops | direct'",
+        evidence,
+    )
+
+
+
 def main() -> int:
     repo = find_repo_root(__file__)
     sys.stdout.reconfigure(encoding="utf-8")
@@ -368,6 +443,7 @@ def main() -> int:
         test_comments_provider_neutral(raw),
         test_approval_kept(config),
         test_docs_flow(repo),
+        test_no_stale_devops_direct_route_list(repo),
         test_direct_fallback(repo, vc, config),
         test_validator_and_devops_alias(vc, repo, config),
         test_version_changelog(repo),
