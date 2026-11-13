@@ -3,14 +3,16 @@
 # Initialises or refreshes a user's ai-framework configuration.
 #
 # This script:
-#   1. Creates or updates the user's preference file
+#   1. Creates or updates the user preferences file
 #   2. Caches the framework and resolved config on the bot machine
 #   3. Is safe to re-run (idempotent)
+#   4. Migrates from old users/<name>.yaml format if found
 #
 # Usage:
 #   .\scripts\init-user.ps1 [-Username <username>]
 #
 # If Username is not provided, it uses $env:USERNAME or prompts for input.
+# The username is used only to fill the `user:` field in the config file.
 # ---------------------------------------------------------------------------
 
 param(
@@ -24,9 +26,9 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $FrameworkRoot = Split-Path -Parent $ScriptDir
 
 # Configuration
-$BotMachineUserDir = if ($env:AI_FRAMEWORK_BOT_USER_DIR) { $env:AI_FRAMEWORK_BOT_USER_DIR } else { "/home/box/ai-framework/users" }
+$BotMachineConfig = if ($env:AI_FRAMEWORK_USER_CONFIG) { $env:AI_FRAMEWORK_USER_CONFIG } else { "/home/box/ai-framework/user-preferences.yaml" }
+$LocalConfig = if ($env:AI_FRAMEWORK_USER_CONFIG) { $env:AI_FRAMEWORK_USER_CONFIG } else { "$env:USERPROFILE\.ai-framework\user-preferences.yaml" }
 $BotMachineCacheDir = if ($env:AI_FRAMEWORK_BOT_CACHE_DIR) { $env:AI_FRAMEWORK_BOT_CACHE_DIR } else { "/home/box/ai-framework/cache" }
-$LocalUserDir = if ($env:AI_FRAMEWORK_LOCAL_USER_DIR) { $env:AI_FRAMEWORK_LOCAL_USER_DIR } else { "$env:USERPROFILE\.ai-framework\users" }
 
 Write-Host "`n=== AI Framework User Initialisation ===`n" -ForegroundColor Blue
 
@@ -43,7 +45,7 @@ if ([string]::IsNullOrWhiteSpace($Username)) {
 Write-Host "Username: " -NoNewline
 Write-Host $Username -ForegroundColor Green
 
-# Determine if we're on the bot machine
+# Determine if we're on the bot machine and which config file to use
 $IsBotMachine = $false
 if (Test-Path "/home/box" -ErrorAction SilentlyContinue) {
     try {
@@ -58,38 +60,62 @@ if (Test-Path "/home/box" -ErrorAction SilentlyContinue) {
 if ($IsBotMachine) {
     Write-Host "Environment: " -NoNewline
     Write-Host "Bot machine" -ForegroundColor Green
-    $UserConfigDir = $BotMachineUserDir
+    $UserConfigFile = $BotMachineConfig
 } else {
     Write-Host "Environment: " -NoNewline
     Write-Host "Local developer machine" -ForegroundColor Green
-    $UserConfigDir = $LocalUserDir
+    $UserConfigFile = $LocalConfig
 }
-
-$UserConfigFile = Join-Path $UserConfigDir "$Username.yaml"
 
 # Step 1: Create or update user preference file
-Write-Host "`nStep 1: User preference file" -ForegroundColor Blue
+Write-Host "`nStep 1: User preferences file" -ForegroundColor Blue
 Write-Host "Location: $UserConfigFile"
 
-if (-not (Test-Path $UserConfigDir)) {
-    New-Item -ItemType Directory -Path $UserConfigDir -Force | Out-Null
-}
+# Check for migration from old format
+$UserConfigDir = Split-Path -Parent $UserConfigFile
+$OldUserDir = Join-Path $UserConfigDir "users"
+$OldUserFile = Join-Path $OldUserDir "$Username.yaml"
 
-if (Test-Path $UserConfigFile) {
+if ((Test-Path $OldUserFile) -and -not (Test-Path $UserConfigFile)) {
+    Write-Host "Found old user config format at $OldUserFile" -ForegroundColor Yellow
+    Write-Host "Migrating to new single-file format..."
+    
+    # Ensure directory exists
+    $ParentDir = Split-Path -Parent $UserConfigFile
+    if (-not (Test-Path $ParentDir)) {
+        New-Item -ItemType Directory -Path $ParentDir -Force | Out-Null
+    }
+    
+    # Copy old file to new location
+    Copy-Item -Path $OldUserFile -Destination $UserConfigFile -Force
+    
+    Write-Host "✓ Migrated from old format" -ForegroundColor Green
+    Write-Host "Old file preserved at: $OldUserFile"
+    Write-Host "You can safely delete the old users/ directory after verification."
+} elseif (Test-Path $UserConfigFile) {
     Write-Host "Existing config found. Keeping existing preferences." -ForegroundColor Yellow
     Write-Host "To reset preferences, delete $UserConfigFile and re-run this script."
 } else {
-    Write-Host "Creating new user config from template..."
+    Write-Host "Creating new user preferences file from template..."
+    
+    # Ensure directory exists
+    $ParentDir = Split-Path -Parent $UserConfigFile
+    if (-not (Test-Path $ParentDir)) {
+        New-Item -ItemType Directory -Path $ParentDir -Force | Out-Null
+    }
     
     $ConfigContent = @"
 # User preferences for ai-framework
 # ---------------------------------------------------------------------------
-# This file contains per-user runtime preferences that override the shared
+# This file contains runtime preferences that override the shared
 # ai-framework.config.yaml settings. It should NOT be committed to the
 # repository.
 #
+# One file per machine: each person runs the framework on their own bot machine,
+# so only one person's preferences live on a given machine.
+#
 # Location precedence (highest to lowest):
-#   1. User config file (this file)
+#   1. User preferences file (this file)
 #   2. Per-role setting in ai-framework.config.yaml (runtime.<role>)
 #   3. Shared default in ai-framework.config.yaml (runtime.default)
 # ---------------------------------------------------------------------------
@@ -118,7 +144,7 @@ user: $Username
 "@
     
     Set-Content -Path $UserConfigFile -Value $ConfigContent -Encoding UTF8
-    Write-Host "✓ Created user config" -ForegroundColor Green
+    Write-Host "✓ Created user preferences file" -ForegroundColor Green
 }
 
 # Step 2: Cache framework on bot machine
@@ -193,9 +219,9 @@ if ($IsBotMachine) {
 #   2. Shared config (ai-framework.config.yaml)
 
 # To see your effective configuration, agents should:
-#   1. Read user config if it exists
+#   1. Read user preferences file if it exists
 #   2. Read shared config
-#   3. Merge with precedence: user > per-role > default
+#   3. Merge with precedence: user preferences > per-role > default
 
 user: $Username
 user_config: $UserConfigFile
@@ -212,7 +238,7 @@ shared_config: $FrameworkRoot/ai-framework.config.yaml
 
 # Summary
 Write-Host "`n=== Initialisation Complete ===`n" -ForegroundColor Green
-Write-Host "User config: $UserConfigFile"
+Write-Host "User preferences: $UserConfigFile"
 if ($IsBotMachine) {
     Write-Host "Framework cache: $BotMachineCacheDir"
 }
@@ -220,10 +246,10 @@ Write-Host ""
 Write-Host "Next steps:"
 Write-Host "  1. Edit $UserConfigFile to set your runtime preferences"
 Write-Host "  2. Agents will automatically resolve configuration from:"
-Write-Host "     - Your user config (highest priority)"
+Write-Host "     - Your user preferences file (highest priority)"
 Write-Host "     - Per-role settings in ai-framework.config.yaml"
 Write-Host "     - Shared default in ai-framework.config.yaml (lowest priority)"
 Write-Host ""
-Write-Host "To switch to a different runtime (e.g. claude-code), edit the user config file."
+Write-Host "To switch to a different runtime (e.g. claude-code), edit the user preferences file."
 Write-Host "See README.md for more details."
 Write-Host ""
