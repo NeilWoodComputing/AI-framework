@@ -37,24 +37,24 @@ Migration             Api.Framework.Data/Migrations + LoginDbContextModelSnapsho
 
 There is no downstream mapper. A field the schema owns is validated on the record; a database-only check (uniqueness and the like) runs in the area service. Details: `checklists/api-framework-checklist.md`.
 
-### `unity-api`
+### `csharp-api`
 
 ```text
 UI binding            #/properties/<field> in the UI schema / form (camelCase)
    ↓
-API record / DTO      Unity.Entities/Records (form records) or Controllers/V2/TempEntityModels (list / detail models)
+API record / DTO      Entities records folder (form records) or Controllers/V2/TempEntityModels (list / detail models)
    ↓
-Mapper                Unity.API/Mapping  (UI record ↔ downstream request or local entity)
+Mapper                API mapping folder  (UI record ↔ downstream request or local entity)
    ↓
-Persistence           local: entity in Unity.Data.Models + DbSet on UnityContext, via a service in Unity.Services / Unity.Interfaces
+Persistence           local: entity in data models + DbSet on DbContext, via a service in services / interfaces folders
                       downstream: the owning *RestService request model
    ↓
 Column                entity property / [Column] / HasColumnName / HasMaxLength
    ↓
-Migration             Unity.Data/Migrations (new or changed local columns) + model snapshot
+Migration             Data migrations folder (new or changed local columns) + model snapshot
 ```
 
-Per `unity-api-overview.mdc`, some entities are stored locally and some only exist downstream. Decide which branch applies from the spec's **Service** and the existing code. Details: `checklists/api-unity-checklist.md`.
+Per `csharp-api-overview.mdc`, some entities are stored locally and some only exist downstream. Decide which branch applies from the spec's **Service** and the existing code. Details: `checklists/api-csharp-checklist.md`.
 
 ## Steps
 
