@@ -41,32 +41,32 @@ The framework is runtime-agnostic: it maps roles (planning, code, review, testin
 
 Configuration is resolved in this order (highest to lowest priority):
 
-1. **Per-user config file** — your personal preferences (not committed to the repo)
+1. **User preferences file** — `user-preferences.yaml` (not committed to the repo)
 2. **Per-role setting** in `ai-framework.config.yaml` (`runtime.planning`, `runtime.code`, etc.)
 3. **Shared default** in `ai-framework.config.yaml` (`runtime.default`)
 
-### User preference files
+### User preferences file
 
-Each user can set their own runtime preferences without editing the shared config. User config files are **not committed** to the repository.
+Runtime preferences are stored in a single file per machine. Each person runs the framework on their own bot machine, so only one person's preferences live on a given machine. The preferences file is **not committed** to the repository.
 
 **Location on the bot machine:**
 ```
-/home/box/ai-framework/users/<user>.yaml
+/home/box/ai-framework/user-preferences.yaml
 ```
 
 **Location on a developer's machine:**
 ```
-~/.ai-framework/users/<user>.yaml
+~/.ai-framework/user-preferences.yaml
 ```
 
 **Custom location (environment variable):**
 ```bash
-export AI_FRAMEWORK_USER_CONFIG=/path/to/your/config.yaml
+export AI_FRAMEWORK_USER_CONFIG=/path/to/your/user-preferences.yaml
 ```
 
 ### Setting up your preferences
 
-Run the init script to create your user config file and cache the framework:
+Run the init script to create your user preferences file and cache the framework:
 
 **Linux / macOS / WSL:**
 ```bash
@@ -78,12 +78,15 @@ Run the init script to create your user config file and cache the framework:
 .\scripts\init-user.ps1 [-Username <username>]
 ```
 
-The script:
-1. Creates or refreshes your user preference file
-2. Caches the framework on the bot machine (when run there)
-3. Is safe to re-run (idempotent)
+The username is optional and is used only to fill the `user:` field in the preferences file.
 
-After running the init script, edit your user config file to set preferences:
+The script:
+1. Creates or refreshes your user preferences file
+2. Caches the framework on the bot machine (when run there)
+3. Migrates from old `users/<name>.yaml` format if found
+4. Is safe to re-run (idempotent)
+
+After running the init script, edit your user preferences file to set preferences:
 
 ```yaml
 # User preferences for ai-framework
@@ -105,7 +108,7 @@ runtime:
 
 To switch a role to Claude Code:
 
-1. Edit your user config file (`/home/box/ai-framework/users/<user>.yaml` on the bot machine)
+1. Edit your user preferences file (`/home/box/ai-framework/user-preferences.yaml` on the bot machine)
 2. Set the runtime for that role:
    ```yaml
    runtime:
@@ -117,7 +120,7 @@ To switch a role to Claude Code:
 
 **Before doing any work**, each agent must:
 
-1. Resolve the effective runtime for its role (user config → per-role → shared default)
+1. Resolve the effective runtime for its role (user preferences → per-role → shared default)
 2. Verify it is running under the correct runtime
 3. **If assigned to a different runtime, stop and hand off** rather than silently running under the wrong subscription
 

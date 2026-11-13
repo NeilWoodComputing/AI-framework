@@ -4,14 +4,16 @@
 # Initialises or refreshes a user's ai-framework configuration.
 #
 # This script:
-#   1. Creates or updates the user's preference file
+#   1. Creates or updates the user preferences file
 #   2. Caches the framework and resolved config on the bot machine
 #   3. Is safe to re-run (idempotent)
+#   4. Migrates from old users/<name>.yaml format if found
 #
 # Usage:
 #   ./scripts/init-user.sh [username]
 #
 # If username is not provided, it uses $USER or prompts for input.
+# The username is used only to fill the `user:` field in the config file.
 # ---------------------------------------------------------------------------
 
 set -euo pipefail
@@ -28,9 +30,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FRAMEWORK_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Configuration
-BOT_MACHINE_USER_DIR="${AI_FRAMEWORK_BOT_USER_DIR:-/home/box/ai-framework/users}"
+BOT_MACHINE_CONFIG="${AI_FRAMEWORK_USER_CONFIG:-/home/box/ai-framework/user-preferences.yaml}"
+LOCAL_CONFIG="${AI_FRAMEWORK_USER_CONFIG:-$HOME/.ai-framework/user-preferences.yaml}"
 BOT_MACHINE_CACHE_DIR="${AI_FRAMEWORK_BOT_CACHE_DIR:-/home/box/ai-framework/cache}"
-LOCAL_USER_DIR="${AI_FRAMEWORK_LOCAL_USER_DIR:-$HOME/.ai-framework/users}"
 
 echo -e "${BLUE}=== AI Framework User Initialisation ===${NC}\n"
 
@@ -47,39 +49,60 @@ fi
 
 echo -e "Username: ${GREEN}$USERNAME${NC}"
 
-# Determine if we're on the bot machine
+# Determine if we're on the bot machine and which config file to use
 IS_BOT_MACHINE=false
 if [[ -d "/home/box" ]] && [[ -w "/home/box" ]]; then
     IS_BOT_MACHINE=true
     echo -e "Environment: ${GREEN}Bot machine${NC}"
-    USER_CONFIG_DIR="$BOT_MACHINE_USER_DIR"
+    USER_CONFIG_FILE="$BOT_MACHINE_CONFIG"
 else
     echo -e "Environment: ${GREEN}Local developer machine${NC}"
-    USER_CONFIG_DIR="$LOCAL_USER_DIR"
+    USER_CONFIG_FILE="$LOCAL_CONFIG"
 fi
 
-USER_CONFIG_FILE="$USER_CONFIG_DIR/$USERNAME.yaml"
-
 # Step 1: Create or update user preference file
-echo -e "\n${BLUE}Step 1: User preference file${NC}"
+echo -e "\n${BLUE}Step 1: User preferences file${NC}"
 echo "Location: $USER_CONFIG_FILE"
 
-mkdir -p "$USER_CONFIG_DIR"
+# Check for migration from old format
+OLD_USER_DIR="$(dirname "$USER_CONFIG_FILE")/users"
+OLD_USER_FILE="$OLD_USER_DIR/$USERNAME.yaml"
 
-if [[ -f "$USER_CONFIG_FILE" ]]; then
+if [[ -f "$OLD_USER_FILE" ]] && [[ ! -f "$USER_CONFIG_FILE" ]]; then
+    echo -e "${YELLOW}Found old user config format at $OLD_USER_FILE${NC}"
+    echo "Migrating to new single-file format..."
+    
+    # Ensure directory exists
+    mkdir -p "$(dirname "$USER_CONFIG_FILE")"
+    
+    # Copy old file to new location
+    cp "$OLD_USER_FILE" "$USER_CONFIG_FILE"
+    
+    echo -e "${GREEN}✓ Migrated from old format${NC}"
+    echo "Old file preserved at: $OLD_USER_FILE"
+    echo "You can safely delete the old users/ directory after verification."
+elif [[ -f "$USER_CONFIG_FILE" ]]; then
     echo -e "${YELLOW}Existing config found. Keeping existing preferences.${NC}"
     echo "To reset preferences, delete $USER_CONFIG_FILE and re-run this script."
 else
-    echo "Creating new user config from template..."
+    # Create new config
+    echo "Creating new user preferences file from template..."
+    
+    # Ensure directory exists
+    mkdir -p "$(dirname "$USER_CONFIG_FILE")"
+    
     cat > "$USER_CONFIG_FILE" << EOF
 # User preferences for ai-framework
 # ---------------------------------------------------------------------------
-# This file contains per-user runtime preferences that override the shared
+# This file contains runtime preferences that override the shared
 # ai-framework.config.yaml settings. It should NOT be committed to the
 # repository.
 #
+# One file per machine: each person runs the framework on their own bot machine,
+# so only one person's preferences live on a given machine.
+#
 # Location precedence (highest to lowest):
-#   1. User config file (this file)
+#   1. User preferences file (this file)
 #   2. Per-role setting in ai-framework.config.yaml (runtime.<role>)
 #   3. Shared default in ai-framework.config.yaml (runtime.default)
 # ---------------------------------------------------------------------------
@@ -88,6 +111,13 @@ else
 user: $USERNAME
 
 # Runtime preferences
+# Supported runtimes:
+#   cursor        - Cursor Cloud Agents (Cursor-managed VMs). This is the
+#                   shared default. The bot machine coordinates cloud agent work.
+#                   Local Windows PC execution is NEVER the default.
+#   cursor-local  - Cursor IDE on your local machine (opt-in only, not the default)
+#   claude-code   - Claude Code or other Claude interfaces
+#
 # Uncomment and set the default to override the shared default for all your roles.
 # runtime:
 #   default: cursor
@@ -99,7 +129,7 @@ user: $USERNAME
 #   review: cursor
 #   testing: cursor
 EOF
-    echo -e "${GREEN}✓ Created user config${NC}"
+    echo -e "${GREEN}✓ Created user preferences file${NC}"
 fi
 
 # Step 2: Cache framework on bot machine
@@ -159,9 +189,9 @@ if [[ "$IS_BOT_MACHINE" == true ]]; then
 #   2. Shared config (ai-framework.config.yaml)
 
 # To see your effective configuration, agents should:
-#   1. Read user config if it exists
+#   1. Read user preferences file if it exists
 #   2. Read shared config
-#   3. Merge with precedence: user > per-role > default
+#   3. Merge with precedence: user preferences > per-role > default
 
 user: $USERNAME
 user_config: $USER_CONFIG_FILE
@@ -176,7 +206,7 @@ fi
 
 # Summary
 echo -e "\n${GREEN}=== Initialisation Complete ===${NC}\n"
-echo "User config: $USER_CONFIG_FILE"
+echo "User preferences: $USER_CONFIG_FILE"
 if [[ "$IS_BOT_MACHINE" == true ]]; then
     echo "Framework cache: $BOT_MACHINE_CACHE_DIR"
 fi
@@ -184,9 +214,9 @@ echo ""
 echo "Next steps:"
 echo "  1. Edit $USER_CONFIG_FILE to set your runtime preferences"
 echo "  2. Agents will automatically resolve configuration from:"
-echo "     - Your user config (highest priority)"
+echo "     - Your user preferences file (highest priority)"
 echo "     - Per-role settings in ai-framework.config.yaml"
 echo "     - Shared default in ai-framework.config.yaml (lowest priority)"
 echo ""
-echo "To switch to a different runtime (e.g. claude-code), edit the user config file."
+echo "To switch to a different runtime (e.g. claude-code), edit the user preferences file."
 echo "See README.md for more details."

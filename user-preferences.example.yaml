@@ -1,22 +1,25 @@
 # User preferences for ai-framework
 # ---------------------------------------------------------------------------
-# This file contains per-user runtime preferences that override the shared
+# This file contains runtime preferences that override the shared
 # ai-framework.config.yaml settings. It should NOT be committed to the
 # repository.
 #
+# One file per machine: each person runs the framework on their own bot machine,
+# so only one person's preferences live on a given machine.
+#
 # Location precedence (highest to lowest):
-#   1. User config file (this file)
+#   1. User preferences file (this file)
 #   2. Per-role setting in ai-framework.config.yaml (runtime.<role>)
 #   3. Shared default in ai-framework.config.yaml (runtime.default)
 #
 # Default location on the bot machine:
-#   /home/box/ai-framework/users/<user>.yaml
+#   /home/box/ai-framework/user-preferences.yaml
 #
 # Default location on a developer's machine:
-#   ~/.ai-framework/users/<user>.yaml
+#   ~/.ai-framework/user-preferences.yaml
 #
 # Override with environment variable:
-#   AI_FRAMEWORK_USER_CONFIG=/path/to/your/config.yaml
+#   AI_FRAMEWORK_USER_CONFIG=/path/to/your/user-preferences.yaml
 # ---------------------------------------------------------------------------
 
 # Your username (for identification only; not used for resolution)

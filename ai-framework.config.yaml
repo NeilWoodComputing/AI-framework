@@ -22,8 +22,11 @@ config_version: 1
 # ---------------------------------------------------------------------------
 # Runtime
 # Which agent runtime or tool performs the work for each role. The shared
-# default applies unless a per-role override is set. Per-user preferences in
-# a user config file take precedence over both (see README.md → Runtime configuration).
+# default applies unless a per-role override is set. User preferences in
+# user-preferences.yaml take precedence over both (see README.md → Runtime configuration).
+#
+# One file per machine: each person runs the framework on their own bot machine,
+# so only one person's preferences live on a given machine.
 #
 # Agents running under a different runtime than their assigned role must stop
 # and hand off rather than silently running under the wrong subscription.
@@ -33,7 +36,7 @@ config_version: 1
 #                   the bot machine. This is the default. Local Windows PC
 #                   execution is NEVER the default; local-machine execution
 #                   (Cursor IDE on a developer's machine) is opt-in only via
-#                   per-user config.
+#                   user-preferences.yaml.
 #   claude-code   - Claude Code or other Claude interfaces
 #   (more runtimes can be added later)
 #

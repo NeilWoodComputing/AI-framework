@@ -1,6 +1,8 @@
-# User configuration files (not committed - per-user preferences)
-users/*.yaml
-!users/example.yaml
+# User preferences file (not committed - one file per machine)
+user-preferences.yaml
+
+# Old user config files (from before migration to single-file)
+users/
 
 # Cache directory (on bot machine)
 cache/
