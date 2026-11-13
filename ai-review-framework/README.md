@@ -77,7 +77,7 @@ Written to the feature's `reviews/` folder on every round:
 - When creating a feature's `reviews/` folder for the first time, copy `templates/reviews-folder-README.md` into it as `README.md`.
 - PR re-reviews overwrite the same report. The header records the reviewed commit and iteration number.
 
-The report follows `templates/review-report.md`. Inline comments (Azure DevOps PR route only, when publishing is enabled) follow `templates/review-comment.md`.
+The report follows `templates/review-report.md`. Inline comments (GitHub and Azure DevOps PR route, when publishing is enabled) follow `templates/review-comment.md`.
 
 After each round the reviewing agent updates the feature's `handoff.md` and messages the implementing agent (changes requested) or the human owner (approved), by the names in `agents`. See `AGENT-BRIEF.md` → **Handoff**.
 

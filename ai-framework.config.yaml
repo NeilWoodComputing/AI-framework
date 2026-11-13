@@ -449,7 +449,7 @@ handoff:
   #           (direct-handoff). The reviewing agent reviews all code relevant to
   #           the plan (review.direct_scope: plan), or a local git diff when
   #           direct_scope is diff.
-  code_to_review: direct                 # pr | direct
+  code_to_review: pr                     # pr | direct
 
   # Implementing agent -> testing agent, at the SAME TIME as code_to_review (Neil,
   # 2026-10-08 19:07 BST, option B). No new stage: the feature stays in-review,
@@ -461,8 +461,8 @@ handoff:
 
   # Reviewing agent -> implementing agent. Findings go in the full report and
   # reviews/<review.log_file>; the reviewing agent messages the implementing agent
-  # the report path. On the pr route they are also posted to the PR only when
-  # review.publish allows (provider azure-devops only). Later option: devops
+  # the report path. On the pr route they are also posted to the PR when
+  # review.publish allows (supported on azure-devops and github). Later option: devops
   # (comment on the work item).
   review_feedback: direct                # direct
 

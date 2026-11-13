@@ -48,7 +48,7 @@ Skip stage 3 or 4 only when the tickets have no API or no UI work, and say so in
 
 ### 1. pick-up
 
-- `direct`: open `work/<feature>/handoff.md`. `devops`: find the ticket ID in the work item title, then the feature's `handoff.md`.
+- `direct`: open `work/<feature>/handoff.md`. `devops`: find the ticket ID in the work item title (Azure DevOps or GitHub issue), then the feature's `handoff.md`. For GitHub Issues, use the cross-repo closing keyword `Closes owner/repo#N` in the PR when tickets and code are in different repositories.
 - Load every ticket in `tickets`, every path in each ticket's **Specs** field (`specs/*.yaml`, `excel/*.xlsx`) and `stubs/ui-to-db.yaml` if present
 - Build a control inventory (per control: section / step, label, type, mandatory, editable, enablement, min / max, validation + messages, Service / Table / Column) and a scenario list (`<ticket>/S1`, `S2`, …)
 - On `changes-requested`: also load `review.report` (and the latest round in `review.log`, `reviews/review-log.md`) and list its findings by ID. If the handback is from a **test** failure / test-review code defect, also note `testing.test_fix_cycle` vs `testing.max_test_fix_cycles` (does not increment review cycle)

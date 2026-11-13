@@ -90,9 +90,9 @@ Whenever you run a check (build, lint, typecheck, tests, the pre-handoff runner 
 - Every report has a **Review scope** section: how the scope was built, and each file reviewed with its reason (manifest / discovered / diff)
 - Then append the round to `<feature_path>/reviews/review-log.md` (`review.log_file`, template `templates/review-log.md`) on **both** routes: date, source, branch or PR, verdict, and each comment as `file:line`, severity, comment and suggested fix (required for direct; PR route logs a summary). Append only.
 
-## Publishing (PR route, Azure DevOps only)
+## Publishing (PR route)
 
-Follow `loops/pr-review.md` stage 9. PR posting is off until Azure DevOps is in use, and you never vote. Never read, print or store token values. Do not push commits, change branches, or edit the code under review.
+Follow `loops/pr-review.md` stage 9. PR posting is controlled by `review.publish.enabled` (supported on azure-devops and github providers), and you never vote. Never read, print or store token values. Do not push commits, change branches, or edit the code under review.
 
 ## Handoff (implementing agent → reviewing agent → implementing agent / human owner)
 
