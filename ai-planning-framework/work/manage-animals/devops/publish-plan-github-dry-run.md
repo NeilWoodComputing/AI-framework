@@ -101,55 +101,66 @@ Then Animal.Attributes is stored as []
 And Animal.Attributes is never null
 ```
 
-### Scenario: S3 — NormalizedName is unique among non-deleted rows
+### Scenario: S3 — Normalised name is unique among non-deleted rows
 
 ```gherkin
-Given an Animal with NormalizedName "BESSIE" is not deleted
-When the Animals service attempts to save another Animal with Name " Bessie " or " bessie "
-Then the save fails
-And the unique index ix_animals_normalized_name_active prevents the duplicate
-When an Animal with NormalizedName "DAISY" has been soft-deleted
-And a new Animal is saved with Name "Daisy"
-Then the save succeeds
-And the unique index allows the duplicate NormalizedName while one is soft-deleted
+Given a non-deleted Animal exists with NormalizedName "BESSIE"
+When another non-deleted Animal row with NormalizedName "BESSIE" is inserted
+Then the database rejects the insert with a unique-constraint violation on ix_animals_normalized_name_active
 ```
 
 ### Scenario: S4 — A soft-deleted animal's name can be reused
 
 ```gherkin
-Given the only Animal with Name "Bessie" has been soft-deleted
-When a new Animal is saved with Name "Bessie" and valid DateBorn
-Then the create succeeds
-And the unique check excluded the soft-deleted row
+Given an Animal with NormalizedName "BESSIE" has IsDeleted = true
+When a new non-deleted Animal row with NormalizedName "BESSIE" is inserted
+Then the insert succeeds
+And both rows remain in creatures.animals
 ```
 
-### Scenario: S5 — UpdatedBy FK enforces referential integrity
+### Scenario: S5 — Soft-deleted flag exists
 
 ```gherkin
-Given a valid Animal row references Animal.UpdatedBy → auth.users(id)
-When the auth.users row is attempted to be deleted
-Then the delete is restricted (not cascaded)
-And the Animal row still references a valid user id
+Given an Animal row exists
+When IsDeleted is set to true for that row
+Then the row remains in storage
+And list and get queries for non-deleted animals exclude it
 ```
 
-### Scenario: S6 — animals_write permission is seeded
+### Scenario: S6 — Table lives in the creatures schema
 
 ```gherkin
-Given the migration has been applied
-When auth.permissions is queried
-Then a row exists with permission_name "animals_write", display_name "Manage animals", category "Animals"
-And the permission is stable id 25
+Given an empty database
+When the API starts and applies its migrations
+Then schema creatures exists
+And table creatures.animals exists with primary key pk_animals and index ix_animals_normalized_name_active
+And there is no table auth.animals
+And the EF migrations history is recorded in auth.__ef_migrations_history
 ```
 
-### Scenario: S7 — Administrators and Standard groups receive animals_write
+### Scenario: S7 — The animals permission is seeded for our users
 
 ```gherkin
-Given the migration has been applied
-And the default tenant has preset groups Administrators and Standard
-When permission_group_permissions is queried
-Then both groups are linked to permission animals_write
-And self-registered users (Administrators or Standard) get animals_write in their next token
+Given an empty database
+When the API starts and applies its migrations
+Then auth.permissions contains "animals_write" with display name "Manage animals" and category "Animals"
+And it is the only permission in category "Animals" (no read permission)
+And the preset Administrators group has "animals_write"
+And the preset Standard group has "animals_write"
+And no feature in auth.features grants the "Animals" category
+When an existing Standard-group user signs in again
+Then their token contains the permission claim "animals_write"
 ```
+
+## Acceptance criteria (summary)
+
+- [ ] S1 — Animal table stores all mapped columns
+- [ ] S2 — Attributes default to an empty array
+- [ ] S3 — Normalised name is unique among non-deleted rows
+- [ ] S4 — A soft-deleted animal's name can be reused
+- [ ] S5 — Soft-deleted flag exists
+- [ ] S6 — Table lives in the creatures schema
+- [ ] S7 — The animals permission is seeded for our users
 
 ## Out of scope
 
@@ -444,7 +455,7 @@ The page that hosts this grid (route, nav link, permission gate, no-permission m
 
 ## Acceptance criteria
 
-(Scenarios continue; S1, S10 and S11 moved to T-ANIMAL-008)
+Scenario IDs are stable (decision 28). **S1, S10 and S11 moved to T-ANIMAL-008** (the page ticket) as T-ANIMAL-008 S1, S2 and S3; S2–S9 stay here with their numbers; S12 and S13 are new scenarios for paging and the empty state (final since Neil accepted Q37 at 19:00 BST). S14 and S15 are new for decision 29 (boolean icons); no old → new remap.
 
 ### Scenario: S2 — List shows non-deleted animals
 
@@ -497,63 +508,78 @@ Then rows are sorted by Animal.Name ascending by default
 
 ```gherkin
 Given I have permission animals_write
-And I am on Manage Animals
+And Manage Animals is open
 When I click "+ Add Animal"
-Then Add | Edit Animal opens in Add mode as a modal over the page
+Then Add | Edit Animal opens in Add mode
 ```
 
-### Scenario: S8 — Clicking a row does nothing
+### Scenario: S8 — Edit opens Basic Form with existing data
 
 ```gherkin
-Given I am on Manage Animals with one or more rows
-When I click a row
-Then the row is not selected and no modal opens and no handler runs
-And I must choose Edit Animal from the row actions menu to edit
+Given I have permission animals_write
+And an Animal row is shown on Manage Animals
+When I open that row's actions menu in the Actions column and choose Edit Animal
+Then Add | Edit Animal opens in Edit mode
+And fields are loaded via the Animals service from Animal for that row
 ```
 
-### Scenario: S9 — Actions column is last
+### Scenario: S9 — Row actions menu in the last column; row click does nothing
 
 ```gherkin
-Given the Manage Animals grid has columns Name, Is Furry, Has Hooves, Date Born, Attributes, Last Amended
-When the grid renders
-Then the Actions column is shown after Last Amended as the last column
-And the Actions header is not sortable
+Given I have permission animals_write
+And Animal rows are shown on Manage Animals
+Then the last column of the grid is "Actions", after Last Amended, and it is not sortable
+And every row's Actions cell has an "Actions" menu trigger
+When I open a row's actions menu
+Then it lists Edit Animal then Delete Animal, each with its icon, and no View Animal
+When I click a row outside its Actions cell
+Then nothing opens and no form is shown
 ```
 
-### Scenario: S12 — Page size options
+### Scenario: S12 — Results are paged on the server
 
 ```gherkin
-Given I am on Manage Animals
-When the paginator renders
-Then the default page size is 20
-And I can choose 5, 10, 20, 50, 100 or 200 rows per page
+Given 25 non-deleted Animals exist
+And I have permission animals_write
+When Manage Animals loads
+Then the grid shows the first 20 rows sorted by Animal.Name ascending
+And the page size options are 5, 10, 20, 50, 100 and 200
+When I go to the next page
+Then the remaining 5 rows are requested from v1/Animal via the Animals service and shown
 ```
 
-### Scenario: S13 — Empty state
+### Scenario: S13 — No animals to show
 
 ```gherkin
 Given no non-deleted Animals exist
+And I have permission animals_write
 When Manage Animals loads
-Then the results area shows "No results"
+Then the results area shows the message "No results"
 And "+ Add Animal" is still available
 ```
 
-### Scenario: S14 — Is Furry / Has Hooves show boolean icons, not switches
+### Scenario: S14 — True shows a green circle with a tick, accessible name Yes
 
 ```gherkin
-Given the grid has columns Is Furry and Has Hooves
-When a row renders with Animal.IsFurry true and Animal.HasHooves false
-Then Is Furry shows a filled green circle with a tick cut-out (renderBooleanIconCell)
-And Has Hooves shows a filled red circle with a cross cut-out
-And neither is an editable Switch
+Given I have permission animals_write
+And an Animal exists with Animal.IsFurry true and Animal.HasHooves true
+When Manage Animals loads
+Then that row's Is Furry cell shows a filled circle coloured var(--app-boolean-true-fill) with the design-system Icon named Check as a transparent cut-out (Icon knockout="circle"; the row colour shows through the tick), and accessible name "Yes"
+And that row's Has Hooves cell shows the same green circle with Check cut-out and accessible name "Yes"
+And neither cell is a Switch
 ```
 
-### Scenario: S15 — Boolean icons are not interactive
+### Scenario: S15 — False shows a red circle with a cross, No; cells are not interactive
 
 ```gherkin
-Given a boolean icon cell is shown in the Is Furry or Has Hooves column
-When I click the cell
-Then no handler runs and the cell is not focusable as a control
+Given I have permission animals_write
+And an Animal exists with Animal.IsFurry false and Animal.HasHooves false
+When Manage Animals loads
+Then that row's Is Furry and Has Hooves cells each show a filled circle coloured var(--app-boolean-false-fill) with the design-system Icon named Close as a transparent cut-out (Icon knockout="circle"; the row colour shows through the cross), and accessible name "No"
+When I click either cell
+Then no request is sent and no form or menu opens
+And neither cell is focusable as a control
+And meaning is not colour-only (accessible name present)
 ```
 
 ## Acceptance criteria (summary)
@@ -564,12 +590,12 @@ Then no handler runs and the cell is not focusable as a control
 - [ ] S5 — Last Amended outside summer time
 - [ ] S6 — Default sort by Name ascending
 - [ ] S7 — Add opens Basic Form
-- [ ] S8 — Clicking a row does nothing
-- [ ] S9 — Actions column is last
-- [ ] S12 — Page size options
-- [ ] S13 — Empty state
-- [ ] S14 — Is Furry / Has Hooves show boolean icons, not switches
-- [ ] S15 — Boolean icons are not interactive
+- [ ] S8 — Edit opens Basic Form with existing data
+- [ ] S9 — Row actions menu in the last column; row click does nothing
+- [ ] S12 — Results are paged on the server
+- [ ] S13 — No animals to show
+- [ ] S14 — True shows a green circle with a tick, accessible name Yes
+- [ ] S15 — False shows a red circle with a cross, No; cells are not interactive
 
 ## Out of scope
 
@@ -1002,6 +1028,8 @@ Then the array column shows "dairy, docile"
 And a row with [] shows an empty cell
 ```
 
+*(Old → new: the previous "Grid cells" scenario also required a read-only boolean Switch cell. That boolean part moved to **T-ANIMAL-009** scenarios S1–S3 / T-ANIMAL-003 S14–S15 under decision 29. This scenario keeps only the string-array half and is renamed in place.)*
+
 ## Acceptance criteria (summary)
 
 - [ ] S1 — Switch renders and binds a boolean
@@ -1078,8 +1106,6 @@ And a row with [] shows an empty cell
 
 ## Acceptance criteria
 
-(Selected key scenarios; full scenarios in ticket)
-
 ### Scenario: S1 — Row actions menu in the last column
 
 ```gherkin
@@ -1114,13 +1140,64 @@ Then it lists only "Open"
 And no disabled "Edit Animal" or "Delete Animal" items are shown
 ```
 
+### Scenario: S4 — Any one of several permissions is enough
+
+```gherkin
+Given a row action that requires any of "reports_view" or "animals_write"
+When I am signed in with "animals_write" only
+Then the item is listed in every row's menu
+```
+
 ### Scenario: S5 — No Actions column when no item is allowed
 
 ```gherkin
-Given row actions all require permission "animals_write"
+Given every row action requires permission "animals_write"
 And I am signed in without "animals_write"
 When the grid renders
-Then there is no Actions column
+Then the grid has no "Actions" column
+And the last column is the last data column
+```
+
+### Scenario: S6 — Per-row visibility
+
+```gherkin
+Given a row action "Delete Animal" with isVisible returning false for the row named "Bessie"
+When I open the menus for rows "Bessie" and "Ziggy"
+Then the "Ziggy" menu lists "Delete Animal"
+And the "Bessie" menu does not
+```
+
+### Scenario: S7 — A row with no visible items has no trigger
+
+```gherkin
+Given a single row action "Delete Animal" with isVisible returning false for the row named "Bessie"
+When the grid renders rows "Bessie" and "Ziggy"
+Then the "Bessie" row's Actions cell is empty
+And the "Ziggy" row's Actions cell shows the "Actions" menu trigger
+```
+
+### Scenario: S8 — Existing text-button grids are unaffected
+
+```gherkin
+Given the seeded reference-data types EXAMPLE_STATUS and SHOWCASE_OPTION (2 active items each, from the existing migration seed; no extra reset rows)
+And I am signed in as a user with user_management_read
+When I open the reference-data types grid
+Then it shows exactly 2 rows, EXAMPLE_STATUS then SHOWCASE_OPTION, with Active items 2 and 2
+And the columns are "Type key", "Active items", "Actions", with "Actions" last and not sortable
+And each row's Actions cell has exactly one "Manage" text button and no row actions menu trigger
+When I click Manage on the SHOWCASE_OPTION row
+Then the Manage SHOWCASE_OPTION modal opens listing Widget and Gadget
+And closing it returns to the reference-data types grid
+```
+
+### Scenario: S9 — Menu closes on Escape and outside click
+
+```gherkin
+Given a row's actions menu is open
+When I press Escape
+Then the menu closes and no action runs
+When I open it again and click outside it
+Then the menu closes and no action runs
 ```
 
 ## Acceptance criteria (summary)
@@ -1130,9 +1207,10 @@ Then there is no Actions column
 - [ ] S3 — Items are hidden without the required permission
 - [ ] S4 — Any one of several permissions is enough
 - [ ] S5 — No Actions column when no item is allowed
-- [ ] S6 — Per-row visibility with isVisible
-- [ ] S7 — Empty cell when no items visible for that row
-- [ ] S8 — Existing grids unchanged
+- [ ] S6 — Per-row visibility
+- [ ] S7 — A row with no visible items has no trigger
+- [ ] S8 — Existing text-button grids are unaffected
+- [ ] S9 — Menu closes on Escape and outside click
 
 ## Out of scope
 
@@ -1195,6 +1273,8 @@ Then there is no Actions column
 6. Standing rule (decision 27): a routed list page shows its list on the page; modals only for the Add | Edit form and the delete confirmation. Follow UI.NextJs.Framework `.cursor/rules/framework/nextjs-list-pages.mdc` and `nextjs-modal-routing.mdc` for the form. (Was T-ANIMAL-003 item 8.)
 
 ## Acceptance criteria
+
+Scenario IDs are stable (decision 28). S1–S3 moved here from T-ANIMAL-003 (old S1, S10, S11) with their wording unchanged; S4–S6 are new in the split and restate decision 27 (no behaviour change).
 
 ### Scenario: S1 (was T-ANIMAL-003 S1) — Open Manage Animals from the nav (decisions 24, 27)
 
@@ -1260,12 +1340,12 @@ And the grid is shown on the page with no modal open
 
 ## Acceptance criteria (summary)
 
-- [ ] S1 — Open Manage Animals from the nav
-- [ ] S2 — User without animals_write cannot open Manage Animals
-- [ ] S3 — User-management permissions alone do not give access to animals
-- [ ] S4 — Add | Edit Animal opens as a modal over the page and closes back to it
-- [ ] S5 — Opening a form URL directly shows the page with the form on top
-- [ ] S6 — The old /manage URL redirects to the page
+- [ ] S1 (was T-ANIMAL-003 S1) — Open Manage Animals from the nav (decisions 24, 27)
+- [ ] S2 (was T-ANIMAL-003 S10) — User without animals_write cannot open Manage Animals
+- [ ] S3 (was T-ANIMAL-003 S11) — User-management permissions alone do not give access to animals
+- [ ] S4 — Add | Edit Animal opens as a modal over the page and closes back to it (decision 27)
+- [ ] S5 — Opening a form URL directly shows the page with the form on top (decision 27)
+- [ ] S6 — The old /manage URL redirects to the page (decision 27)
 
 ## Out of scope
 
@@ -1328,8 +1408,6 @@ And the grid is shown on the page with no modal open
 
 ## Acceptance criteria
 
-(Selected key scenarios; full scenarios in ticket)
-
 ### Scenario: S1 — True shows a green circle with a tick, named Yes
 
 ```gherkin
@@ -1353,6 +1431,25 @@ And the design-system Icon named Close is a transparent cut-out of that circle (
 And the cell has an accessible name "No" (not colour-only)
 ```
 
+### Scenario: S3 — Cell is not interactive
+
+```gherkin
+Given a boolean-icon cell is shown for true or false
+When I click the cell
+Then no request is sent and no handler runs
+And the cell is not focusable as a control (not a button, link or switch)
+```
+
+### Scenario: S4 — Labels are configurable with Yes/No defaults
+
+```gherkin
+Given renderBooleanIconCell is called with trueLabel "Furry" and falseLabel "Not furry"
+When a true value and a false value render
+Then the accessible names are "Furry" and "Not furry" respectively
+When it is called with no label options
+Then the accessible names default to "Yes" and "No"
+```
+
 ### Scenario: S5 — Null / undefined shows em dash named Not set
 
 ```gherkin
@@ -1363,6 +1460,40 @@ Then it shows an em dash "—" (not a Check or Close icon, and no circle)
 And the em dash uses the theme text colour var(--app-text-primary)
 And the cell has an accessible name "Not set"
 And it is not colour-coded as success or error
+```
+
+### Scenario: S6 — Existing switch cell still available
+
+```gherkin
+Given renderBooleanSwitchCell is still exported from @entity-framework
+When another grid calls renderBooleanSwitchCell
+Then it still renders a read-only Switch as before
+And Manage Animals Is Furry / Has Hooves do not use it after T-ANIMAL-003 switches over
+```
+
+### Scenario: S7 — Circle fills meet contrast in light and dark mode
+
+```gherkin
+Given the boolean cell fill tokens in tokens.css
+When the theme is light (no data-theme or data-theme="light")
+Then --app-boolean-true-fill is #609b44 and --app-boolean-false-fill is #ef5673
+And each fill is at least 3:1 against the grid row #ffffff and row hover #fafafa (3.35 / 3.21 and 3.36 / 3.22)
+When the theme is dark (html data-theme="dark")
+Then --app-boolean-true-fill is #8dc374 and --app-boolean-false-fill is #ff9aa8
+And each fill is at least 3:1 against the grid row #2d3a4a and row hover #3d4854 (5.61 / 4.52 and 5.75 / 4.63)
+And there is no --app-boolean-glyph token (the cut-out shows the row colour; Neil 20:19)
+And switching the theme updates the circle colours without a reload
+```
+
+### Scenario: S8 — Dedicated tokens leave system buttons and callouts unchanged
+
+```gherkin
+Given the boolean cell uses --app-boolean-true-fill and --app-boolean-false-fill
+When tokens.css is updated for decision 30
+Then --system-green stays #72b453 and --system-red stays #cf1337 in both themes
+And --app-boolean-glyph is not defined
+And the System green / System red buttons and the success / error callouts look as before
+And the renderer contains no hard-coded colour values
 ```
 
 ## Acceptance criteria (summary)
