@@ -9,3 +9,33 @@ cache/
 
 # Resolved config files
 .resolved-config-*.yaml
+
+# Python
+__pycache__/
+*.pyc
+
+# Node.js
+node_modules/
+.next/
+
+# IDE and editor
+.vs/
+
+# Build artifacts
+bin/
+obj/
+dist/
+
+# Test outputs
+TestResults/
+playwright-report/
+test-results/
+coverage/
+
+# Environment files
+.env
+.env.*
+
+# Keep pre-handoff fixture files tracked (negation rules)
+!ai-code-framework/scripts/fixtures/pre-handoff/api-bad/.env.local
+!ai-code-framework/scripts/fixtures/pre-handoff/api-bad/bin/
