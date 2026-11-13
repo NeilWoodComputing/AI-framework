@@ -5,6 +5,7 @@ Short instructions for the **implementing agent** (`agents.code` in `../ai-frame
 ## Read first
 
 0. `../ai-framework.config.yaml` — shared config (paths relative to the `ai-framework` root):
+   - `runtime` — which agent runtime performs the work (Cursor Cloud Agents, Claude Code, etc.). Resolve your effective runtime from user config → per-role → shared default (see `../README.md` → Runtime configuration). **Verify you are running under the correct runtime before doing any work.** If assigned to a different runtime, stop and hand off.
    - `development.api.active` / `development.ui.active` — the **only** API and UI you build in; each option's `path`, `agent_docs`, `rules`, `skills`
    - `frameworks.code.rules` — shared rules (`.cursor/rules/`)
    - `output.work_dir` — where each `<feature>/` lives (specs, Excel, tickets, `handoff.md`)

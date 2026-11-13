@@ -1,0 +1,42 @@
+# User preferences for ai-framework
+# ---------------------------------------------------------------------------
+# This file contains per-user runtime preferences that override the shared
+# ai-framework.config.yaml settings. It should NOT be committed to the
+# repository.
+#
+# Location precedence (highest to lowest):
+#   1. User config file (this file)
+#   2. Per-role setting in ai-framework.config.yaml (runtime.<role>)
+#   3. Shared default in ai-framework.config.yaml (runtime.default)
+#
+# Default location on the bot machine:
+#   /home/box/ai-framework/users/<user>.yaml
+#
+# Default location on a developer's machine:
+#   ~/.ai-framework/users/<user>.yaml
+#
+# Override with environment variable:
+#   AI_FRAMEWORK_USER_CONFIG=/path/to/your/config.yaml
+# ---------------------------------------------------------------------------
+
+# Your username (for identification only; not used for resolution)
+user: example-user
+
+# Runtime preferences
+# Supported runtimes:
+#   cursor        - Cursor Cloud Agents (Cursor-managed VMs). This is the
+#                   shared default. The bot machine coordinates cloud agent work.
+#                   Local Windows PC execution is NEVER the default.
+#   cursor-local  - Cursor IDE on your local machine (opt-in only, not the default)
+#   claude-code   - Claude Code or other Claude interfaces
+#
+# Uncomment and set the default to override the shared default for all your roles.
+# runtime:
+#   default: cursor
+
+# Per-role overrides (optional). Uncomment and set to override for specific roles.
+# runtime:
+#   planning: cursor
+#   code: cursor
+#   review: cursor
+#   testing: cursor
