@@ -34,7 +34,7 @@ services:
   - name: Water Domain
 
 glossary:
-  System: The CandC application (formerly Unity).
+  System: The CandC application.
   NAV: New Appointment Variation.
   DWI: Drinking Water Inspectorate (UK drinking water regulator).
 
