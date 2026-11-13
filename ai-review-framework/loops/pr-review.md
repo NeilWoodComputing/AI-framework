@@ -47,7 +47,7 @@ Read `../ai-framework.config.yaml` (paths relative to the `ai-framework` root) b
         ↓
 8. write-review-report         scope, summary, tables, verdict → reviews/PR-<id>-review.md | DIRECT-<branch-slug|feature>-<n>-review.md
         ↓
-9. publish (azure-devops only)  inline + summary comments when review.publish allows; else record "Not published"; never a vote
+9. publish                      inline + summary comments when review.publish allows (azure-devops, github); else record "Not published"; never a vote
         ↓
 10. write-review-log           append the round to reviews/review-log.md (BOTH routes)
         ↓
