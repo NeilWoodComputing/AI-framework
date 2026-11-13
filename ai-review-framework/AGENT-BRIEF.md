@@ -35,10 +35,10 @@ Automatically, on any of `review.triggers` (`review.auto_review: true`). No huma
 
 ## Get the change
 
-- **Scope boundary (every route).** Only files under `review.scope_include` (the folders listed there in the config) are ever reviewed. Planning artefacts (specs, tickets, stubs, Excel) are the reference for what should be built, never reviewed. Framework docs, the config and anything else outside `review.scope_include` are never in scope; a PR or diff file outside it is listed as excluded in the report's **Review scope** and not reviewed.
+- **Scope boundary (every route).** Only files under `review.scope_include` (the folders listed there in the config) are ever reviewed. Review scope per repo: AI-framework (framework folders, handoff, scripts, tests, root config and README) and ai-framework-tests (api/ and ui/ app code). Planning artefacts (specs, tickets, stubs, Excel) are the reference for what should be built, never reviewed. Files outside `review.scope_include` are listed as excluded in the report's **Review scope** and not reviewed.
 - **Direct hand-off, `review.direct_scope: plan` (default):** review **all code relevant to the plan**, not a diff. No git, branch or `target_branch` is needed. Build the scope as in `skills/gather-pr-context/SKILL.md` step 9, the one home for the plan-scope rules.
 - **Direct hand-off, `direct_scope: diff`:** run `git diff <base_branch>...<branch>` in each repo from `handoff.md` (target falls back to `review.target_branch`; a placeholder or non-git repo → stop and report).
-- **PR:** read it the way `loops/pr-review.md` stage 1 says for `review.provider`. If that provider's values are `<placeholders>` or its connector is unavailable, stop and report. Fall back to `local-git` only if the human owner agrees or `review.provider` already says `local-git`.
+- **PR:** read it the way `loops/pr-review.md` stage 1 says for `review.provider`. PRs on both AI-framework (framework changes) and ai-framework-tests (app code) are in scope. If that provider's values are `<placeholders>` or its connector is unavailable, stop and report. Fall back to `local-git` only if the human owner agrees or `review.provider` already says `local-git`.
 
 ## Link tickets and specs
 

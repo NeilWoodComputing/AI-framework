@@ -14,7 +14,7 @@ The review scope depends on the route:
 | Direct (`handoff.code_to_review: direct`) | `plan` (default) | **Plan scope:** every file that implements the feature's plan, read whole. Built from the implementing agent's `implementation` manifest plus a search of the active API / UI paths (step 9). Needs no git and no target branch |
 | Direct | `diff` | Local `git diff <base_branch>...<branch>` in each repo (old behaviour) |
 
-On every route the scope holds only files under `review.scope_include` (the folders listed there in the config). Planning artefacts (specs, tickets, stubs, Excel) are loaded below as the reference for what should be built, but are never reviewed. Framework docs, the config and anything else outside `review.scope_include` are never in scope.
+On every route the scope holds only files under `review.scope_include` (the folders listed there in the config). Review scope per repo: AI-framework (framework folders, handoff, scripts, tests, root config and README) and ai-framework-tests (api/ and ui/ app code). Planning artefacts (specs, tickets, stubs, Excel) are loaded below as the reference for what should be built, but are never reviewed. Files outside `review.scope_include` are never in scope.
 
 ## Inputs
 
@@ -42,7 +42,7 @@ On every route the scope holds only files under `review.scope_include` (the fold
      - `direct_scope: diff` — run the `local-git` commands below with `base_branch` (else `review.target_branch`) as target and `branch` as source. A repo that is not under git, or a placeholder target, → stop and report.
    - **PR route:** get PR metadata and diff from `review.provider`:
      - `azure-devops` — through the connector, read-only: title, description, source / target refs, latest iteration and commit, changed files, diff. Needs `review.azure_devops.*` filled and the env var named by `secrets.azure_devops_pat_env` set. Never print or store the token.
-     - `github` — same, with `review.github.*`. Use a connected GitHub connector where available (no token needed); otherwise the env var named by `secrets.github_token_env`.
+     - `github` — same, with `review.github.*`. Covers PRs on both NeilWoodComputing/AI-framework (framework changes) and NeilWoodComputing/ai-framework-tests (app code). Use a connected GitHub connector where available (no token needed); otherwise the env var named by `secrets.github_token_env`.
      - `cursor-origin` — through the Cursor Origin connector, read-only, with `owner` = `review.cursor_origin.namespace` and repository name = `review.cursor_origin.repository`. No token env var is needed:
        - **pull request read**, summary view → title, description, source (head) and target (base) branches, head commit; files view → changed files; commits view → commits in the PR
        - **compare commits** `<target>...<source>` (relative to the merge base, as a PR shows) → the diff

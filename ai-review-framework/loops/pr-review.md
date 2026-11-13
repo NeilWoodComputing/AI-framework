@@ -61,15 +61,15 @@ Stages 2–4 are the critical path. Stages 5–7 still run when no ticket is lin
 ### 1. gather-pr-context
 
 - Run `skills/gather-pr-context/SKILL.md`
-- Every route: only files under `review.scope_include` enter the review scope. Specs, tickets and stubs are loaded as the reference, not reviewed; PR / diff files outside `review.scope_include` are listed as excluded
+- Every route: only files under `review.scope_include` enter the review scope. Review scope per repo: AI-framework (framework folders, handoff, scripts, tests, root config and README) and ai-framework-tests (api/ and ui/ app code). Specs, tickets and stubs are loaded as the reference, not reviewed; PR / diff files outside `review.scope_include` are listed as excluded
 - Direct route: read `<feature_path>/handoff.md` (stage `in-review`, owner `agents.review.id`, not `example: true`): repos, tickets, the `implementation` manifest, and branch / head commit where present. Review round `n` = `review.cycle` + 1
   - `direct_scope: plan` (default): build the plan scope as in `skills/gather-pr-context/SKILL.md` step 9, the one home for the plan-scope rules. No git needed
   - `direct_scope: diff`: `git diff <base_branch>...<branch>` in each repo (target falls back to `review.target_branch`)
   - Round `n` 2 or later: scoped re-review, with a full pass on the final round (`skills/gather-pr-context/SKILL.md` step 9, item 7)
 - Pre-handoff gate (every route, before any review work; `../handoff/README.md` rule 12): if `code.pre_handoff_gate` in `handoff.md` is not `pass`, or `code.pre_handoff_gate_at` is missing or earlier than the History row that handed the feature to `in-review`, send it back without a review round: no report, no review-log round and no `review.cycle` increment. Set stage `changes-requested`, owner `agents.code.id`, `pickup: pending`, add a History row giving the reason, and message the implementing agent by name
-- PR route: PR metadata and diff from `review.provider`, read-only; find the feature's `handoff.md` from the linked ticket
+- PR route: PR metadata and diff from `review.provider`, read-only. PRs on both AI-framework (framework changes) and ai-framework-tests (app code) are in scope. Find the feature's `handoff.md` from the linked ticket
   - `azure-devops`: Azure DevOps connector (token env var from `secrets.azure_devops_pat_env`)
-  - `github`: a connected GitHub connector where available, else the token env var from `secrets.github_token_env`
+  - `github`: a connected GitHub connector where available, else the token env var from `secrets.github_token_env`. Covers both NeilWoodComputing/AI-framework and NeilWoodComputing/ai-framework-tests
   - `cursor-origin`: Cursor Origin connector for `review.cursor_origin.namespace` / `repository`, no token env var: pull request read (summary, files, commits), compare commits (`<target>...<source>` merge-base diff), get file contents (whole files / dependencies at the head ref), list commits. Never its write tools
   - `local-git`: `git diff <target>...<source>` in `review.local_git.repo_paths`; also covers a local clone of an Origin or GitHub repo
 - Output: context pack — change metadata, **review scope** (each file with class and reason: diff / dependency / manifest / discovered; exclusions; not implemented / deferred items), linked tickets, spec control inventory, scenario list (`<ticket>/S<n>`), applicable rules
