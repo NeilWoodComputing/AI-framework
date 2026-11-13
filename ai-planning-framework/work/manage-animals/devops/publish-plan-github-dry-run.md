@@ -621,12 +621,11 @@ And meaning is not colour-only (accessible name present)
 
 **Action:** CREATE (no existing issue found with label `T-ANIMAL-004`)
 
-**Title:** `[T-ANIMAL-004] Add | Edit Animal Basic Form (Form Modal)`
+**Title:** `[T-ANIMAL-004] Add | Edit Animal Basic Form (UI page)`
 
 **Labels:**
 - `T-ANIMAL-004`
 - `manage-animals`
-- `form-modal`
 - `ui-page`
 - `ai-planning-framework`
 
@@ -1088,6 +1087,17 @@ And a row with [] shows an empty cell
 | Edit Animal (first consumer) | Row actions menu item | Animals (through T-ANIMAL-003) | Animal (creatures.animals) | Opens Add \| Edit Animal in Edit mode |
 | Delete Animal (first consumer) | Row actions menu item | Animals (through T-ANIMAL-005) | Animal (creatures.animals) | Soft delete (IsDeleted) after confirmation |
 
+## Current code (extension point)
+
+Read only in `src/framework/entity-framework/` (the files include Dev Bot's uncommitted changes listed in `handoff.md` › `implementation`):
+
+- `grid/grid-column.ts`: `GridRowAction<T>` = `label`, `tid?`, `icon?` (added by Dev Bot), `execute(item)`, `prefetchHref?(item)`. No permission or per-row visibility.
+- `grid/entity-grid-config.ts`: `EntityGridConfig<T>.rowActions?` and `rowActionsDisplay?: 'buttons' | 'menu'` (`menu` added by Dev Bot; `buttons` is the default).
+- `components/entity-grid/EntityGrid.tsx`: when `rowActions` is not empty it appends a last column (`propertyName: '__actions'`, header "Actions", not sortable). With `menu`, each cell renders `EntityGridRowActionsMenu`; otherwise each action is a small text `Button`. No Actions column when `rowActions` is empty. No row-click handler.
+- `components/entity-grid/EntityGridRowActionsMenu.tsx` (Dev Bot): an "Actions" text button (`aria-haspopup="menu"`, `aria-expanded`) opening a `role="menu"` list of `menuitem` buttons (optional icon + label); closes on Escape, on a click outside, and after an item is chosen; renders nothing when given no actions. Styles in `EntityGrid.module.css` (`rowActionsMenu*`).
+- Consumers: the two reference-data grids (default `buttons`) and `src/features/animals/manage-animals/use-animals-grid.tsx` (`menu`; at planning time it built the item list conditionally from `user_management_write`; the folder was renamed from `manage-animals-modal/` when the list moved onto the page, decision 27).
+- Permissions on the client: `session.permissions: string[]` (`src/framework/auth/models/auth-state.model.ts`, read with `useAuth()` from `@auth/context/AuthProvider`). No shared permission helper exists.
+
 ## Work to do
 
 1. **Keep and formalise the `menu` display** (decision 26): `rowActionsDisplay: 'menu'` and `EntityGridRowActionsMenu.tsx` stay as the shared row actions menu, documented as a framework option. `buttons` stays the default.
@@ -1395,6 +1405,15 @@ And the grid is shown on the page with no modal open
 |-------------------|-----------------|---------|-----------------|--------------------------------------|
 | Is Furry (grid) | Boolean icon cell (`renderBooleanIconCell`) | Animals | Animal (creatures.animals) | Animal.IsFurry |
 | Has Hooves (grid) | Boolean icon cell (`renderBooleanIconCell`) | Animals | Animal (creatures.animals) | Animal.HasHooves |
+
+## Findings from the current UI (read-only; do not invent names)
+
+Checked in `ai-code-framework/ui/UI.NextJs.Framework` (read only):
+
+- **Existing boolean grid helper:** `renderBooleanSwitchCell` in `src/framework/entity-framework/grid/grid-cell-renderers.tsx` — renders `@design-system` `Switch` with `readOnly` and `aria-label={label}`. Exported from `@entity-framework`. Animals uses it in `src/features/animals/manage-animals/columns/animals-grid-columns.tsx` for Is Furry / Has Hooves today.
+- **Icon component:** `src/framework/design-system/components/icon/Icon.tsx` — Material icon paths (Apache 2.0), `fill="currentColor"`, default `size = '1.8rem'`, `aria-hidden` + `focusable="false"` on the SVG, `data-icon={name}`. **Current `IconName` values: only `Edit` and `Delete`.** There is **no** Check / Tick / Close / Cross icon yet — this ticket **adds** Material `Check` and `Close` to `ICON_PATHS` / `IconName`.
+- **Colour tokens:** `src/framework/design-system/theme/tokens.css` already defines `--system-green: #72b453` and `--system-red: #cf1337` on `:root` (not overridden in dark theme). *(Decision 30: do **not** use or change these for the boolean cell — they also paint the system buttons and callout borders. Light-mode #72b453 is 2.51:1 on white and dark-mode #cf1337 is 2.09:1 on the dark row, both below 3:1. Dark overrides live in the `html[data-theme='dark']` block of the same file (set by `ThemeProvider.tsx`); the dark `--app-form-error-text` is `#ff9aa8`. Add new dedicated boolean fill tokens — see Work to do item 7; the glyph is a cut-out, not a colour token (Neil 20:19).)*
+- **Aria pattern today:** `renderBooleanSwitchCell` puts the accessible name on the control (`aria-label`). Because `Icon` is `aria-hidden`, the boolean-icon cell must put `aria-label` (Yes / No / Not set) on a wrapping non-interactive element (e.g. `span`), not rely on colour alone.
 
 ## Work to do
 

@@ -95,6 +95,8 @@ And the service writes the record with the entered values
 
 The full Given/When/Then is **required**, not optional. The checkable summary provides a quick overview for developers and testers.
 
+If a ticket has no scenarios or no Given / When / Then, do not publish it. List it in the dry-run plan under a **Blocked — missing GWT** entry, with the ticket path and the reason, and report it in the run output.
+
 ### Labels
 
 Always include:
