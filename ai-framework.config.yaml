@@ -304,8 +304,10 @@ review:
   github:
     # Read through a connected GitHub connector where available; otherwise the
     # token env var named in secrets.github_token_env.
+    # Covers PRs on both AI-framework (the framework itself) and ai-framework-tests
+    # (app code in api/ and ui/). Repository can be a list or inferred from the PR.
     owner: NeilWoodComputing
-    repository: ai-framework-tests
+    repositories: [AI-framework, ai-framework-tests]
   cursor_origin:
     # Read through the Cursor Origin connector (the user's connected account).
     # No token env var: nothing for this provider goes in `secrets`.
@@ -337,14 +339,26 @@ review:
   direct_scope: plan                     # plan | diff
 
   # The ONLY folders whose files are ever reviewed, on every route (direct plan
-  # scope, direct diff, PR): the ai-code-framework API and UI folders, which hold
-  # every development.api / development.ui option path. Planning artefacts (specs,
-  # tickets, stubs, Excel) are read as the reference for what should be built,
-  # but are never reviewed. Framework docs, this config and anything else outside
-  # these folders are never in scope. scope_exclude still applies inside them.
+  # scope, direct diff, PR). Review scope per repo:
+  # - AI-framework: framework folders, handoff, scripts, tests, root config and README
+  # - ai-framework-tests: api/ and ui/ (app code)
+  # Planning artefacts (specs, tickets, stubs, Excel) are read as the reference
+  # for what should be built, but are never reviewed. scope_exclude still applies.
   scope_include:
-    - "ai-code-framework/api/**"         # Unity.API, API.Framework
-    - "ai-code-framework/ui/**"          # UI.Angular.Framework, UI.NextJs.Framework
+    # AI-framework (framework changes)
+    - "ai-planning-framework/**"
+    - "ai-code-framework/**"
+    - "ai-review-framework/**"
+    - "ai-test-framework/**"
+    - "handoff/**"
+    - "scripts/**"
+    - "tests/**"
+    - "ai-framework.config.yaml"
+    - "project.yaml"
+    - "README.md"
+    # ai-framework-tests (app code in api/ and ui/)
+    - "api/**"
+    - "ui/**"
 
   # Never in a review scope (any route): build output, dependencies, generated
   # files and secrets. Secret files are never opened. Add patterns as needed.

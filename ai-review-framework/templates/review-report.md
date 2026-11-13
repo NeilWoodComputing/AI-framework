@@ -49,7 +49,7 @@ How the scope was built: <PR diff from `<provider>` \| Plan scope — started fr
 - Round type: <first review \| scoped re-review (open findings + changed files) \| full pass (final round)>
 - Not implemented (no file in scope): <none \| control / `Table.Column` → F-NN>
 - Deferred by the ticket's out-of-scope list: <none \| item>
-- Excluded: outside `review.scope_include` (only API / UI code is reviewed): <none \| files>; `review.scope_exclude` (build output, node_modules, bin / obj, generated, secrets / `.env`) <+ anything else skipped and why>
+- Excluded: outside `review.scope_include` (AI-framework framework folders or ai-framework-tests api/ui): <none \| files>; `review.scope_exclude` (build output, node_modules, bin / obj, generated, secrets / `.env`) <+ anything else skipped and why>
 
 ## Findings
 

@@ -12,7 +12,11 @@ The review never edits the code under review. It writes a full report and append
 | Direct, `review.direct_scope: plan` (default) | **All code relevant to the plan**, from the implementing agent's `implementation` manifest plus a codebase search, every file read whole. No git or target branch needed. The rules: `skills/gather-pr-context/SKILL.md` step 9 |
 | Direct, `direct_scope: diff` | Local `git diff <base_branch>...<branch>` in each repo (the old behaviour) |
 
-**Only API / UI code is reviewed.** On every route (PR, direct `plan`, direct `diff`) a file is in scope only if it is under a `review.scope_include` folder: `ai-code-framework/api/` or `ai-code-framework/ui/`, the folders holding the `development.api` / `development.ui` codebases. A PR or diff file outside them is listed as excluded and not reviewed. Planning artefacts (`specs/`, `tickets/`, `stubs/`, `excel/`) are read as the reference for what should be built, but are never reviewed themselves. Framework docs, shared rules (`frameworks.code.rules`, read as reference only), `ai-framework.config.yaml` and anything else outside those folders are never in scope. The report and review log are still written to the feature's `reviews/` folder.
+**Review scope per repo.** Review Bot reviews PRs on **both** AI-framework (framework changes) and ai-framework-tests (app code in api/ and ui/). On every route (PR, direct `plan`, direct `diff`) a file is in scope only if it is under a `review.scope_include` folder:
+- **AI-framework:** framework folders (`ai-planning-framework/`, `ai-code-framework/`, `ai-review-framework/`, `ai-test-framework/`, `handoff/`, `scripts/`, `tests/`), root config (`ai-framework.config.yaml`, `project.yaml`) and README
+- **ai-framework-tests:** app code (`api/` and `ui/`)
+
+A PR or diff file outside these is listed as excluded and not reviewed. Planning artefacts (`specs/`, `tickets/`, `stubs/`, `excel/`) are read as the reference for what should be built, but are never reviewed themselves. The report and review log are still written to the feature's `reviews/` folder.
 
 `review.scope_exclude` keeps build output, node_modules, bin / obj, generated files and secrets / `.env` files out of every scope. Each report has a **Review scope** section listing how the scope was built and why each file is included.
 
