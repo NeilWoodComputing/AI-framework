@@ -66,12 +66,12 @@ test-bot follows the shared editing rules in `../handoff/README.md` → **Shared
 
 ## Reporting results
 
-### PR-based workflow
+### PR-based reporting
 
 - **Readiness signal:** Post a single **'Test Bot: test results'** comment on the PR with test outcomes, check results, and any blockers. Then message Review Bot (`agents.review.name`) with the PR URL and a summary.
 - **Blockers:** Report missing scaffolding, scenario IDs, environment, database or secrets in the PR comment and message to Review Bot. A blocked run does not get final approval (`testing.blocked_tests_allow_approval: false`).
 
-### Feature-based workflow (with handoff.md)
+### Reporting for features with handoff.md
 
 Where a feature has a `handoff.md` file:
 
