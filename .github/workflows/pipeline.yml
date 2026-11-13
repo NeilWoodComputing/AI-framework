@@ -142,4 +142,11 @@ jobs:
       run: bats tests/init-user.bats
     
     - name: Run PowerShell script tests
-      run: pwsh -Command "Invoke-Pester tests/init-user.Tests.ps1 -Output Detailed"
+      run: |
+        pwsh -Command "
+          \$config = New-PesterConfiguration
+          \$config.Run.Path = 'tests/init-user.Tests.ps1'
+          \$config.Run.Exit = \$true
+          \$config.Output.Verbosity = 'Detailed'
+          Invoke-Pester -Configuration \$config
+        "
