@@ -1,0 +1,157 @@
+name: pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate configuration
+    runs-on: ubuntu-24.04
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+    
+    - name: Set up Python
+      uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+      continue-on-error: true
+    
+    - name: Install Python dependencies
+      run: pip install pyyaml
+    
+    - name: Run config validation
+      run: python3 tests/validate-config.py
+    
+    - name: Run framework consistency checks
+      run: python3 tests/check-framework.py
+
+  lint:
+    name: Lint code and configuration
+    runs-on: ubuntu-24.04
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+    
+    - name: Set up Python
+      uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+      continue-on-error: true
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7.1.0
+      with:
+        node-version: '20'
+    
+    - name: Install PowerShell
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget apt-transport-https software-properties-common
+        wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
+        sudo dpkg -i packages-microsoft-prod.deb
+        rm packages-microsoft-prod.deb
+        sudo apt-get update
+        sudo apt-get install -y powershell
+    
+    - name: Cache PowerShell modules
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: ~/.local/share/powershell/Modules
+        key: ${{ runner.os }}-pwsh-${{ hashFiles('**/*.ps1') }}
+        restore-keys: |
+          ${{ runner.os }}-pwsh-
+      continue-on-error: true
+    
+    - name: Install linting tools
+      run: |
+        pip install yamllint
+        sudo apt-get install -y shellcheck
+        npm install -g markdownlint-cli
+        pwsh -Command "Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser -SkipPublisherCheck"
+    
+    - name: Run shellcheck
+      run: shellcheck scripts/init-user.sh scripts/test.sh
+    
+    - name: Run PSScriptAnalyzer
+      run: pwsh -Command "Invoke-ScriptAnalyzer -Path scripts/init-user.ps1 -Settings PSGallery"
+    
+    - name: Run yamllint
+      run: yamllint ai-framework.config.yaml user-preferences.example.yaml
+    
+    - name: Run markdownlint
+      run: |
+        markdownlint README.md \
+          ai-planning-framework/AGENT-BRIEF.md \
+          ai-code-framework/AGENT-BRIEF.md \
+          ai-review-framework/AGENT-BRIEF.md \
+          ai-test-framework/AGENT-BRIEF.md \
+          handoff/README.md
+
+  test:
+    name: Run test suite
+    runs-on: ubuntu-24.04
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+    
+    - name: Set up Python
+      uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+      continue-on-error: true
+    
+    - name: Install PowerShell
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget apt-transport-https software-properties-common
+        wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
+        sudo dpkg -i packages-microsoft-prod.deb
+        rm packages-microsoft-prod.deb
+        sudo apt-get update
+        sudo apt-get install -y powershell
+    
+    - name: Cache PowerShell modules
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+      with:
+        path: ~/.local/share/powershell/Modules
+        key: ${{ runner.os }}-pwsh-${{ hashFiles('**/*.ps1') }}
+        restore-keys: |
+          ${{ runner.os }}-pwsh-
+      continue-on-error: true
+    
+    - name: Install test dependencies
+      run: |
+        pip install pyyaml
+        sudo apt-get install -y bats
+        pwsh -Command "Install-Module -Name Pester -Force -Scope CurrentUser -SkipPublisherCheck"
+    
+    - name: Run bash script tests
+      run: bats tests/init-user.bats
+    
+    - name: Run PowerShell script tests
+      run: |
+        pwsh -Command "
+          \$config = New-PesterConfiguration
+          \$config.Run.Path = 'tests/init-user.Tests.ps1'
+          \$config.Run.Exit = \$true
+          \$config.Output.Verbosity = 'Detailed'
+          Invoke-Pester -Configuration \$config
+        "

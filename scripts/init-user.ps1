@@ -26,8 +26,8 @@ $TemplateFile = Join-Path $FrameworkRoot "user-preferences.example.yaml"
 
 # Configuration from environment
 $IsBotMachine = ($env:AI_FRAMEWORK_BOT_MACHINE -eq "true")
-$BotMachineConfig = if ($env:AI_FRAMEWORK_USER_CONFIG) { $env:AI_FRAMEWORK_USER_CONFIG } else { "/home/box/ai-framework/user-preferences.yaml" }
-$LocalConfig = if ($env:AI_FRAMEWORK_USER_CONFIG) { $env:AI_FRAMEWORK_USER_CONFIG } else { "$env:USERPROFILE\.ai-framework\user-preferences.yaml" }
+$BotMachineConfigPath = if ($env:AI_FRAMEWORK_USER_CONFIG) { $env:AI_FRAMEWORK_USER_CONFIG } else { "/home/box/ai-framework/user-preferences.yaml" }
+$LocalConfigPath = if ($env:AI_FRAMEWORK_USER_CONFIG) { $env:AI_FRAMEWORK_USER_CONFIG } else { "$env:USERPROFILE\.ai-framework\user-preferences.yaml" }
 $BotMachineCacheDir = if ($env:AI_FRAMEWORK_BOT_CACHE_DIR) { $env:AI_FRAMEWORK_BOT_CACHE_DIR } else { "/home/box/ai-framework/cache" }
 
 Write-Host "`n=== AI Framework User Initialisation ===`n" -ForegroundColor Blue
@@ -49,11 +49,11 @@ Write-Host $Username -ForegroundColor Green
 if ($IsBotMachine) {
     Write-Host "Environment: " -NoNewline
     Write-Host "Bot machine" -ForegroundColor Green
-    $UserConfigFile = $BotMachineConfig
+    $UserConfigFile = $BotMachineConfigPath
 } else {
     Write-Host "Environment: " -NoNewline
     Write-Host "Local developer machine" -ForegroundColor Green
-    $UserConfigFile = $LocalConfig
+    $UserConfigFile = $LocalConfigPath
 }
 
 # Step 1: Create or update user preferences file

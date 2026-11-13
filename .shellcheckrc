@@ -1,0 +1,9 @@
+# ShellCheck configuration
+# Disable specific checks that are not relevant
+
+# SC1090: Can't follow non-constant source
+disable=SC1090
+
+# SC2181: Check exit code directly instead of $?
+# (We use $? in some places for clarity)
+disable=SC2181
