@@ -17,17 +17,18 @@ permissions:
 jobs:
   validate:
     name: Validate configuration
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
     
     - name: Set up Python
-      uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3  # v5.2.0
+      uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
       with:
         python-version: '3.11'
         cache: 'pip'
+      continue-on-error: true
     
     - name: Install Python dependencies
       run: pip install pyyaml
@@ -40,20 +41,21 @@ jobs:
 
   lint:
     name: Lint code and configuration
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
     
     - name: Set up Python
-      uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3  # v5.2.0
+      uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
       with:
         python-version: '3.11'
         cache: 'pip'
+      continue-on-error: true
     
     - name: Set up Node.js
-      uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6  # v4.0.4
+      uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af  # v4.1.0
       with:
         node-version: '20'
     
@@ -68,12 +70,13 @@ jobs:
         sudo apt-get install -y powershell
     
     - name: Cache PowerShell modules
-      uses: actions/cache@v4
+      uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2
       with:
         path: ~/.local/share/powershell/Modules
         key: ${{ runner.os }}-pwsh-${{ hashFiles('**/*.ps1') }}
         restore-keys: |
           ${{ runner.os }}-pwsh-
+      continue-on-error: true
     
     - name: Install linting tools
       run: |
@@ -102,17 +105,18 @@ jobs:
 
   test:
     name: Run test suite
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
     
     - name: Set up Python
-      uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3  # v5.2.0
+      uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
       with:
         python-version: '3.11'
         cache: 'pip'
+      continue-on-error: true
     
     - name: Install PowerShell
       run: |
@@ -125,12 +129,13 @@ jobs:
         sudo apt-get install -y powershell
     
     - name: Cache PowerShell modules
-      uses: actions/cache@v4
+      uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a  # v4.1.2
       with:
         path: ~/.local/share/powershell/Modules
         key: ${{ runner.os }}-pwsh-${{ hashFiles('**/*.ps1') }}
         restore-keys: |
           ${{ runner.os }}-pwsh-
+      continue-on-error: true
     
     - name: Install test dependencies
       run: |
