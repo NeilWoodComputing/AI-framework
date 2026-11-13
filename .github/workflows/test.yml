@@ -1,0 +1,89 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Set up PowerShell
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install PowerShell
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget apt-transport-https software-properties-common
+        wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
+        sudo dpkg -i packages-microsoft-prod.deb
+        sudo apt-get update
+        sudo apt-get install -y powershell
+    
+    - name: Install test dependencies
+      run: |
+        # Python dependencies
+        pip install pyyaml
+        
+        # Shellcheck
+        sudo apt-get install -y shellcheck
+        
+        # Yamllint
+        pip install yamllint
+        
+        # Bats
+        sudo apt-get install -y bats
+        
+        # Markdown linting
+        npm install -g markdownlint-cli
+        
+        # PowerShell modules
+        pwsh -Command "Install-Module -Name Pester -Force -Scope CurrentUser -SkipPublisherCheck"
+        pwsh -Command "Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser"
+    
+    - name: Run config validation
+      run: python3 tests/validate-config.py
+    
+    - name: Run framework consistency checks
+      run: python3 tests/check-framework.py
+    
+    - name: Run shellcheck
+      run: shellcheck scripts/init-user.sh
+    
+    - name: Run PSScriptAnalyzer
+      run: pwsh -Command "Invoke-ScriptAnalyzer -Path scripts/init-user.ps1 -Settings PSGallery"
+    
+    - name: Run yamllint
+      run: yamllint ai-framework.config.yaml user-preferences.example.yaml
+    
+    - name: Run markdownlint
+      run: |
+        markdownlint README.md \
+          ai-planning-framework/AGENT-BRIEF.md \
+          ai-code-framework/AGENT-BRIEF.md \
+          ai-review-framework/AGENT-BRIEF.md \
+          ai-test-framework/AGENT-BRIEF.md \
+          handoff/README.md
+    
+    - name: Run bash script tests
+      run: bats tests/init-user.bats
+    
+    - name: Run PowerShell script tests
+      run: pwsh -Command "Invoke-Pester tests/init-user.Tests.ps1 -Output Detailed"
+    
+    - name: Test summary
+      if: always()
+      run: echo "Test suite completed"

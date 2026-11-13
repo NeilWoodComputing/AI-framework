@@ -111,3 +111,49 @@ One agent per framework, each filling a role: the **planning agent** (`ai-planni
 - Gates: the human owner approves the plan before code starts and always does the merge (`handoff.require_human_approval`). Agents never merge.
 
 Each feature's state (stage, owner, route, branch, PR, review, approvals, history) is in `<output.work_dir>/<feature>/handoff.md`. Agents pass each other only the feature path. Full rules: `handoff/README.md`.
+
+## Testing
+
+The framework includes automated quality checks and tests that run on every PR and push to main.
+
+### Running Tests Locally
+
+```bash
+./scripts/test.sh
+```
+
+This runs all available checks:
+- **Config validation** — validates `ai-framework.config.yaml` and `user-preferences.example.yaml` schemas
+- **Framework consistency** — checks AGENT-BRIEF.md files, README precedence, and referenced paths
+- **ShellCheck** — static analysis of `init-user.sh`
+- **PSScriptAnalyzer** — static analysis of `init-user.ps1`
+- **yamllint** — YAML formatting and style
+- **markdownlint** — Markdown formatting and style
+- **Bash tests (bats)** — behaviour tests for `init-user.sh`
+- **PowerShell tests (Pester)** — behaviour tests for `init-user.ps1`
+
+### Test Coverage
+
+**Init script tests:**
+- Fresh config creation from template
+- Idempotent re-runs (preserves existing settings)
+- Migration from old `users/<name>.yaml` format
+- Environment variable handling (`AI_FRAMEWORK_USER_CONFIG`, `AI_FRAMEWORK_BOT_MACHINE`)
+- Cache creation and refresh (bot machine mode)
+- Git and rsync fallback handling
+
+**Quality checks:**
+- Config schema validation (runtime values, agent mappings, required fields)
+- All AGENT-BRIEF.md files contain runtime verification instructions
+- README precedence matches config precedence
+- Referenced framework paths exist
+- Shell and PowerShell scripts pass static analysis
+- YAML and Markdown files follow style guidelines
+
+### CI/CD
+
+GitHub Actions runs the full test suite automatically on:
+- Pull requests to `main`
+- Pushes to `main`
+
+See `.github/workflows/test.yml` for the complete CI configuration.
